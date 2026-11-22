@@ -1,0 +1,2834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Tableau Quest — Jefe Final: Simulacro UNED (P1–P10)</title>
+
+  <!-- Metaetiquetas PWA para instalación móvil -->
+  <meta name="theme-color" content="#090d1a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Jefe Final LED" />
+  <meta name="description" content="Simulacro oficial y entrenador táctil para las 10 primeras preguntas (P1–P10) de Lógica y Estructuras Discretas UNED." />
+
+  <!-- Icono SVG inline (Corona dorada de Jefe Final con ⊨) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23090d1a'/%3E%3Cstop offset='100%25' stop-color='%23171f3b'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fde68a'/%3E%3Cstop offset='50%25' stop-color='%23f59e0b'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23bg)'/%3E%3Crect x='24' y='24' width='464' height='464' rx='94' fill='none' stroke='url(%23gold)' stroke-width='14' stroke-opacity='0.85'/%3E%3Cpath d='M110 220 L152 128 L216 184 L256 108 L296 184 L360 128 L402 220 Z' fill='url(%23gold)'/%3E%3Crect x='110' y='236' width='292' height='26' rx='13' fill='url(%23gold)'/%3E%3Ctext x='256' y='375' text-anchor='middle' fill='%2322d3ee' font-family='monospace' font-size='112' font-weight='900'%3E%E2%8A%A8%3C/text%3E%3Ctext x='256' y='438' text-anchor='middle' fill='%23f8fafc' font-family='sans-serif' font-size='44' font-weight='900' letter-spacing='4'%3EP1-P10%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23090d1a'/%3E%3Cstop offset='100%25' stop-color='%23171f3b'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fde68a'/%3E%3Cstop offset='50%25' stop-color='%23f59e0b'/%3E%3Cstop offset='100%25' stop-color='%23d97706'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23bg)'/%3E%3Crect x='24' y='24' width='464' height='464' rx='94' fill='none' stroke='url(%23gold)' stroke-width='14' stroke-opacity='0.85'/%3E%3Cpath d='M110 220 L152 128 L216 184 L256 108 L296 184 L360 128 L402 220 Z' fill='url(%23gold)'/%3E%3Crect x='110' y='236' width='292' height='26' rx='13' fill='url(%23gold)'/%3E%3Ctext x='256' y='375' text-anchor='middle' fill='%2322d3ee' font-family='monospace' font-size='112' font-weight='900'%3E%E2%8A%A8%3C/text%3E%3Ctext x='256' y='438' text-anchor='middle' fill='%23f8fafc' font-family='sans-serif' font-size='44' font-weight='900' letter-spacing='4'%3EP1-P10%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    /* =========================================================================
+       1. TOKENS DE DISEÑO "FINAL BOSS" (#090d1a)
+       ========================================================================= */
+    :root {
+      --bg-outer: #040711;
+      --bg-app: #090d1a;
+      --card: rgba(15, 23, 42, 0.86);
+      --card-solid: #11182c;
+      --border: #1e293b;
+      --border-hi: #334155;
+
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --dim: #64748b;
+
+      /* Paleta de acentos */
+      --gold: #f59e0b;
+      --gold-lt: #fcd34d;
+      --gold-bg: rgba(245, 158, 11, 0.14);
+      --gold-bd: rgba(245, 158, 11, 0.48);
+
+      --cyan: #22d3ee;
+      --cyan-lt: #67e8f9;
+      --cyan-bg: rgba(34, 211, 238, 0.13);
+      --cyan-bd: rgba(34, 211, 238, 0.45);
+
+      --violet: #a78bfa;
+      --violet-lt: #ddd6fe;
+      --violet-bg: rgba(167, 139, 250, 0.14);
+      --violet-bd: rgba(167, 139, 250, 0.48);
+
+      --ok: #10b981;
+      --ok-lt: #6ee7b7;
+      --ok-bg: rgba(16, 185, 129, 0.15);
+      --ok-bd: rgba(16, 185, 129, 0.52);
+
+      --err: #f43f5e;
+      --err-lt: #fda4af;
+      --err-bg: rgba(244, 63, 94, 0.15);
+      --err-bd: rgba(244, 63, 94, 0.52);
+
+      --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg-outer);
+      color: var(--text);
+      font-family: var(--font);
+      overscroll-behavior: none;
+      line-height: 1.45;
+    }
+
+    body {
+      background-image:
+        radial-gradient(circle at 18% 8%, rgba(245, 158, 11, 0.12), transparent 36%),
+        radial-gradient(circle at 86% 18%, rgba(34, 211, 238, 0.09), transparent 38%),
+        radial-gradient(circle at 50% 92%, rgba(167, 139, 250, 0.10), transparent 42%);
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 480px;
+      height: 100dvh;
+      margin: 0 auto;
+      background: var(--bg-app);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 560px) {
+      body {
+        display: flex; align-items: center; justify-content: center;
+        min-height: 100vh; padding: 14px;
+      }
+      .app-shell {
+        height: min(890px, calc(100vh - 28px));
+        border-radius: 30px;
+        border: 1px solid rgba(245, 158, 11, 0.24);
+        box-shadow:
+          0 32px 96px -14px rgba(0, 0, 0, 0.94),
+          0 0 70px -24px rgba(245, 158, 11, 0.22);
+      }
+    }
+
+    .scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .scroll-y::-webkit-scrollbar, .scroll-x::-webkit-scrollbar { width: 5px; height: 4px; }
+    .scroll-y::-webkit-scrollbar-thumb, .scroll-x::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.45); border-radius: 99px;
+    }
+
+    button, a { font-family: inherit; color: inherit; text-decoration: none; background: none; border: none; cursor: pointer; padding: 0; }
+    .btn { transition: transform 0.11s ease, border-color 0.14s ease, background 0.14s ease, opacity 0.14s ease; user-select: none; }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+    .mono { font-family: var(--mono); letter-spacing: -0.02em; }
+
+    /* Cabecera fija */
+    .topbar {
+      padding: 10px 12px;
+      background: linear-gradient(180deg, rgba(13, 19, 38, 0.98), rgba(9, 13, 26, 0.96));
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      flex-shrink: 0; z-index: 25;
+    }
+    .icon-btn {
+      height: 36px; min-width: 36px; padding: 0 10px;
+      border-radius: 11px;
+      background: rgba(24, 34, 58, 0.9);
+      border: 1px solid var(--border-hi);
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      font-size: 12px; font-weight: 800; color: #e2e8f0; flex-shrink: 0;
+    }
+    .icon-btn.manual {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(167, 139, 250, 0.16));
+      border-color: var(--gold-bd); color: var(--gold-lt);
+    }
+    .icon-btn.locked {
+      background: rgba(15, 23, 42, 0.7);
+      border-color: var(--border); color: var(--dim);
+    }
+
+    /* Contenedores & Tarjetas */
+    .pad { flex: 1; padding: 13px; display: flex; flex-direction: column; gap: 11px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px;
+    }
+    .boss-hero {
+      border-radius: 20px; padding: 15px;
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.16), rgba(15, 23, 42, 0.95) 48%, rgba(167, 139, 250, 0.14));
+      border: 1px solid var(--gold-bd);
+      box-shadow: 0 14px 36px -18px rgba(245, 158, 11, 0.35);
+    }
+    .mode-card {
+      width: 100%; text-align: left;
+      border-radius: 18px; padding: 14px;
+      border: 1px solid var(--border);
+      background: linear-gradient(155deg, rgba(20, 29, 54, 0.9), rgba(11, 16, 32, 0.96));
+      display: flex; flex-direction: column; gap: 7px;
+      position: relative;
+    }
+    .mode-card.m-gold { border-color: var(--gold-bd); background: linear-gradient(150deg, rgba(64, 37, 8, 0.45), rgba(11, 16, 32, 0.96)); }
+    .mode-card.m-cyan { border-color: var(--cyan-bd); background: linear-gradient(150deg, rgba(8, 51, 68, 0.42), rgba(11, 16, 32, 0.96)); }
+    .mode-card.m-violet { border-color: var(--violet-bd); background: linear-gradient(150deg, rgba(46, 16, 101, 0.42), rgba(11, 16, 32, 0.96)); }
+    .mode-card.m-ok { border-color: var(--ok-bd); background: linear-gradient(150deg, rgba(6, 78, 59, 0.38), rgba(11, 16, 32, 0.96)); }
+
+    /* Badges */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 99px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      border: 1px solid transparent; white-space: nowrap;
+    }
+    .b-gold { background: var(--gold-bg); border-color: var(--gold-bd); color: var(--gold-lt); }
+    .b-cyan { background: var(--cyan-bg); border-color: var(--cyan-bd); color: var(--cyan-lt); }
+    .b-violet { background: var(--violet-bg); border-color: var(--violet-bd); color: var(--violet-lt); }
+    .b-ok { background: var(--ok-bg); border-color: var(--ok-bd); color: var(--ok-lt); }
+    .b-err { background: var(--err-bg); border-color: var(--err-bd); color: var(--err-lt); }
+    .b-dim { background: rgba(30, 41, 59, 0.8); border-color: var(--border-hi); color: var(--muted); }
+
+    /* Botones CTA */
+    .cta {
+      width: 100%; padding: 12px 14px; border-radius: 14px;
+      font-weight: 800; font-size: 13px;
+      display: flex; align-items: center; justify-content: center; gap: 7px; text-align: center;
+    }
+    .cta-gold { background: linear-gradient(90deg, #f59e0b, #fbbf24); color: #1a0d02; }
+    .cta-cyan { background: linear-gradient(90deg, #06b6d4, #22d3ee); color: #031921; }
+    .cta-violet { background: linear-gradient(90deg, #8b5cf6, #a78bfa); color: #0e0620; }
+    .cta-ok { background: linear-gradient(90deg, #10b981, #34d399); color: #031d15; }
+    .cta-err { background: linear-gradient(90deg, #e11d48, #f43f5e); color: #fff1f2; }
+    .cta-ghost { background: rgba(30, 41, 59, 0.85); border: 1px solid var(--border-hi); color: #e2e8f0; }
+
+    /* Barra de navegación rápida P1..P10 */
+    .qnav {
+      padding: 7px 10px;
+      background: rgba(11, 16, 32, 0.96);
+      border-bottom: 1px solid var(--border);
+      display: flex; gap: 5px; overflow-x: auto; flex-shrink: 0;
+    }
+    .qpill {
+      min-width: 38px; height: 30px; padding: 0 7px;
+      border-radius: 9px; font-family: var(--mono); font-size: 11px; font-weight: 800;
+      background: #131c33; border: 1px solid var(--border-hi); color: var(--muted);
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .qpill.p-prop { border-bottom: 2px solid var(--cyan); }
+    .qpill.p-pred { border-bottom: 2px solid var(--violet); }
+    .qpill.answered { background: rgba(245, 158, 11, 0.22); border-color: var(--gold); color: var(--gold-lt); }
+    .qpill.res-ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-lt); }
+    .qpill.res-err { background: var(--err-bg); border-color: var(--err); color: var(--err-lt); }
+    .qpill.active {
+      background: #f8fafc; color: #090d1a; border-color: #f8fafc;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.65);
+    }
+
+    /* Tarjeta Sticky Colapsable de Datos (Pizarra V/F táctil) */
+    .data-panel {
+      background: linear-gradient(180deg, #10182f, #0c1224);
+      border-bottom: 1px solid var(--border-hi);
+      flex-shrink: 0; z-index: 15;
+    }
+    .data-head {
+      padding: 8px 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .data-body {
+      padding: 0 11px 10px;
+      display: flex; flex-direction: column; gap: 5px;
+      max-height: 215px; overflow-y: auto;
+    }
+    .f-row {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(9, 13, 26, 0.78);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 5px 8px;
+    }
+    .f-row.m-v { border-color: var(--ok-bd); background: rgba(16, 185, 129, 0.10); }
+    .f-row.m-f { border-color: var(--err-bd); background: rgba(244, 63, 94, 0.10); }
+    .f-row.m-x { opacity: 0.45; }
+    .f-row.m-x .f-expr { text-decoration: line-through; }
+
+    .f-tag {
+      font-family: var(--mono); font-size: 11px; font-weight: 900;
+      min-width: 24px; flex-shrink: 0;
+    }
+    .f-expr {
+      font-family: var(--mono); font-size: 11.8px; font-weight: 600;
+      color: #e2e8f0; flex: 1; word-break: break-word; line-height: 1.3;
+    }
+    .vf-btn {
+      width: 30px; height: 26px; border-radius: 8px; flex-shrink: 0;
+      font-family: var(--mono); font-size: 12px; font-weight: 900;
+      display: inline-flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border-hi); background: #162038; color: var(--muted);
+    }
+    .vf-btn.st-1 { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-lt); }
+    .vf-btn.st-2 { background: var(--err-bg); border-color: var(--err); color: var(--err-lt); }
+    .vf-btn.st-3 { background: rgba(71, 85, 105, 0.35); border-color: #64748b; color: #cbd5e1; }
+
+    .interp-box {
+      border-radius: 10px; padding: 6px 9px;
+      background: rgba(9, 13, 26, 0.72);
+      border: 1px solid var(--border);
+      font-family: var(--mono); font-size: 11.2px; color: #cbd5e1;
+      line-height: 1.38;
+    }
+    .interp-box.hi {
+      background: rgba(167, 139, 250, 0.15);
+      border-color: var(--violet);
+      color: #f5f3ff;
+      box-shadow: 0 0 14px -6px rgba(167, 139, 250, 0.55);
+    }
+
+    /* Opciones de respuesta (a, b, c) */
+    .opt-btn {
+      width: 100%; text-align: left;
+      background: rgba(17, 24, 44, 0.92);
+      border: 1.5px solid var(--border-hi);
+      border-radius: 14px; padding: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--gold-bd); }
+    .opt-btn.selected {
+      background: rgba(245, 158, 11, 0.16);
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4);
+    }
+    .opt-btn.correct { background: var(--ok-bg); border-color: var(--ok); }
+    .opt-btn.wrong { background: var(--err-bg); border-color: var(--err); }
+    .opt-btn.eliminated { opacity: 0.32; pointer-events: none; }
+    .opt-btn.eliminated .opt-txt { text-decoration: line-through; }
+
+    .opt-letter {
+      width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 12.5px; font-weight: 900;
+      background: #090d1a; border: 1px solid var(--border-hi); color: var(--muted);
+    }
+    .opt-btn.selected .opt-letter { background: var(--gold); color: #160a01; border-color: var(--gold); }
+    .opt-btn.correct .opt-letter { background: var(--ok); color: #031a12; border-color: var(--ok); }
+    .opt-btn.wrong .opt-letter { background: var(--err); color: #fff; border-color: var(--err); }
+    .opt-txt { font-family: var(--mono); font-size: 13.2px; font-weight: 700; word-break: break-word; line-height: 1.35; flex: 1; }
+
+    /* Barra inferior fija */
+    .footbar {
+      padding: 9px 11px;
+      background: rgba(9, 13, 26, 0.98);
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 7px;
+      flex-shrink: 0; z-index: 20;
+    }
+
+    /* Enlaces a Temporadas 1 y 2 */
+    .season-bar {
+      padding: 8px 12px;
+      background: rgba(7, 10, 22, 0.96);
+      border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      flex-shrink: 0;
+    }
+    .season-link {
+      padding: 9px 8px; border-radius: 12px;
+      font-size: 11.2px; font-weight: 800; text-align: center;
+      background: rgba(17, 24, 44, 0.9); border: 1px solid var(--border-hi);
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .season-link.t1 { color: var(--cyan-lt); border-color: rgba(34, 211, 238, 0.3); }
+    .season-link.t2 { color: var(--violet-lt); border-color: rgba(167, 139, 250, 0.3); }
+
+    /* Tabs, Modales, Barras y Toast */
+    .tabs {
+      display: grid; gap: 5px;
+      background: #060913; padding: 4px; border-radius: 13px; border: 1px solid var(--border);
+    }
+    .tab-btn { padding: 8px 6px; border-radius: 9px; font-size: 11px; font-weight: 800; color: var(--muted); text-align: center; }
+    .tab-btn.active { background: #1e293b; color: #f8fafc; }
+
+    .backdrop {
+      position: fixed; inset: 0; z-index: 60;
+      background: rgba(3, 6, 14, 0.85);
+      backdrop-filter: blur(5px);
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .backdrop.center { align-items: center; padding: 16px; }
+    .sheet {
+      width: 100%; max-width: 480px; max-height: 88vh;
+      background: #0d1428; border-top: 1px solid var(--border-hi);
+      border-radius: 24px 24px 0 0; padding: 15px 15px 22px;
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: sheetUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dialog {
+      width: 100%; max-width: 400px; max-height: 86vh;
+      background: #0d1428; border: 1px solid var(--border-hi);
+      border-radius: 22px; padding: 18px; overflow-y: auto;
+      animation: popIn 0.18s ease;
+    }
+
+    .toast-wrap {
+      position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+      z-index: 90; width: calc(100% - 28px); max-width: 444px; pointer-events: none;
+    }
+    .toast-box {
+      border-radius: 14px; padding: 10px 13px; font-size: 12px; font-weight: 700;
+      text-align: center; border: 1px solid; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+      animation: popIn 0.18s ease;
+    }
+    .t-ok { background: rgba(6, 78, 59, 0.97); border-color: var(--ok); color: #dcfce7; }
+    .t-err { background: rgba(136, 19, 55, 0.97); border-color: var(--err); color: #ffe4e6; }
+    .t-gold { background: rgba(120, 53, 15, 0.97); border-color: var(--gold); color: #fef3c7; }
+    .t-info { background: rgba(15, 23, 42, 0.97); border-color: var(--cyan); color: #cffafe; }
+
+    .bar-track { width: 100%; height: 7px; border-radius: 99px; background: #1e293b; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; transition: width 0.25s ease; }
+
+    .medal-circle {
+      width: 78px; height: 78px; border-radius: 50%; margin: 0 auto;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 900; font-family: var(--mono);
+      border: 3px solid;
+    }
+
+    /* Tabla compacta para Manual */
+    .mini-tbl { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    .mini-tbl th, .mini-tbl td {
+      border: 1px solid var(--border-hi); padding: 6px 7px; text-align: left;
+    }
+    .mini-tbl th { background: #162038; color: var(--gold-lt); font-weight: 800; }
+
+    @keyframes popIn { 0% { opacity: 0; transform: translateY(-6px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes sheetUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+
+    /* Utilidades */
+    .flex { display: flex; }
+    .col { flex-direction: column; }
+    .aic { align-items: center; }
+    .jcb { justify-content: space-between; }
+    .jcc { justify-content: center; }
+    .wrap { flex-wrap: wrap; }
+    .f1 { flex: 1; }
+    .min0 { min-width: 0; }
+    .g4 { gap: 4px; } .g6 { gap: 6px; } .g8 { gap: 8px; } .g10 { gap: 10px; } .g12 { gap: 12px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .tc { text-align: center; }
+    .trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sm { font-size: 12.2px; color: var(--muted); }
+    .xs { font-size: 10.6px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div id="app" class="app-shell"></div>
+
+  <script>
+    /* =========================================================================
+       1. MOTOR DE SONIDO SINTETIZADO (WEB AUDIO API · SIN ARCHIVOS EXTERNOS)
+       ========================================================================= */
+    const Sound = (() => {
+      let ctx = null;
+      let muted = false;
+
+      function getCtx() {
+        if (muted) return null;
+        if (!ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) ctx = new AC();
+        }
+        if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+        return ctx;
+      }
+
+      function tone(f1, dur, type = 'sine', vol = 0.055, delay = 0, f2 = null) {
+        const c = getCtx();
+        if (!c) return;
+        try {
+          const t = c.currentTime + delay;
+          const osc = c.createOscillator();
+          const g = c.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(f1, t);
+          if (f2) osc.frequency.exponentialRampToValueAtTime(f2, t + dur);
+          g.gain.setValueAtTime(0.001, t);
+          g.gain.exponentialRampToValueAtTime(vol, t + 0.012);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          osc.connect(g);
+          g.connect(c.destination);
+          osc.start(t);
+          osc.stop(t + dur + 0.02);
+        } catch (_) {}
+      }
+
+      return {
+        isMuted: () => muted,
+        toggle: () => {
+          muted = !muted;
+          if (!muted) tone(587, 0.08, 'sine', 0.05);
+          return muted;
+        },
+        click: () => tone(500, 0.04, 'triangle', 0.03, 0, 580),
+        ok: () => { tone(523, 0.09, 'sine', 0.06, 0); tone(784, 0.16, 'sine', 0.065, 0.06); },
+        err: () => { tone(195, 0.12, 'sawtooth', 0.048, 0, 145); tone(145, 0.17, 'sawtooth', 0.042, 0.08, 110); },
+        combo: () => { tone(587, 0.08, 'triangle', 0.06, 0); tone(880, 0.1, 'sine', 0.065, 0.05); tone(1174, 0.18, 'sine', 0.06, 0.1); },
+        hint: () => { tone(440, 0.08, 'sine', 0.045, 0); tone(659, 0.12, 'sine', 0.05, 0.06); },
+        win: () => [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.24, 'sine', 0.068, i * 0.085))
+      };
+    })();
+
+    /* =========================================================================
+       2. BANCO VERIFICADO DE 60 PREGUNTAS UNED (6 PACKS PROP + 6 PACKS PRED)
+       ========================================================================= */
+    const PROP_PACKS = [
+      {
+        id: 'P-1',
+        source: 'UNED 2026 · Mod. A',
+        kind: 'prop',
+        formulas: [
+          { key: 'X1', expr: '(¬p ∨ q ∨ r) ∧ (s ∨ p)' },
+          { key: 'X2', expr: '(s → q) ∧ (r → ¬p)' },
+          { key: 'X3', expr: '(p ∧ ¬q) ∨ (r ∧ ¬s)' },
+          { key: 'X4', expr: '(q → r) ∨ (s → p)' }
+        ],
+        questions: [
+          {
+            slot: 'P1',
+            prompt: 'La interpretación I: (p, q, r, s) = (0, 1, 1, 1) satisface:',
+            correct: '{X1, X2, X4}',
+            wrong: ['{X1, X3, X4}', '{X2, X3, X4}'],
+            pista1: 'Descarte visual: X4 está en las 3 opciones, ¡NO la calcules! Evalúa primero X3.',
+            pista2: 'En X3 = (p ∧ ¬q) ∨ (r ∧ ¬s), sustituye p=0, q=1, r=1, s=1: ambos lados del ∨ dan 0.',
+            explicacion: 'Con (0,1,1,1): X3 = (0∧0) ∨ (1∧0) = 0 (Falsa). Como X3 falla, descartamos cualquier opción con X3. Comprobando: X1 = (1∨1∨1)∧(1∨0) = 1 y X2 = (1→1)∧(1→1) = 1. Correcta: {X1, X2, X4}.',
+            consejo: 'En P1 siempre busca la fórmula que aparece en 2 opciones y falta en 1: si resulta falsa, resuelves la pregunta en 10 segundos.'
+          },
+          {
+            slot: 'P2',
+            prompt: 'Señale el conjunto insatisfacible:',
+            correct: '{X1, X2, X3}',
+            wrong: ['{X1, X3, X4}', '{X2, X3, X4}'],
+            pista1: 'Por P1 ya sabes que {X1, X2, X4} es satisfacible. Empieza el tableau por X1 y X2 (reglas α) y bifurca X3 al final.',
+            pista2: 'En X3 hay dos ramas: Rama 1 (p=1, q=0) fuerza en X2 que r=0 y s=0, chocando con (¬p∨q∨r) de X1. Rama 2 (r=1, s=0) fuerza en X2 que p=0, chocando con (s∨p) de X1.',
+            explicacion: 'En {X1, X2, X3}, al abrir X3 = (p∧¬q) ∨ (r∧¬s): si p=1,q=0, entonces X2 obliga r=0,s=0, pero X1 exige ¬p∨q∨r (da 0, cierra #); si r=1,s=0, X2 obliga p=0, pero X1 exige s∨p (da 0, cierra #). Todas las ramas cierran.',
+            consejo: 'Anota el trío insatisfacible {X1, X2, X3}: te regalará directamente P4 y P5 con el Mega Truco.'
+          },
+          {
+            slot: 'P3',
+            prompt: 'X2 es equivalente a:',
+            correct: '(p → ¬r) ∧ (q ∨ ¬s)',
+            wrong: ['(¬r → p) ∧ (¬q → s)', '(p → r) ∧ (¬s → ¬q)'],
+            pista1: 'X2 = (s → q) ∧ (r → ¬p). Aplica la ley del condicional a la izquierda y el contrarrecíproco a la derecha.',
+            pista2: 's → q ≡ ¬s ∨ q ≡ q ∨ ¬s; y r → ¬p ≡ ¬(¬p) → ¬r ≡ p → ¬r.',
+            explicacion: 'Partiendo de X2 = (s → q) ∧ (r → ¬p): la primera parte por ley del condicional es ¬s ∨ q (equivale a q ∨ ¬s) y la segunda por contrarrecíproco (A→B ≡ ¬B→¬A) es p → ¬r. Al conmutar el ∧ obtenemos (p → ¬r) ∧ (q ∨ ¬s).',
+            consejo: 'El contrarrecíproco (A → B ≡ ¬B → ¬A) sale muchísimo en P3 y P8. Recuerda: gira la flecha y niega ambos lados.'
+          },
+          {
+            slot: 'P4',
+            prompt: 'Señale la consecuencia lógica correcta:',
+            correct: 'X1, X2 ⊨ ¬X3',
+            wrong: ['X3, X4 ⊨ ¬X1', 'X2, X4 ⊨ ¬X3'],
+            pista1: '¡MEGA TRUCO! No hagas otro tableau: usa el conjunto insatisfacible {X1, X2, X3} de P2.',
+            pista2: 'Aplica la regla del espejo: niega la fórmula de la derecha de ⊨ y métela al saco. Debe salir {X1, X2, X3}.',
+            explicacion: 'Para A, B ⊨ C comprobamos si {A, B, ¬C} es insatisfacible. En X1, X2 ⊨ ¬X3, al negar ¬X3 obtenemos {X1, X2, X3}, que es exactamente el conjunto insatisfacible de P2.',
+            consejo: 'Si P2 está bien, P4 se resuelve en 5 segundos: busca la opción cuyas 3 letras coincidan con el trío insatisfacible (con la derecha negada).'
+          },
+          {
+            slot: 'P5',
+            prompt: 'Señale la tautología:',
+            correct: '(X1 ∧ X3) → ¬X2',
+            wrong: ['(X1 ∧ X2) → ¬X4', '(X2 ∧ X4) → ¬X3'],
+            pista1: '¡MEGA TRUCO! Una implicación (A ∧ B) → C es tautología si y solo si {A, B, ¬C} es insatisfacible.',
+            pista2: 'Niega el consecuente y júntalo con el antecedente: busca qué opción reconstruye {X1, X2, X3}.',
+            explicacion: 'Negar (X1 ∧ X3) → ¬X2 da {X1, X3, ¬¬X2} = {X1, X2, X3}, que es insatisfacible. Por tanto la implicación nunca puede ser falsa (es tautología).',
+            consejo: 'P2, P4 y P5 son tres caras de la misma moneda: +1,5 puntos del tirón si aciertas el conjunto insatisfacible.'
+          }
+        ]
+      },
+      {
+        id: 'P-2',
+        source: 'UNED 2026 · Sept',
+        kind: 'prop',
+        formulas: [
+          { key: 'X1', expr: 'q ∨ (r → s)' },
+          { key: 'X2', expr: '¬(p → ¬q) ∨ (s → r)' },
+          { key: 'X3', expr: '¬r ∨ (¬s ∨ p)' },
+          { key: 'X4', expr: '¬p ∧ ¬(q ∨ ¬r)' }
+        ],
+        questions: [
+          {
+            slot: 'P1',
+            prompt: 'La interpretación I: (p, q, r, s) = (0, 0, 1, 1) satisface:',
+            correct: '{X1, X2, X4}',
+            wrong: ['{X1, X3, X4}', '{X1, X2, X3}'],
+            pista1: 'X1 está en las 3 opciones, ¡ignórala! Prueba X3 o X4.',
+            pista2: 'En X3 = ¬r ∨ (¬s ∨ p), sustituye r=1, s=1, p=0: ¬1=0, ¬1=0, p=0.',
+            explicacion: 'Con (0,0,1,1): X3 = 0 ∨ (0 ∨ 0) = 0 (Falsa). Así descartamos las opciones con X3. En cambio X2 = 0∨(1→1) = 1 y X4 = 1∧¬(0∨0) = 1. Correcta: {X1, X2, X4}.',
+            consejo: 'Una disyunción (∨) de literales solo es falsa cuando TODOS sus términos valen 0. Eso se ve de un vistazo.'
+          },
+          {
+            slot: 'P2',
+            prompt: 'Señale el conjunto insatisfacible:',
+            correct: '{X1, X3, X4}',
+            wrong: ['{X1, X2, X3}', '{X2, X3, X4}'],
+            pista1: 'Empieza siempre por la fórmula puramente conjuntiva (α): aquí es X4 = ¬p ∧ ¬(q ∨ ¬r).',
+            pista2: 'X4 obliga sin bifurcar a p=0, q=0 y r=1. Ahora mete esos valores en X1 y en X3.',
+            explicacion: 'X4 da en vertical (reglas α): ¬p (p=0), ¬q (q=0) y r (r=1). Al meter q=0, r=1 en X1 = q ∨ (r→s), obliga s=1. Pero con p=0, r=1, s=1, todos los disyuntos de X3 = ¬r ∨ ¬s ∨ p dan 0 (#). Insatisfacible: {X1, X3, X4}.',
+            consejo: 'Busca primero la fórmula con ∧ y negaciones de ∨: te fija 3 o 4 variables de golpe sin abrir ninguna rama.'
+          },
+          {
+            slot: 'P3',
+            prompt: 'X1 es equivalente a:',
+            correct: 'r → (q ∨ s)',
+            wrong: ['s → (q ∨ r)', 'q → (r ∨ s)'],
+            pista1: 'Convierte la flecha de X1 = q ∨ (r → s) en disyunción (A→B ≡ ¬A∨B) y reagrupa.',
+            pista2: 'X1 ≡ q ∨ ¬r ∨ s ≡ ¬r ∨ (q ∨ s). ¿Qué implicación equivale a ¬r ∨ (q ∨ s)?',
+            explicacion: 'Quitando la flecha a X1: q ∨ (¬r ∨ s). Por asociatividad y conmutatividad del ∨, es ¬r ∨ (q ∨ s), que por ley del condicional equivale exactamente a r → (q ∨ s).',
+            consejo: 'Truco rápido en P3: si dudas, busca una valoración que haga 0 a X1 (aquí q=0, r=1, s=0) y comprueba qué opción también da 0.'
+          },
+          {
+            slot: 'P4',
+            prompt: 'Señale la consecuencia lógica correcta:',
+            correct: 'X1, X4 ⊨ ¬X3',
+            wrong: ['X2, X3 ⊨ ¬X4', 'X1, X2 ⊨ ¬X3'],
+            pista1: 'Usa el conjunto insatisfacible de P2: {X1, X3, X4}.',
+            pista2: 'Pasa una fórmula a la derecha de ⊨ cambiándole el signo.',
+            explicacion: 'Negando ¬X3 obtenemos X3, que junto a las premisas X1 y X4 forma {X1, X3, X4} (insatisfacible). Por tanto X1, X4 ⊨ ¬X3 es correcta.',
+            consejo: 'Comprueba siempre que las 3 fórmulas involucradas sean exactamente las del saco insatisfacible.'
+          },
+          {
+            slot: 'P5',
+            prompt: 'Señale la tautología:',
+            correct: '(X1 ∧ X3) → ¬X4',
+            wrong: ['(X1 ∧ X2) → ¬X3', '(X2 ∧ X4) → ¬X3'],
+            pista1: 'Aplica el Mega Truco: busca la implicación cuya negación genere {X1, X3, X4}.',
+            pista2: 'Negar (A ∧ B) → ¬C da {A, B, C}.',
+            explicacion: 'Al negar (X1 ∧ X3) → ¬X4 resulta {X1, X3, X4}, que ya sabemos insatisfacible. Luego (X1 ∧ X3) → ¬X4 es siempre verdadera (tautología).',
+            consejo: 'Si las opciones mezclan las mismas letras, vigila el signo ¬ del consecuente: debe invertir el signo al entrar al saco.'
+          }
+        ]
+      },
+      {
+        id: 'P-3',
+        source: 'UNED 2025 · Mod. A',
+        kind: 'prop',
+        formulas: [
+          { key: 'X1', expr: '(q ∧ (s ∨ ¬p)) ∨ r' },
+          { key: 'X2', expr: 'p → (s ∧ ¬q)' },
+          { key: 'X3', expr: '(q ∨ r) → (¬s → p)' },
+          { key: 'X4', expr: '¬(s ∨ p)' }
+        ],
+        questions: [
+          {
+            slot: 'P1',
+            prompt: 'La interpretación I: (p, q, r, s) = (0, 1, 1, 0) satisface:',
+            correct: '{X1, X2, X4}',
+            wrong: ['{X1, X2, X3}', '{X1, X3, X4}'],
+            pista1: 'X1 aparece en todas, ¡sáltatela! Observa X2 (p=0 en el antecedente) y X3.',
+            pista2: 'En X2, p=0 hace 0→? = 1 automáticamente. En X3 = (1∨1) → (1→0), el consecuente falla.',
+            explicacion: 'Con (0,1,1,0): X3 = (1∨1) → (¬0 → 0) = 1 → (1→0) = 1 → 0 = 0 (Falsa). En cambio X2 = 0→... = 1 y X4 = ¬(0∨0) = 1. Correcta: {X1, X2, X4}.',
+            consejo: 'En condicionales p → (...), si ves p=0 ya ni leas el resto de la fórmula: vale 1 al instante.'
+          },
+          {
+            slot: 'P2',
+            prompt: 'Señale el conjunto insatisfacible:',
+            correct: '{X1, X3, X4}',
+            wrong: ['{X1, X2, X3}', '{X2, X3, X4}'],
+            pista1: 'Ataca primero la regla α más directa: X4 = ¬(s ∨ p) equivale a ¬s ∧ ¬p.',
+            pista2: 'Con s=0 y p=0, en X3 el consecuente (¬s→p) es 1→0 = 0, así que obliga a ¬(q∨r), es decir q=0 y r=0. ¿Qué pasa entonces en X1?',
+            explicacion: 'X4 fija s=0 y p=0. En X3, como ¬s→p es falso (1→0), la única rama abierta obliga q=0 y r=0. Pero al meter q=0, r=0 en X1 = (q∧...) ∨ r, ambos lados dan 0 (#). Insatisfacible: {X1, X3, X4}.',
+            consejo: 'Priorizar α sobre β convierte un árbol que parecería enorme en 4 líneas rectas.'
+          },
+          {
+            slot: 'P3',
+            prompt: 'X1 es equivalente a:',
+            correct: '(q ∨ r) ∧ (s ∨ ¬p ∨ r)',
+            wrong: ['(q ∧ r) ∨ (s ∧ ¬p ∧ r)', '(s ∧ ¬p ∧ r) ∨ (q ∨ r)'],
+            pista1: 'Mira la forma de X1 = (q ∧ (s ∨ ¬p)) ∨ r: es una disyunción de r con una conjunción.',
+            pista2: 'Aplica la ley distributiva de ∨ sobre ∧: (A ∧ B) ∨ r ≡ (A ∨ r) ∧ (B ∨ r).',
+            explicacion: 'Distribuyendo "∨ r" sobre la conjunción (q ∧ (s ∨ ¬p)): obtenemos (q ∨ r) ∧ ((s ∨ ¬p) ∨ r), que por asociatividad es (q ∨ r) ∧ (s ∨ ¬p ∨ r).',
+            consejo: 'Ojo en distributivas: el operador de fuera entra dentro de los paréntesis y el de dentro sale fuera.'
+          },
+          {
+            slot: 'P4',
+            prompt: 'Señale la consecuencia lógica correcta:',
+            correct: 'X3, X4 ⊨ ¬X1',
+            wrong: ['X2, X4 ⊨ ¬X3', 'X1, X2 ⊨ ¬X3'],
+            pista1: 'Relaciona esta pregunta con el conjunto insatisfacible {X1, X3, X4} de P2.',
+            pista2: 'Pasa ¬X1 a la izquierda quitando la negación: te queda {X3, X4, X1}.',
+            explicacion: 'X3, X4 ⊨ ¬X1 equivale a que {X3, X4, ¬¬X1} = {X1, X3, X4} sea insatisfacible, exactamente lo demostrado en P2.',
+            consejo: 'Da igual cuál de las 3 fórmulas del saco insatisfacible manden a la derecha negada: todas generan consecuencias válidas.'
+          },
+          {
+            slot: 'P5',
+            prompt: 'Señale la tautología:',
+            correct: '(X1 ∧ X3) → ¬X4',
+            wrong: ['(X1 ∧ X2) → ¬X3', '(X2 ∧ X4) → ¬X3'],
+            pista1: 'Busca la opción que junta las tres piezas del conjunto insatisfacible {X1, X3, X4}.',
+            pista2: 'Negar (X1 ∧ X3) → ¬X4 produce X1, X3 y X4.',
+            explicacion: 'La negación de (X1 ∧ X3) → ¬X4 es el conjunto {X1, X3, X4}, que es insatisfacible; por tanto la fórmula original es una tautología.',
+            consejo: 'Nunca pierdas tiempo haciendo tabla de verdad en P5 si ya tienes P2 resuelta.'
+          }
+        ]
+      },
+      {
+        id: 'P-4',
+        source: 'UNED 2025 · Sept',
+        kind: 'prop',
+        formulas: [
+          { key: 'X1', expr: '(¬s ∨ p) ∧ (s ∨ r ∨ ¬q)' },
+          { key: 'X2', expr: 's ∨ ((p → q) ∧ (p → ¬r))' },
+          { key: 'X3', expr: '¬s ∧ (q ∨ r ∨ p)' },
+          { key: 'X4', expr: '¬(p → (q ∨ r))' }
+        ],
+        questions: [
+          {
+            slot: 'P1',
+            prompt: 'La interpretación I: (p, q, r, s) = (1, 0, 0, 0) satisface:',
+            correct: '{X1, X3, X4}',
+            wrong: ['{X1, X2, X3}', '{X1, X2, X4}'],
+            pista1: 'X1 está en las 3 opciones. Fíjate en X2: s=0, así que todo depende de (p→q) ∧ (p→¬r).',
+            pista2: 'Con p=1 y q=0, p→q vale 0, lo que tumba la conjunción de X2.',
+            explicacion: 'Con (1,0,0,0): en X2, s=0 y (1→0)=0, luego X2 = 0 ∨ (0∧1) = 0 (Falsa). Comprobando X3 = 1∧(0∨0∨1) = 1 y X4 = ¬(1→0) = 1. Correcta: {X1, X3, X4}.',
+            consejo: 'En una conjunción (∧), en cuanto encuentras un 0 ya sabes que vale 0 sin calcular el otro lado.'
+          },
+          {
+            slot: 'P2',
+            prompt: 'Señale el conjunto insatisfacible:',
+            correct: '{X2, X3, X4}',
+            wrong: ['{X1, X2, X4}', '{X1, X2, X3}'],
+            pista1: 'Despliega primero las dos fórmulas α: X4 = ¬(p → (q ∨ r)) y X3 = ¬s ∧ (...).',
+            pista2: 'X4 obliga p=1, q=0, r=0. X3 obliga s=0. Sustituye esos cuatro valores en X2.',
+            explicacion: 'Por regla α de negación del condicional, X4 da p=1 y ¬(q∨r), es decir q=0 y r=0. X3 da ¬s (s=0). En X2 = s ∨ ((p→q)∧(p→¬r)), s=0 y p→q = 1→0 = 0, cerrando todas las ramas (#). Insatisfacible: {X2, X3, X4}.',
+            consejo: 'La negación de un condicional ¬(A → B) es tu mejor amiga: es regla α y te da A y ¬B en línea recta.'
+          },
+          {
+            slot: 'P3',
+            prompt: 'X2 es equivalente a:',
+            correct: 's ∨ (p → (q ∧ ¬r))',
+            wrong: ['s ∨ (p → (¬q ∧ ¬r))', 's ∨ (p → (q ∨ ¬r))'],
+            pista1: 'Saca factor común a "p →" en (p → q) ∧ (p → ¬r) convirtiendo primero las flechas en ∨.',
+            pista2: '(¬p ∨ q) ∧ (¬p ∨ ¬r) ≡ ¬p ∨ (q ∧ ¬r) ≡ p → (q ∧ ¬r).',
+            explicacion: 'Transformando ambos condicionales: (¬p ∨ q) ∧ (¬p ∨ ¬r). Sacando factor común ¬p (distributiva inversa) queda ¬p ∨ (q ∧ ¬r), que vuelve a ser p → (q ∧ ¬r). Con el "s ∨" inicial: s ∨ (p → (q ∧ ¬r)).',
+            consejo: 'Memoriza esta identidad oro de exámenes: (p → q) ∧ (p → r) ≡ p → (q ∧ r).'
+          },
+          {
+            slot: 'P4',
+            prompt: 'Señale la consecuencia lógica correcta:',
+            correct: 'X2, X3 ⊨ ¬X4',
+            wrong: ['X1, X2 ⊨ ¬X4', 'X1, X3 ⊨ ¬X4'],
+            pista1: 'Usa el conjunto insatisfacible {X2, X3, X4} hallado en P2.',
+            pista2: 'Negando el lado derecho de ⊨ debemos obtener el trío {X2, X3, X4}.',
+            explicacion: 'En X2, X3 ⊨ ¬X4, al negar ¬X4 formamos {X2, X3, X4}, que es insatisfacible. Las otras opciones contienen X1, que no pertenece al trío insatisfacible.',
+            consejo: 'El descarte de X1 te resuelve P4 casi sin parpadear.'
+          },
+          {
+            slot: 'P5',
+            prompt: 'Señale la tautología:',
+            correct: '(X2 ∧ X4) → ¬X3',
+            wrong: ['(X1 ∧ X2) → ¬X3', '(X1 ∧ X4) → ¬X2'],
+            pista1: 'Mismo trío insatisfacible: {X2, X3, X4}.',
+            pista2: 'Solo una opción prescinde de X1 y combina X2, X3 y X4 con el signo correcto.',
+            explicacion: 'Negar (X2 ∧ X4) → ¬X3 equivale a {X2, X4, X3}, conjunto insatisfacible. Luego la implicación es tautología.',
+            consejo: 'Verifica siempre la coherencia de tus respuestas P2-P4-P5 antes de entregar: las tres deben señalar el mismo trío.'
+          }
+        ]
+      },
+      {
+        id: 'P-5',
+        source: 'UNED Batería · Sept',
+        kind: 'prop',
+        formulas: [
+          { key: 'X1', expr: '¬s → (¬q ∧ (r ∨ ¬p))' },
+          { key: 'X2', expr: '¬(¬p ∨ ¬s) ∧ q' },
+          { key: 'X3', expr: '(r ∧ p) → (¬q ∧ ¬s)' },
+          { key: 'X4', expr: 'q → (¬r → ¬s)' }
+        ],
+        questions: [
+          {
+            slot: 'P1',
+            prompt: 'La interpretación I: (p, q, r, s) = (1, 1, 0, 1) satisface:',
+            correct: '{X1, X2, X3}',
+            wrong: ['{X1, X3, X4}', '{X2, X3, X4}'],
+            pista1: 'X3 está en todas. Fíjate en X4 con q=1, r=0, s=1.',
+            pista2: 'En X4 = 1 → (¬0 → ¬1) = 1 → (1 → 0) = 0.',
+            explicacion: 'Sustituyendo (1,1,0,1) en X4: 1 → (1 → 0) = 1 → 0 = 0 (Falsa). Descartamos las opciones con X4 y queda {X1, X2, X3} (en efecto, X1 tiene ¬s=0→1, X2 = ¬(0∨0)∧1 = 1, X3 = 0→... = 1).',
+            consejo: 'Cuando veas varios condicionales anidados como q → (¬r → ¬s), solo es falso si q=1, ¬r=1 y ¬s=0.'
+          },
+          {
+            slot: 'P2',
+            prompt: 'Señale el conjunto insatisfacible:',
+            correct: '{X2, X3, X4}',
+            wrong: ['{X1, X2, X4}', '{X1, X2, X3}'],
+            pista1: 'Por P1 ya sabes que {X1, X2, X3} es satisfacible (¡descartada!). Abre X2 por regla α.',
+            pista2: 'X2 = ¬(¬p∨¬s) ∧ q fija p=1, s=1 y q=1. Ahora entra en X4 y luego en X3.',
+            explicacion: 'X2 (α) obliga p=1, s=1 y q=1. En X4 = q → (¬r → ¬s), como q=1 y ¬s=0, la única rama que no muere exige r=1. Con p=1, r=1, q=1, s=1, X3 queda (1∧1) → (0∧0) = 0 (#). Insatisfacible: {X2, X3, X4}.',
+            consejo: '¡Usa P1 para ahorrar trabajo en P2! El conjunto que acertaste en P1 es seguro satisfacible y puedes tacharlo en P2.'
+          },
+          {
+            slot: 'P3',
+            prompt: '¬X4 es equivalente a:',
+            correct: 'q ∧ ¬r ∧ s',
+            wrong: ['q ∨ ¬r ∨ ¬s', 'q ∧ r ∧ ¬s'],
+            pista1: '¡Ojo! Te piden ¬X4 (la NEGACIÓN de X4), no X4.',
+            pista2: 'Quita flechas a X4: ¬q ∨ (r ∨ ¬s). Ahora aplica De Morgan negando todo.',
+            explicacion: 'X4 = q → (¬r → ¬s) ≡ ¬q ∨ (¬¬r ∨ ¬s) ≡ ¬q ∨ r ∨ ¬s. Al negarlo por De Morgan cambiamos los ∨ por ∧ y negamos cada literal: ¬(¬q ∨ r ∨ ¬s) ≡ q ∧ ¬r ∧ s.',
+            consejo: 'Lee dos veces el enunciado de P3: a veces piden X4 y a veces ¬X4. Ese pequeño ¬ cuesta -0,25 si vas con prisa.'
+          },
+          {
+            slot: 'P4',
+            prompt: 'Señale la consecuencia lógica correcta:',
+            correct: 'X3, X4 ⊨ ¬X2',
+            wrong: ['X1, X4 ⊨ ¬X2', 'X2, X3 ⊨ ¬X1'],
+            pista1: 'Mega Truco con el conjunto insatisfacible {X2, X3, X4} de P2.',
+            pista2: 'Al negar ¬X2 y unirlo a X3, X4 obtienes {X2, X3, X4}.',
+            explicacion: 'X3, X4 ⊨ ¬X2 equivale a que {X3, X4, X2} sea insatisfacible, que es exactamente el conjunto de P2.',
+            consejo: 'Unifica el orden mentalmente: {X3, X4, X2} es lo mismo que {X2, X3, X4}.'
+          },
+          {
+            slot: 'P5',
+            prompt: 'Señale la tautología:',
+            correct: '(X2 ∧ X4) → ¬X3',
+            wrong: ['(X1 ∧ X2) → ¬X4', '(X3 ∧ X1) → ¬X4'],
+            pista1: 'Solo una opción contiene exactamente las fórmulas X2, X3 y X4.',
+            pista2: 'Negar (X2 ∧ X4) → ¬X3 devuelve {X2, X4, X3}.',
+            explicacion: 'Al negar el condicional obtenemos {X2, X4, ¬¬X3} = {X2, X3, X4}, insatisfacible. Luego es tautología.',
+            consejo: 'Fíjate qué rápido: ninguna de las otras opciones usa las tres fórmulas del saco insatisfacible.'
+          }
+        ]
+      },
+      {
+        id: 'P-6',
+        source: 'UNED 2026 · Mod. B',
+        kind: 'prop',
+        formulas: [
+          { key: 'X1', expr: 'p ∧ q' },
+          { key: 'X2', expr: '(¬p ∨ ¬q ∨ r ∨ s) ∧ (q → ¬r)' },
+          { key: 'X3', expr: '(p → (q ∨ r)) ∨ (s → p)' },
+          { key: 'X4', expr: '(s ↔ ¬p) ∧ (r ∨ q ∨ s)' }
+        ],
+        questions: [
+          {
+            slot: 'P1',
+            prompt: 'La interpretación I: (p, q, r, s) = (1, 1, 0, 0) satisface:',
+            correct: '{X1, X3, X4}',
+            wrong: ['{X2, X3, X4}', '{X1, X2, X4}'],
+            pista1: 'X4 está en las 3 opciones. Mira X2 con p=1, q=1, r=0, s=0.',
+            pista2: 'En el primer paréntesis de X2: ¬1 ∨ ¬1 ∨ 0 ∨ 0 = 0.',
+            explicacion: 'Con (1,1,0,0), en X2 el primer factor (¬p∨¬q∨r∨s) vale 0, luego X2 = 0. En cambio X1 = 1∧1 = 1, X3 = (1→1)∨1 = 1 y X4 = (0↔0)∧1 = 1. Correcta: {X1, X3, X4}.',
+            consejo: 'Recuerda el bicondicional (↔): es verdadero cuando ambos lados valen lo mismo (0↔0 es 1, igual que 1↔1).'
+          },
+          {
+            slot: 'P2',
+            prompt: 'Señale el conjunto insatisfacible:',
+            correct: '{X1, X2, X4}',
+            wrong: ['{X1, X2, X3}', '{X2, X3, X4}'],
+            pista1: 'X1 fija p=1 y q=1 (regla α). Mete eso en X4 (s ↔ ¬p) para sacar s.',
+            pista2: 'Con p=1, s ↔ 0 obliga s=0. Ahora entra en X2: el primer factor obliga r=1 y el segundo (q→¬r) obliga r=0.',
+            explicacion: 'X1 obliga p=1, q=1. X4 exige s ↔ ¬1, luego s=0. En X2, el primer paréntesis (0∨0∨r∨0) obliga r=1, pero el segundo paréntesis (1 → ¬r) obliga r=0 (#). Insatisfacible: {X1, X2, X4}.',
+            consejo: 'Las fórmulas cortas como X1: p ∧ q son dinamita: aplícalas primero y simplifica el resto mentalmente.'
+          },
+          {
+            slot: 'P3',
+            prompt: 'X4 es equivalente a:',
+            correct: '((s ∧ ¬p) ∨ (p ∧ ¬s)) ∧ (r ∨ q ∨ s)',
+            wrong: ['(s → ¬p) ∧ (r ∨ q ∨ s)', '(s → ¬p) ∨ (r ∨ q ∨ s)'],
+            pista1: 'Fíjate en la primera parte de X4: (s ↔ ¬p). ¿Cómo se descompone un bicondicional?',
+            pista2: 'A ↔ B ≡ (A ∧ B) ∨ (¬A ∧ ¬B). Aplícalo con A = s y B = ¬p.',
+            explicacion: 's ↔ ¬p es verdadero cuando ambos son verdaderos (s ∧ ¬p) o ambos son falsos (¬s ∧ ¬¬p ≡ p ∧ ¬s). Por tanto X4 ≡ ((s ∧ ¬p) ∨ (p ∧ ¬s)) ∧ (r ∨ q ∨ s).',
+            consejo: 'Un bicondicional (↔) NUNCA equivale a un solo condicional (→): siempre exige las dos direcciones (o ambos 1, o ambos 0).'
+          },
+          {
+            slot: 'P4',
+            prompt: 'Señale la consecuencia lógica correcta:',
+            correct: 'X1, X2 ⊨ ¬X4',
+            wrong: ['X1, X3 ⊨ ¬X2', 'X2, X3 ⊨ ¬X4'],
+            pista1: 'Aplica el Mega Truco con el saco insatisfacible {X1, X2, X4} de P2.',
+            pista2: 'Cambia el signo a ¬X4 y únelo a las premisas: sale {X1, X2, X4}.',
+            explicacion: 'X1, X2 ⊨ ¬X4 equivale a que {X1, X2, X4} sea insatisfacible (P2). Las demás opciones meten X3, que no cierra.',
+            consejo: 'Fíjate qué limpio: P4 no requiere rehacer ningún cálculo.'
+          },
+          {
+            slot: 'P5',
+            prompt: 'Señale la tautología:',
+            correct: '(X1 ∧ X4) → ¬X2',
+            wrong: ['(X1 ∧ X2) → ¬X3', '(X2 ∧ X3) → ¬X4'],
+            pista1: 'Busca la opción formada únicamente por el trío {X1, X2, X4}.',
+            pista2: 'Negar (X1 ∧ X4) → ¬X2 devuelve {X1, X4, X2}.',
+            explicacion: 'Negando la implicación obtenemos {X1, X4, X2}, insatisfacible por P2. Por tanto (X1 ∧ X4) → ¬X2 es tautología.',
+            consejo: 'Dominar el puente P2→P4→P5 te garantiza consistencia absoluta en el bloque 1.'
+          }
+        ]
+      }
+    ];
+
+    const PRED_PACKS = [
+      {
+        id: 'F-1',
+        source: 'UNED 2026 · Sept',
+        kind: 'pred',
+        universe: 'U = {1, 2}',
+        formulas: [
+          { key: 'Y1', expr: '∀x(∀y Rxy → Px)' },
+          { key: 'Y2', expr: '∃x(Qx ∧ ∃y ¬Py)' },
+          { key: 'Y3', expr: '∀x(¬Px ∧ ∀y Rxy)' },
+          { key: 'Y4', expr: '∃x ∀y Rxy' }
+        ],
+        I1: 'P = {2}, Q = {1}, R = {(2,1), (2,2)}',
+        I2: 'P = ∅, Q = {1, 2}, R = {(1,1), (1,2), (2,1), (2,2)}',
+        questions: [
+          {
+            slot: 'P6',
+            prompt: 'Con universo U = {1, 2}, la interpretación I1 satisface:',
+            correct: '{Y1, Y2, Y4}',
+            wrong: ['{Y1, Y2, Y3}', '{Y2, Y3, Y4}'],
+            pista1: 'Y2 aparece en las 3 opciones, ¡no la calcules! Comprueba Y3 primero: lleva ∀x ¬Px.',
+            pista2: 'En I1, P = {2}, así que P(2) es Verdadero y ¬P(2) es Falso. Eso tumba Y3.',
+            explicacion: 'En I1: Y3 exige ¬Px para todo x, pero P(2) es V, luego Y3 = F. Comprobando Y1: para x=1, ∀y R(1,y) es F (F→F = V); para x=2, ∀y R(2,y) es V y P(2) es V (V→V = V). Y4 se cumple con x=2. Correcta: {Y1, Y2, Y4}.',
+            consejo: 'Recuerda: 1 y 2 en U={1,2} son NOMBRES de objetos, NO Verdadero/Falso. Escribe V/F mentalmente para no liarte.'
+          },
+          {
+            slot: 'P7',
+            prompt: 'Con universo U = {1, 2}, la interpretación I2 satisface:',
+            correct: '{Y2, Y3, Y4}',
+            wrong: ['{Y1, Y2, Y4}', '{Y1, Y2, Y3}'],
+            pista1: 'En I2, P = ∅ (ningún objeto cumple P) y R contiene TODOS los pares.',
+            pista2: 'Evalúa Y1 = ∀x(∀y Rxy → Px): el antecedente ∀y Rxy es siempre V, pero Px es siempre F.',
+            explicacion: 'En I2, como R tiene todos los pares, ∀y R(1,y) es V, pero P(1) es F (P=∅). Luego V → F = F y Y1 falla. En cambio Y2, Y3 (¬Px siempre V y ∀y Rxy siempre V) y Y4 son verdaderas.',
+            consejo: 'Cuando un predicado viene vacío (P = ∅), cualquier Px es F y cualquier ¬Px es V automáticamente.'
+          },
+          {
+            slot: 'P8',
+            prompt: 'Es equivalente a Y1:',
+            correct: '∀x ∃y(Rxy → Px)',
+            wrong: ['∀x ∀y(Rxy → Px)', '∀x ∀y Rxy → ∀x Px'],
+            pista1: '¡TRAMPA CLÁSICA UNED! Al sacar un cuantificador del ANTECEDENTE de un condicional (→), el cuantificador SE INVIERTE.',
+            pista2: '(∀y Rxy) → Px ≡ ¬(∀y Rxy) ∨ Px ≡ (∃y ¬Rxy) ∨ Px ≡ ∃y(¬Rxy ∨ Px) ≡ ∃y(Rxy → Px).',
+            explicacion: 'Por ley del condicional, ∀y Rxy → Px equivale a ¬∀y Rxy ∨ Px. Metiendo la negación se convierte en ∃y ¬Rxy ∨ Px. Como y no está libre en Px, sacamos ∃y: ∃y(¬Rxy ∨ Px) ≡ ∃y(Rxy → Px). Con el ∀x exterior: ∀x ∃y(Rxy → Px).',
+            consejo: 'Regla de oro en P8: sacar cuantificador del ANTECEDENTE de → invierte ∀↔∃; sacarlo del CONSECUENTE mantiene el mismo cuantificador.'
+          },
+          {
+            slot: 'P9',
+            prompt: 'Marque el conjunto insatisfacible:',
+            correct: '{Y1, Y3}',
+            wrong: ['{Y1, Y2}', '{Y2, Y3}'],
+            pista1: '¡Truco de oro! Mira tus respuestas de P6 y P7: cualquier pareja satisfecha por I1 o I2 ya es SATISFACIBLE.',
+            pista2: 'I1 satisface {Y1, Y2, Y4} (descarta {Y1, Y2}) e I2 satisface {Y2, Y3, Y4} (descarta {Y2, Y3}). ¡Solo queda {Y1, Y3}!',
+            explicacion: 'Además del descarte por I1 e I2, en el tableau de {Y1, Y3}: instanciamos Y3 con "a" (¬Pa ∧ ∀y Ray) e Y1 con "a" (∀y Ray → Pa). Al bifurcar Y1, una rama niega ∀y Ray (choca con ∀y Ray) y la otra da Pa (choca con ¬Pa). Todo cierra (#).',
+            consejo: 'En el examen real, P6 y P7 casi siempre te regalan descartes directos para P9.'
+          },
+          {
+            slot: 'P10',
+            prompt: 'Marque la consecuencia lógica correcta (base del Tableau de Desarrollo):',
+            correct: 'Y1 ⊨ ¬Y3',
+            wrong: ['Y1 ⊨ ¬Y2', '¬Y1 ⊨ Y3'],
+            pista1: 'Aplica la regla del espejo al conjunto insatisfacible {Y1, Y3} de P9: niega SOLO lo de la derecha.',
+            pista2: '¡Cuidado con la trampa ¬Y1 ⊨ Y3! Si niegas la derecha sale {¬Y1, ¬Y3}, que NO es {Y1, Y3}.',
+            explicacion: 'Decir que {Y1, Y3} es insatisfacible significa que no pueden ser verdad a la vez, pero SÍ pueden ser falsas a la vez (por eso ¬Y1 ⊨ Y3 falla). En cambio, si Y1 es verdad, Y3 está obligada a ser falsa: Y1 ⊨ ¬Y3.',
+            consejo: 'Para comprobar A ⊨ B sin dudar: niega B y mira si {A, ¬B} coincide exactamente con el conjunto insatisfacible de P9.'
+          }
+        ]
+      },
+      {
+        id: 'F-2',
+        source: 'UNED 2026 · Mod. A',
+        kind: 'pred',
+        universe: 'U = {1, 2}',
+        formulas: [
+          { key: 'Y1', expr: '∀x(Px ∧ ∃y(Mxy ∨ Myx))' },
+          { key: 'Y2', expr: '∃x(¬Px ∧ ∀y ¬Mxy)' },
+          { key: 'Y3', expr: '∃x(Px ∨ ∀y(Mxy ∨ Myx))' },
+          { key: 'Y4', expr: '∃x(Px ∧ (Mxx ∨ ∃y Myx))' }
+        ],
+        I1: 'P = {1, 2}, M = {(1,2)}',
+        I2: 'P = {1}, M = {(1,1)}',
+        questions: [
+          {
+            slot: 'P6',
+            prompt: 'Con universo U = {1, 2}, la interpretación I1 satisface:',
+            correct: '{Y1, Y3, Y4}',
+            wrong: ['{Y2, Y3, Y4}', '{Y1, Y2, Y3}'],
+            pista1: 'Y3 está en todas. Mira Y2 en I1: exige ∃x ¬Px, pero ¿cómo es P en I1?',
+            pista2: 'En I1, P = {1, 2} (todos tienen P), así que ¬Px siempre es Falso. Y2 es Falsa.',
+            explicacion: 'En I1, P = {1,2}, luego no existe ningún x con ¬Px y Y2 falla. Comprobando Y1: para x=1 sirve y=2 (M(1,2)=V); para x=2 sirve y=1 (M(1,2)=V). Y4 se cumple con x=2 (P(2)=V y M(1,2)=V). Correcta: {Y1, Y3, Y4}.',
+            consejo: 'Antes de comprobar relaciones binarias Mxy largas, revisa los predicados unarios Px o ¬Px: suelen descartar fórmulas en 2 segundos.'
+          },
+          {
+            slot: 'P7',
+            prompt: 'Con universo U = {1, 2}, la interpretación I2 satisface:',
+            correct: '{Y2, Y3, Y4}',
+            wrong: ['{Y1, Y3, Y4}', '{Y1, Y2, Y3}'],
+            pista1: 'En I2, P = {1} (el 2 NO está en P). Mira Y1: empieza con ∀x(Px ∧ ...).',
+            pista2: 'Para x=2, P(2) es Falso, así que Y1 falla inmediatamente.',
+            explicacion: 'En I2, P(2) es F, por lo que Y1 (∀x Px ∧ ...) es Falsa. Y2 se cumple con x=2 (¬P(2)=V y ni (2,1) ni (2,2) están en M). Y3 y Y4 se cumplen con x=1 (P(1)=V y M(1,1)=V). Correcta: {Y2, Y3, Y4}.',
+            consejo: 'Un universal ∀x(A ∧ B) cae en cuanto encuentras UN solo individuo del universo que incumpla A.'
+          },
+          {
+            slot: 'P8',
+            prompt: 'Es equivalente a Y2:',
+            correct: '∃x ¬(Px ∨ ∃y Mxy)',
+            wrong: ['∃x(Px → ∀y ¬Mxy)', '∃x ¬(Px ∨ ∀y Mxy)'],
+            pista1: 'En Y2 = ∃x(¬Px ∧ ∀y ¬Mxy), cambia primero ∀y ¬Mxy por ¬∃y Mxy.',
+            pista2: 'Te queda ∃x(¬Px ∧ ¬∃y Mxy). Ahora saca la negación fuera aplicando De Morgan.',
+            explicacion: 'Sabemos que ∀y ¬Mxy ≡ ¬∃y Mxy. Sustituyendo en Y2: ∃x(¬Px ∧ ¬∃y Mxy). Por De Morgan (¬A ∧ ¬B ≡ ¬(A ∨ B)), obtenemos ∃x ¬(Px ∨ ∃y Mxy).',
+            consejo: 'Transformar ∀y ¬ en ¬∃y es el paso más habitual para poder sacar un ¬ común con De Morgan.'
+          },
+          {
+            slot: 'P9',
+            prompt: 'Marque el conjunto insatisfacible:',
+            correct: '{Y1, Y2}',
+            wrong: ['{Y1, Y3}', '{Y2, Y4}'],
+            pista1: 'I1 satisface {Y1, Y3, Y4} e I2 satisface {Y2, Y3, Y4}. ¿Qué pareja queda viva?',
+            pista2: 'Y1 dice que TODOS tienen P (∀x Px ∧ ...); Y2 dice que EXISTE uno sin P (∃x ¬Px ∧ ...).',
+            explicacion: 'Por regla δ en Y2 sacamos una constante nueva "a" con ¬Pa. Por regla γ en Y1 instanciamos esa misma "a" obteniendo Pa. Choque directo Pa vs ¬Pa (#). Insatisfacible: {Y1, Y2}.',
+            consejo: 'En tableaux de predicados: aplica SIEMPRE δ (existencial, constante nueva) ANTES que γ (universal, reutiliza esa constante).'
+          },
+          {
+            slot: 'P10',
+            prompt: 'Marque la consecuencia lógica correcta (base del Tableau de Desarrollo):',
+            correct: 'Y2 ⊨ ¬Y1',
+            wrong: ['Y1 ⊨ ¬Y4', '¬Y2 ⊨ Y1'],
+            pista1: 'Usa el puente con P9: el conjunto insatisfacible es {Y1, Y2}.',
+            pista2: 'Negando la derecha de Y2 ⊨ ¬Y1 obtenemos {Y2, Y1}.',
+            explicacion: 'Como {Y1, Y2} es insatisfacible, si Y2 es verdadera, Y1 no puede serlo: Y2 ⊨ ¬Y1. En cambio ¬Y2 ⊨ Y1 es falsa porque ambas podrían ser falsas a la vez.',
+            consejo: 'No te dejes engañar por ¬Y2 ⊨ Y1: siempre comprueba negando solo la conclusión.'
+          }
+        ]
+      },
+      {
+        id: 'F-3',
+        source: 'UNED 2026 · Mod. B',
+        kind: 'pred',
+        universe: 'U = {1, 2}',
+        formulas: [
+          { key: 'Y1', expr: '∃x ∃y(Mxy ∧ ¬Myx)' },
+          { key: 'Y2', expr: '∃x ∃y((Mxy ∨ ¬Mxy) ∧ (¬Px ∨ ¬Py))' },
+          { key: 'Y3', expr: '∀x ∀y((Mxy → Px) ∧ Py)' },
+          { key: 'Y4', expr: '∀x(Qx → (∃y Mxy ∧ Px))' }
+        ],
+        I1: 'P = {1, 2}, Q = {1}, M = {(1,2)}',
+        I2: 'P = {1}, Q = ∅, M = {(1,2)}',
+        questions: [
+          {
+            slot: 'P6',
+            prompt: 'Con universo U = {1, 2}, la interpretación I1 satisface:',
+            correct: '{Y1, Y3, Y4}',
+            wrong: ['{Y1, Y2, Y4}', '{Y1, Y2, Y3}'],
+            pista1: 'En Y2, (Mxy ∨ ¬Mxy) es siempre Verdadero, así que Y2 solo exige que alguien cumpla ¬P.',
+            pista2: 'En I1, P = {1, 2}, por lo que ¬Px ∨ ¬Py es siempre Falso.',
+            explicacion: 'En I1, como P = {1,2}, Y2 = F. En cambio Y1 se cumple con (1,2)∈M y (2,1)∉M; Y3 se cumple porque Px y Py son siempre V; Y4 se cumple porque Q(1)=V tiene M(1,2)=V y P(1)=V (y Q(2)=F). Correcta: {Y1, Y3, Y4}.',
+            consejo: 'Si ves una tautología pegada con ∧ como (Mxy ∨ ¬Mxy) ∧ B, ignórala mentalmente: todo se reduce a B.'
+          },
+          {
+            slot: 'P7',
+            prompt: 'Con universo U = {1, 2}, la interpretación I2 satisface:',
+            correct: '{Y1, Y2, Y4}',
+            wrong: ['{Y1, Y3, Y4}', '{Y1, Y2, Y3}'],
+            pista1: 'En I2, Q = ∅ (así que Y4 vale V automáticamente) y P = {1} (el 2 falla P).',
+            pista2: 'Mira el final de Y3: ∀x ∀y(... ∧ Py). Si y=2, P(2) es Falso.',
+            explicacion: 'En I2, P(2)=F tumba Y3. En cambio Y1 se cumple por (1,2)∈M, (2,1)∉M; Y2 se cumple con x=2, y=2 (¬P(2)=V); Y4 se cumple porque Q=∅ hace falso el antecedente Qx. Correcta: {Y1, Y2, Y4}.',
+            consejo: 'Un predicado vacío en el antecedente de ∀x(Qx → ...) hace toda la fórmula verdadera de inmediato (verdad por vacuidad).'
+          },
+          {
+            slot: 'P8',
+            prompt: 'Es equivalente a Y3:',
+            correct: '∀y Py ∧ ∀x ∀y(Mxy → Px)',
+            wrong: ['∀x ∀y((Px ∨ Mxy) → Px)', '∀x ∀y((Px ∧ Mxy) → Px)'],
+            pista1: 'Recuerda que el cuantificador universal ∀ SÍ se distribuye sobre la conjunción ∧.',
+            pista2: '∀x ∀y(A ∧ Py) ≡ ∀x ∀y A ∧ ∀x ∀y Py, y como x no aparece en Py, ∀x ∀y Py ≡ ∀y Py.',
+            explicacion: 'Distribuyendo ∀x ∀y sobre la conjunción de Y3: ∀x ∀y(Mxy → Px) ∧ ∀x ∀y Py. Quitando el cuantificador superfluo ∀x de Py y conmutando: ∀y Py ∧ ∀x ∀y(Mxy → Px).',
+            consejo: 'Repasa las distribuciones válidas: ∀ se distribuye con ∧ (NO con ∨); ∃ se distribuye con ∨ (NO con ∧).'
+          },
+          {
+            slot: 'P9',
+            prompt: 'Marque el conjunto insatisfacible:',
+            correct: '{Y2, Y3}',
+            wrong: ['{Y1, Y2}', '{Y1, Y3}'],
+            pista1: 'Descarte rápido: I1 cumple {Y1, Y3, Y4} e I2 cumple {Y1, Y2, Y4}.',
+            pista2: 'Y3 fuerza a que TODOS tengan P (∀y Py), pero Y2 afirma que existe alguno que NO tiene P (¬Pa ∨ ¬Pb).',
+            explicacion: 'Por δ dos veces en Y2 obtenemos ¬Pa ∨ ¬Pb. Por γ en Y3 obtenemos Pa (con y=a) y Pb (con y=b). Al bifurcar ¬Pa ∨ ¬Pb, ambas ramas chocan y cierran (#). Insatisfacible: {Y2, Y3}.',
+            consejo: 'Si ya descubriste en P8 que Y3 implica ∀y Py, ver la contradicción con Y2 es instantáneo.'
+          },
+          {
+            slot: 'P10',
+            prompt: 'Marque la consecuencia lógica correcta (base del Tableau de Desarrollo):',
+            correct: 'Y3 ⊨ ¬Y2',
+            wrong: ['Y1 ⊨ ¬Y3', 'Y2 ⊨ ¬Y4'],
+            pista1: 'Conecta P9 ({Y2, Y3} insatisfacible) con P10 mediante el Mega Truco.',
+            pista2: 'Si {Y2, Y3} es insatisfacible, entonces Y3 ⊨ ¬Y2 (o Y2 ⊨ ¬Y3).',
+            explicacion: 'Al negar ¬Y2 y juntarlo con Y3 se forma {Y3, Y2}, que es el conjunto insatisfacible de P9.',
+            consejo: 'Recuerda: P9 y P10 se confirman mutuamente. Si dudas en P9, mira qué opciones aparecen en P10.'
+          }
+        ]
+      },
+      {
+        id: 'F-4',
+        source: 'UNED 2025 · Mod. A',
+        kind: 'pred',
+        universe: 'U = {1, 2}',
+        formulas: [
+          { key: 'Y1', expr: '∃x Qx → ∃y(Py ∧ Syy)' },
+          { key: 'Y2', expr: '∃x ∀y(¬Qx ∧ (¬Sxy ∧ ¬Py))' },
+          { key: 'Y3', expr: '∀x ∃y(Sxy → (Qx ∧ ¬Py))' },
+          { key: 'Y4', expr: '∀x(¬Qx → ∃y(Sxy ∨ Py))' }
+        ],
+        I1: 'P = {1}, Q = {1}, S = {(1,1)}',
+        I2: 'P = ∅, Q = ∅, S = ∅',
+        questions: [
+          {
+            slot: 'P6',
+            prompt: 'Con universo U = {1, 2}, la interpretación I1 satisface:',
+            correct: '{Y1, Y3, Y4}',
+            wrong: ['{Y1, Y2, Y3}', '{Y2, Y3, Y4}'],
+            pista1: 'En I1, P = {1}. Fíjate en Y2: lleva ∀y(... ∧ ¬Py).',
+            pista2: 'Como P(1) es V, ¬P(1) es F, así que ∀y ¬Py falla para y=1 y tumba Y2.',
+            explicacion: 'En I1, Y2 falla porque P(1)=V contradice ∀y ¬Py. En cambio Y1 es V (Q(1)=V y P(1)∧S(1,1)=V), Y3 es V (eligiendo y=2 hace S(x,2)=F→V) y Y4 es V (para x=2, elegir y=1 da P(1)=V). Correcta: {Y1, Y3, Y4}.',
+            consejo: 'En fórmulas tipo ∀x ∃y(Sxy → ...), basta con encontrar UN y para el cual Sxy sea Falso para que todo el condicional valga V.'
+          },
+          {
+            slot: 'P7',
+            prompt: 'Con universo U = {1, 2}, la interpretación I2 satisface:',
+            correct: '{Y1, Y2, Y3}',
+            wrong: ['{Y1, Y3, Y4}', '{Y2, Y3, Y4}'],
+            pista1: 'En I2 TODO está vacío: P = ∅, Q = ∅, S = ∅.',
+            pista2: 'Con todo vacío, ¬Q(1) es V, pero ¿puede cumplirse ∃y(S(1,y) ∨ P(y)) en Y4?',
+            explicacion: 'Con P=Q=S=∅: en Y4, para x=1, ¬Q(1)=V pero S(1,y) y P(y) son siempre F, así que V → F = F (Y4 falla). En cambio Y1 (F→F=V), Y2 (todo negado es V) y Y3 (Sxy=F→V) son verdaderas. Correcta: {Y1, Y2, Y3}.',
+            consejo: 'Las interpretaciones vacías (∅) son un regalo: cualquier atómica positiva vale F y cualquier negada vale V.'
+          },
+          {
+            slot: 'P8',
+            prompt: 'Es equivalente a Y4:',
+            correct: '∀x ∃y(¬Qx → (Sxy ∨ Py))',
+            wrong: ['∀x ¬Qx → ∃y(Sxy ∨ Py)', '∀x ¬Qx → ∀x ∃y(Sxy ∨ Py)'],
+            pista1: 'En Y4 = ∀x(¬Qx → ∃y(Sxy ∨ Py)), el cuantificador ∃y está en el CONSECUENTE y la variable "y" no aparece en ¬Qx.',
+            pista2: 'Al sacar un cuantificador del consecuente de →, NO cambia de símbolo: A → ∃y B ≡ ∃y(A → B).',
+            explicacion: 'Como y no está libre en ¬Qx, podemos extraer ∃y fuera del condicional manteniendo ∃y: ¬Qx → ∃y(Sxy ∨ Py) ≡ ∃y(¬Qx → (Sxy ∨ Py)). Con el ∀x exterior queda ∀x ∃y(¬Qx → (Sxy ∨ Py)).',
+            consejo: 'Nunca saques ∀x fuera si deja una variable "x" suelta en el otro lado de la flecha (como ocurría en la primera opción trampa).'
+          },
+          {
+            slot: 'P9',
+            prompt: 'Marque el conjunto insatisfacible:',
+            correct: '{Y2, Y4}',
+            wrong: ['{Y1, Y2}', '{Y1, Y3}'],
+            pista1: 'I1 cumple {Y1, Y3, Y4} e I2 cumple {Y1, Y2, Y3}. ¿Qué pareja nunca coincidió?',
+            pista2: 'Y2 fija un "a" con ¬Qa y además ¬Say y ¬Py para TODO y. Al meter ese "a" en Y4, obliga a que exista un "b" con Sab ∨ Pb.',
+            explicacion: 'De Y2 (δ con "a") sale ¬Qa y ∀y(¬Say ∧ ¬Py). De Y4 (γ con "a") sale ¬Qa → ∃y(Say ∨ Py). La rama izquierda (Qa) choca con ¬Qa; la derecha saca δ con "b" (Sab ∨ Pb), que choca con ¬Sab y ¬Pb (#). Insatisfacible: {Y2, Y4}.',
+            consejo: 'Cuando Y2 te da un "a" y un ∀y dentro, guarda ese ∀y para instanciarlo con la constante "b" que nazca después.'
+          },
+          {
+            slot: 'P10',
+            prompt: 'Marque la consecuencia lógica correcta (base del Tableau de Desarrollo):',
+            correct: 'Y2 ⊨ ¬Y4',
+            wrong: ['Y1 ⊨ ¬Y2', 'Y3 ⊨ ¬Y1'],
+            pista1: 'Puente directo con el conjunto insatisfacible {Y2, Y4} de P9.',
+            pista2: 'Niega ¬Y4 y júntalo con Y2: {Y2, Y4}.',
+            explicacion: 'Si Y2 es verdadera, Y4 debe ser falsa porque {Y2, Y4} es insatisfacible. Luego Y2 ⊨ ¬Y4.',
+            consejo: 'Fíjate cómo el bloque de Predicados repite exactamente la misma estrategia en cadena que Proposicional.'
+          }
+        ]
+      },
+      {
+        id: 'F-5',
+        source: 'UNED 2025 · Sept',
+        kind: 'pred',
+        universe: 'U = {1, 2}',
+        formulas: [
+          { key: 'Y1', expr: '∀x ∃y ¬(Mxy ∨ Nxy)' },
+          { key: 'Y2', expr: '∃x(∀y Mxy ∨ ∃y Nxy)' },
+          { key: 'Y3', expr: '∀x ∀y((¬Mxy → Nxy) ∧ Py)' },
+          { key: 'Y4', expr: '∃x(Nxx ∨ ∃y Myx)' }
+        ],
+        I1: 'P = {1, 2}, M = ∅, N = {(1,1), (1,2), (2,1), (2,2)}',
+        I2: 'P = {1}, M = ∅, N = {(1,1)}',
+        questions: [
+          {
+            slot: 'P6',
+            prompt: 'Con universo U = {1, 2}, la interpretación I1 satisface:',
+            correct: '{Y2, Y3, Y4}',
+            wrong: ['{Y1, Y2, Y4}', '{Y1, Y2, Y3}'],
+            pista1: 'En I1, N contiene TODOS los pares posibles del universo.',
+            pista2: 'Mira Y1 = ∀x ∃y ¬(Mxy ∨ Nxy): si Nxy es siempre V, ¿puede valer V la negación ¬(Mxy ∨ Nxy)?',
+            explicacion: 'Como N tiene todos los pares, Mxy ∨ Nxy es siempre V y su negación en Y1 es siempre F (Y1 = F). En cambio Y2, Y3 (Nxy=V y Py=V) y Y4 (N(1,1)=V) son todas verdaderas. Correcta: {Y2, Y3, Y4}.',
+            consejo: 'Lee siempre qué significan los conjuntos extremos (∅ o todo U×U): resuelven P6 y P7 en segundos.'
+          },
+          {
+            slot: 'P7',
+            prompt: 'Con universo U = {1, 2}, la interpretación I2 satisface:',
+            correct: '{Y1, Y2, Y4}',
+            wrong: ['{Y2, Y3, Y4}', '{Y1, Y2, Y3}'],
+            pista1: 'En I2, P = {1} (el 2 no tiene P). Mira el final de Y3: ∀x ∀y(... ∧ Py).',
+            pista2: 'Para y=2, P(2) es Falso, así que Y3 falla al instante.',
+            explicacion: 'En I2, P(2)=F hace falsa Y3 (y además ¬M(1,2)→N(1,2) es V→F=F). Y1 se cumple (para x=1 vale y=2; para x=2 vale y=1); Y2 y Y4 se cumplen con x=1 por N(1,1)=V. Correcta: {Y1, Y2, Y4}.',
+            consejo: 'En Y1 = ∀x ∃y, recuerda que el "y" puede cambiar según cada "x" (para x=1 elegimos y=2; para x=2 elegimos y=1).'
+          },
+          {
+            slot: 'P8',
+            prompt: 'Es equivalente a Y1:',
+            correct: '∀x ∃y ¬(¬Nxy → Mxy)',
+            wrong: ['∀x(∃y ¬Mxy ∧ ∃y ¬Nxy)', '∀x ∃y(Mxy → Nxy)'],
+            pista1: 'No distribuyas ∃y sobre ∧ (¡trampa clásica!). Transforma la disyunción (Mxy ∨ Nxy) en condicional.',
+            pista2: 'Mxy ∨ Nxy ≡ Nxy ∨ Mxy ≡ ¬Nxy → Mxy. Ahora pon el ¬ delante.',
+            explicacion: 'Por ley del condicional, ¬Nxy → Mxy equivale a ¬¬Nxy ∨ Mxy ≡ Nxy ∨ Mxy ≡ Mxy ∨ Nxy. Al poner la negación delante obtenemos exactamente ¬(Mxy ∨ Nxy). ¡Ojo: la opción ∃y ¬Mxy ∧ ∃y ¬Nxy es FALSA porque ∃ NO distribuye sobre ∧!',
+            consejo: 'Grábate a fuego la trampa más repetida de P8: ∃y(A ∧ B) NO equivale a (∃y A ∧ ∃y B).'
+          },
+          {
+            slot: 'P9',
+            prompt: 'Marque el conjunto insatisfacible:',
+            correct: '{Y1, Y3}',
+            wrong: ['{Y1, Y2}', '{Y2, Y4}'],
+            pista1: 'I1 cumple {Y2, Y3, Y4} e I2 cumple {Y1, Y2, Y4}. La única pareja sin modelo es {Y1, Y3}.',
+            pista2: 'En Y3, ¬Mxy → Nxy equivale a Mxy ∨ Nxy para TODO x,y; justo lo contrario de Y1.',
+            explicacion: 'Y1 con γ(a) y δ(b) da ¬Mab y ¬Nab. Y3 con γ(a) y γ(b) da ¬Mab → Nab. Al bifurcar este condicional, una rama da Mab (choca con ¬Mab) y la otra da Nab (choca con ¬Nab). Todo cierra (#).',
+            consejo: 'Reescribir ¬M → N como M ∨ N mentalmente te hace ver la contradicción con ¬(M ∨ N) al vuelo.'
+          },
+          {
+            slot: 'P10',
+            prompt: 'Marque la consecuencia lógica correcta (base del Tableau de Desarrollo):',
+            correct: 'Y3 ⊨ ¬Y1',
+            wrong: ['Y1 ⊨ ¬Y2', 'Y2 ⊨ ¬Y4'],
+            pista1: 'Usa el conjunto insatisfacible {Y1, Y3} de P9.',
+            pista2: 'Niega ¬Y1 y únelo a Y3: da {Y3, Y1}.',
+            explicacion: 'Como {Y1, Y3} es insatisfacible, siempre que Y3 es verdadera, Y1 tiene que ser falsa: Y3 ⊨ ¬Y1.',
+            consejo: 'Recuerda que Y3 ⊨ ¬Y1 e Y1 ⊨ ¬Y3 son ambas válidas cuando {Y1, Y3} es insatisfacible.'
+          }
+        ]
+      },
+      {
+        id: 'F-6',
+        source: 'UNED 2025 · Mod. C',
+        kind: 'pred',
+        universe: 'U = {1, 2}',
+        formulas: [
+          { key: 'Y1', expr: '∃x(Qx ∧ ∀y(Sxy ∧ Syx))' },
+          { key: 'Y2', expr: '∃x(¬Qx ∧ ∃y Sxy)' },
+          { key: 'Y3', expr: '∀x(Qx → ∃y Sxy)' },
+          { key: 'Y4', expr: '∀x ∃y(Sxy → (¬Syx ∧ Qy))' }
+        ],
+        I1: 'Q = {1}, S = {(1,1), (1,2), (2,1)}',
+        I2: 'Q = ∅, S = {(2,1)}',
+        questions: [
+          {
+            slot: 'P6',
+            prompt: 'Con universo U = {1, 2}, la interpretación I1 satisface:',
+            correct: '{Y1, Y2, Y3}',
+            wrong: ['{Y2, Y3, Y4}', '{Y1, Y3, Y4}'],
+            pista1: 'En I1, el individuo 1 cumple Q(1) y está conectado en doble sentido con 1 y con 2.',
+            pista2: 'Prueba x=1 en Y4 = ∀x ∃y(Sxy → (¬Syx ∧ Qy)): tanto para y=1 como para y=2, S(1,y) y S(y,1) son ambos V.',
+            explicacion: 'En I1: para x=1 en Y4, si y=1 tenemos S(1,1)=V y ¬S(1,1)=F (Falso); si y=2 tenemos S(1,2)=V y ¬S(2,1)=F (Falso). Luego Y4 = F. En cambio Y1 (x=1), Y2 (x=2, y=1) y Y3 son verdaderas. Correcta: {Y1, Y2, Y3}.',
+            consejo: 'Si ves un elemento con "todos los lazos ida y vuelta", suele cumplir Y1 y tumbar fórmulas que piden ¬Syx.'
+          },
+          {
+            slot: 'P7',
+            prompt: 'Con universo U = {1, 2}, la interpretación I2 satisface:',
+            correct: '{Y2, Y3, Y4}',
+            wrong: ['{Y1, Y2, Y3}', '{Y1, Y3, Y4}'],
+            pista1: 'En I2, Q = ∅. Busca qué fórmula exige ∃x(Qx ∧ ...).',
+            pista2: 'Y1 necesita un x que cumpla Qx, imposible si Q = ∅.',
+            explicacion: 'Como Q = ∅ en I2, Y1 es Falsa de inmediato. Y2 se cumple con x=2, y=1 (¬Q(2)=V, S(2,1)=V); Y3 es V por vacuidad (Q=∅); Y4 es V eligiendo y=1 para x=1 (S(1,1)=F→V) e y=2 para x=2 (S(2,2)=F→V). Correcta: {Y2, Y3, Y4}.',
+            consejo: 'En P7, cuando Q = ∅, Y1 (∃x Qx ∧ ...) siempre muere y Y3 (∀x Qx → ...) siempre vive.'
+          },
+          {
+            slot: 'P8',
+            prompt: 'Es equivalente a Y4:',
+            correct: '∀x(∀y Sxy → ∃y(¬Syx ∧ Qy))',
+            wrong: ['∀x(∃y Sxy → ∃y(¬Syx ∧ Qy))', '∀x(∀y Sxy ∨ ∃y(¬Syx ∧ Qy))'],
+            pista1: 'Convierte el condicional de Y4 = ∀x ∃y(Sxy → (¬Syx ∧ Qy)) en disyunción y distribuye ∃y sobre ∨.',
+            pista2: '∃y(¬Sxy ∨ B) ≡ (∃y ¬Sxy) ∨ (∃y B) ≡ (¬∀y Sxy) ∨ (∃y B) ≡ (∀y Sxy) → (∃y B).',
+            explicacion: 'Como ∃y SÍ se distribuye sobre ∨: ∃y(¬Sxy ∨ (¬Syx ∧ Qy)) ≡ ∃y ¬Sxy ∨ ∃y(¬Syx ∧ Qy). Reescribiendo ∃y ¬Sxy como ¬∀y Sxy y volviendo a condicional queda ∀x(∀y Sxy → ∃y(¬Syx ∧ Qy)).',
+            consejo: 'Regla de oro doble: ∃y(A → B) ≡ (∀y A) → (∃y B). Fíjate cómo el primer cuantificador pasa a ∀ al entrar al antecedente.'
+          },
+          {
+            slot: 'P9',
+            prompt: 'Marque el conjunto insatisfacible:',
+            correct: '{Y1, Y4}',
+            wrong: ['{Y1, Y2}', '{Y2, Y4}'],
+            pista1: 'I1 cumple {Y1, Y2, Y3} e I2 cumple {Y2, Y3, Y4}. Solo queda {Y1, Y4} sin modelo.',
+            pista2: 'Y1 da una constante "a" con ∀y(Say ∧ Sya). Al meter x=a en Y4 sale "b" con Sab → (¬Sba ∧ Qb), que choca en ambas ramas.',
+            explicacion: 'Por δ en Y1 sacamos "a" con ∀y(Say ∧ Sya). Por γ en Y4 con x=a y luego δ con "b" sale Sab → (¬Sba ∧ Qb). Rama 1: ¬Sab choca con Sab; Rama 2: ¬Sba choca con Sba (#). Insatisfacible: {Y1, Y4}.',
+            consejo: 'Las relaciones simétricas (Say ∧ Sya) de Y1 cierran rapidísimo contra condicionales con ¬Sba.'
+          },
+          {
+            slot: 'P10',
+            prompt: 'Marque la consecuencia lógica correcta (base del Tableau de Desarrollo):',
+            correct: 'Y1 ⊨ ¬Y4',
+            wrong: ['Y2 ⊨ ¬Y3', '¬Y1 ⊨ Y4'],
+            pista1: 'Usa el conjunto insatisfacible {Y1, Y4} de P9.',
+            pista2: 'Niega ¬Y4 y júntalo con Y1: {Y1, Y4}. ¡Cuidado con la trampa ¬Y1 ⊨ Y4!',
+            explicacion: 'Como {Y1, Y4} es insatisfacible, siempre que Y1 es verdadera, Y4 tiene que ser falsa: Y1 ⊨ ¬Y4.',
+            consejo: 'Si este fuese el Desarrollo de 1 punto del examen, tu tableau arrancaría exactamente con {Y1, Y4}.'
+          }
+        ]
+      }
+    ];
+
+    const SLOTS = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'P10'];
+
+    const SLOT_LABELS = {
+      P1: 'Evaluar I (Prop.)',
+      P2: 'Insatisfacible (Prop.)',
+      P3: 'Equivalencia (Prop.)',
+      P4: 'Consecuencia (Prop.)',
+      P5: 'Tautología (Prop.)',
+      P6: 'Universo U · I1',
+      P7: 'Universo U · I2',
+      P8: 'Equivalencia (Pred.)',
+      P9: 'Insatisfacible (Pred.)',
+      P10: 'Consecuencia (Pred.)'
+    };
+
+    const SNIPER_GROUPS = [
+      { id: 'sg_p1', title: 'Evaluar Interpretaciones Proposicionales', badge: 'P1 · 6 preguntas', cls: 'b-cyan', slots: ['P1'], desc: 'Sustitución rápida y descarte visual en X1..X4.' },
+      { id: 'sg_p2', title: 'Insatisfacibles Proposicionales', badge: 'P2 · 6 preguntas', cls: 'b-cyan', slots: ['P2'], desc: 'Prioridad α antes que β para encontrar el trío que cierra.' },
+      { id: 'sg_p3', title: 'Equivalencias Proposicionales', badge: 'P3 · 6 preguntas', cls: 'b-cyan', slots: ['P3'], desc: 'De Morgan, contrarrecíproco, distributivas y bicondicional.' },
+      { id: 'sg_p45', title: 'Mega Truco: Consecuencias y Tautologías', badge: 'P4 y P5 · 12 preguntas', cls: 'b-gold', slots: ['P4', 'P5'], desc: 'Conecta el saco insatisfacible con ⊨ y → al vuelo.' },
+      { id: 'sg_p67', title: 'Universos U={1,2}: Interpretaciones I1 e I2', badge: 'P6 y P7 · 12 preguntas', cls: 'b-violet', slots: ['P6', 'P7'], desc: 'Evaluar relaciones binarias, conjuntos vacíos ∅ y dominios finitos.' },
+      { id: 'sg_p8', title: 'Equivalencias en Predicados', badge: 'P8 · 6 preguntas', cls: 'b-violet', slots: ['P8'], desc: 'Extracción en antecedente/consecuente y leyes de cuantificadores.' },
+      { id: 'sg_p910', title: 'Insatisfacible y Consecuencia en Predicados', badge: 'P9 y P10 · 12 preguntas', cls: 'b-violet', slots: ['P9', 'P10'], desc: 'Tableaux de primer orden (δ antes que γ) y espejo para P10.' }
+    ];
+
+    /* =========================================================================
+       3. PERSISTENCIA EN LOCALSTORAGE ('tq_jefe_final_v1')
+       ========================================================================= */
+    const STORAGE_KEY = 'tq_jefe_final_v1';
+
+    function emptySlotStats() {
+      const s = {};
+      SLOTS.forEach((k) => { s[k] = { ok: 0, total: 0 }; });
+      return s;
+    }
+
+    function loadSave() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const d = JSON.parse(raw);
+          const mergedSlots = emptySlotStats();
+          if (d.slotStats) {
+            SLOTS.forEach((k) => {
+              if (d.slotStats[k]) {
+                mergedSlots[k] = { ok: Number(d.slotStats[k].ok) || 0, total: Number(d.slotStats[k].total) || 0 };
+              }
+            });
+          }
+          return {
+            history: Array.isArray(d.history) ? d.history : [],
+            bestScore5: typeof d.bestScore5 === 'number' ? d.bestScore5 : null,
+            arcadeBestScore: Number(d.arcadeBestScore) || 0,
+            arcadeBestStreak: Number(d.arcadeBestStreak) || 0,
+            slotStats: mergedSlots,
+            recentP: Array.isArray(d.recentP) ? d.recentP : [],
+            recentF: Array.isArray(d.recentF) ? d.recentF : []
+          };
+        }
+      } catch (_) {}
+      return {
+        history: [],
+        bestScore5: null,
+        arcadeBestScore: 0,
+        arcadeBestStreak: 0,
+        slotStats: emptySlotStats(),
+        recentP: [],
+        recentF: []
+      };
+    }
+
+    function persistSave() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(State.save)); } catch (_) {}
+    }
+
+    function recordSlotAttempt(slot, isCorrect) {
+      if (!State.save.slotStats[slot]) State.save.slotStats[slot] = { ok: 0, total: 0 };
+      State.save.slotStats[slot].total += 1;
+      if (isCorrect) State.save.slotStats[slot].ok += 1;
+    }
+
+    /* =========================================================================
+       4. ESTADO GLOBAL Y UTILIDADES DE BARAJADO SIN REPETICIÓN
+       ========================================================================= */
+    const State = {
+      screen: 'home', // home | sniper-menu | exam | exam-report | arcade | arcade-over
+      save: loadSave(),
+      modal: null,    // null | manual | radar | confirm-submit | confirm-exit | wildcard
+      manualTab: 'mapa', // mapa | trucos | leyes
+      toast: null,
+      toastTimer: null,
+      timerId: null,
+      dataCollapsed: false,
+      marks: {},      // { [packKey_formulaKey]: 0|1|2|3 }
+      session: null
+    };
+
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // Construye una instancia de pregunta con opciones (a, b, c) barajadas dinámicamente
+    function buildQuestionItem(pack, qObj) {
+      const rawOpts = shuffle([
+        { text: qObj.correct, ok: true },
+        { text: qObj.wrong[0], ok: false },
+        { text: qObj.wrong[1], ok: false }
+      ]);
+      const letters = ['a', 'b', 'c'];
+      const options = rawOpts.map((o, i) => ({ letter: letters[i], text: o.text, ok: o.ok }));
+      return {
+        uid: `${pack.id}_${qObj.slot}`,
+        pack,
+        slot: qObj.slot,
+        prompt: qObj.prompt,
+        pista1: qObj.pista1,
+        pista2: qObj.pista2,
+        explicacion: qObj.explicacion,
+        consejo: qObj.consejo,
+        options,
+        selected: null,        // 'a' | 'b' | 'c' | null
+        locked: false,         // true en guided/sniper/arcade tras contestar
+        hintLevel: 0,          // 0..3 en guided/sniper
+        wildcardBrush: false,  // true si se usó comodín brújula en oficial
+        eliminatedLetter: null // letra tachada por 50/50
+      };
+    }
+
+    // Selecciona un pack aleatorio evitando repetir los 2 últimos jugados
+    function pickFreshPack(packs, recentList) {
+      const candidates = packs.filter((p) => !recentList.includes(p.id));
+      const pool = candidates.length > 0 ? candidates : packs;
+      const chosen = pool[Math.floor(Math.random() * pool.length)];
+      recentList.push(chosen.id);
+      while (recentList.length > 2) recentList.shift();
+      return chosen;
+    }
+
+    function notify(text, type = 'info', ms = 2600) {
+      if (State.toastTimer) clearTimeout(State.toastTimer);
+      State.toast = { text, type };
+      render();
+      State.toastTimer = setTimeout(() => { State.toast = null; render(); }, ms);
+    }
+
+    function clearTimer() {
+      if (State.timerId) { clearInterval(State.timerId); State.timerId = null; }
+    }
+
+    function fmtClock(sec) {
+      const s = Math.max(0, Math.floor(sec));
+      const m = Math.floor(s / 60);
+      const r = s % 60;
+      return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+    }
+
+    function fmtScore(n) {
+      return (Math.round(n * 100) / 100).toFixed(2);
+    }
+
+    /* =========================================================================
+       5. ARRANQUE DE LOS 4 MODOS DE JUEGO
+       ========================================================================= */
+    function startOfficialExam() {
+      clearTimer();
+      Sound.click();
+      const packP = pickFreshPack(PROP_PACKS, State.save.recentP);
+      const packF = pickFreshPack(PRED_PACKS, State.save.recentF);
+      persistSave();
+
+      const items = [
+        ...packP.questions.map((q) => buildQuestionItem(packP, q)),
+        ...packF.questions.map((q) => buildQuestionItem(packF, q))
+      ];
+
+      State.marks = {};
+      State.dataCollapsed = false;
+      State.modal = null;
+      State.session = {
+        mode: 'official',
+        title: 'Simulacro Oficial UNED',
+        packP, packF,
+        items,
+        idx: 0,
+        secondsLeft: 35 * 60,
+        totalSeconds: 35 * 60,
+        wildcardsLeft: 2,
+        wildcardsUsed: 0,
+        report: null,
+        expandedReview: {}
+      };
+      State.screen = 'exam';
+      startOfficialTimer();
+      render();
+    }
+
+    function startGuidedExam() {
+      clearTimer();
+      Sound.click();
+      const packP = pickFreshPack(PROP_PACKS, State.save.recentP);
+      const packF = pickFreshPack(PRED_PACKS, State.save.recentF);
+      persistSave();
+
+      const items = [
+        ...packP.questions.map((q) => buildQuestionItem(packP, q)),
+        ...packF.questions.map((q) => buildQuestionItem(packF, q))
+      ];
+
+      State.marks = {};
+      State.dataCollapsed = false;
+      State.modal = null;
+      State.session = {
+        mode: 'guided',
+        title: 'Entrenamiento Guiado',
+        packP, packF,
+        items,
+        idx: 0,
+        report: null,
+        expandedReview: {}
+      };
+      State.screen = 'exam';
+      render();
+    }
+
+    function startSniperGroup(groupId) {
+      const grp = SNIPER_GROUPS.find((g) => g.id === groupId);
+      if (!grp) return;
+      clearTimer();
+      Sound.click();
+
+      const allPacks = [...PROP_PACKS, ...PRED_PACKS];
+      const pool = [];
+      allPacks.forEach((pk) => {
+        pk.questions.forEach((q) => {
+          if (grp.slots.includes(q.slot)) pool.push(buildQuestionItem(pk, q));
+        });
+      });
+
+      State.marks = {};
+      State.dataCollapsed = false;
+      State.modal = null;
+      State.session = {
+        mode: 'sniper',
+        group: grp,
+        title: grp.title,
+        items: shuffle(pool),
+        idx: 0,
+        report: null,
+        expandedReview: {}
+      };
+      State.screen = 'exam';
+      render();
+    }
+
+    function startArcade() {
+      clearTimer();
+      Sound.click();
+      const allPacks = [...PROP_PACKS, ...PRED_PACKS];
+      const deck = [];
+      allPacks.forEach((pk) => {
+        pk.questions.forEach((q) => deck.push({ pack: pk, q }));
+      });
+      const shuffledDeck = shuffle(deck);
+      const first = buildQuestionItem(shuffledDeck[0].pack, shuffledDeck[0].q);
+
+      State.marks = {};
+      State.dataCollapsed = false;
+      State.modal = null;
+      State.session = {
+        mode: 'arcade',
+        deck: shuffledDeck,
+        deckPos: 0,
+        current: first,
+        lives: 3,
+        score: 0,
+        streak: 0,
+        bestStreakRun: 0,
+        hits: 0,
+        answeredCount: 0,
+        secondsLeft: 60,
+        timedOut: false
+      };
+      State.screen = 'arcade';
+      startArcadeTimer();
+      render();
+    }
+
+    /* =========================================================================
+       6. CRONÓMETROS (ACTUALIZACIÓN DOM LIGERA SIN RE-RENDERIZAR CADA SEGUNDO)
+       ========================================================================= */
+    function startOfficialTimer() {
+      clearTimer();
+      State.timerId = setInterval(() => {
+        const s = State.session;
+        if (!s || State.screen !== 'exam' || s.mode !== 'official') { clearTimer(); return; }
+        s.secondsLeft -= 1;
+        const el = document.getElementById('official-clock');
+        if (el) {
+          el.textContent = `⏱ ${fmtClock(s.secondsLeft)}`;
+          el.style.color = s.secondsLeft <= 300 ? '#fda4af' : '#fcd34d';
+        }
+        if (s.secondsLeft <= 0) {
+          clearTimer();
+          notify('¡Tiempo agotado! Entregando simulacro automáticamente...', 'gold', 2600);
+          submitExam(true);
+        }
+      }, 1000);
+    }
+
+    function startArcadeTimer() {
+      clearTimer();
+      State.timerId = setInterval(() => {
+        const s = State.session;
+        if (!s || State.screen !== 'arcade' || s.current.locked) { clearTimer(); return; }
+        s.secondsLeft -= 1;
+        const txt = document.getElementById('arcade-clock');
+        const bar = document.getElementById('arcade-bar');
+        if (txt) {
+          txt.textContent = `${s.secondsLeft}s`;
+          txt.style.color = s.secondsLeft <= 12 ? '#fda4af' : '#67e8f9';
+        }
+        if (bar) {
+          bar.style.width = `${Math.max(0, (s.secondsLeft / 60) * 100)}%`;
+          bar.style.background = s.secondsLeft <= 12 ? '#f43f5e' : s.secondsLeft <= 25 ? '#f59e0b' : '#22d3ee';
+        }
+        if (s.secondsLeft <= 0) {
+          clearTimer();
+          handleArcadeTimeout();
+        }
+      }, 1000);
+    }
+
+    /* =========================================================================
+       7. INTERACCIONES EN PARTIDA (OPCIONES, PIZARRA V/F, PISTAS, COMODINES)
+       ========================================================================= */
+    function getMarkScopeKey(item) {
+      // En Simulacro y Guiado las marcas de X1..X4 o Y1..Y4 se mantienen dentro del mismo pack para ayudar en el Mega Truco
+      const s = State.session;
+      if (s && (s.mode === 'official' || s.mode === 'guided')) return item.pack.id;
+      return item.uid;
+    }
+
+    function cycleMark(scopeKey, fKey) {
+      Sound.click();
+      const k = `${scopeKey}__${fKey}`;
+      const cur = State.marks[k] || 0;
+      State.marks[k] = (cur + 1) % 4; // 0:· -> 1:V -> 2:F -> 3:✗
+      render();
+    }
+
+    function clearMarks(scopeKey) {
+      Sound.click();
+      Object.keys(State.marks).forEach((k) => {
+        if (k.startsWith(scopeKey + '__')) delete State.marks[k];
+      });
+      notify('Marcas de la pizarra limpiadas', 'info', 1200);
+      render();
+    }
+
+    function toggleDataPanel() {
+      Sound.click();
+      State.dataCollapsed = !State.dataCollapsed;
+      render();
+    }
+
+    function selectExamOption(letter) {
+      const s = State.session;
+      if (!s) return;
+      const item = s.items[s.idx];
+      if (item.eliminatedLetter === letter) return;
+
+      if (s.mode === 'official') {
+        Sound.click();
+        item.selected = (item.selected === letter) ? null : letter;
+        render();
+        return;
+      }
+
+      // En Entrenamiento Guiado y Francotirador: corrección inmediata
+      if (item.locked) return;
+      item.selected = letter;
+      item.locked = true;
+      const opt = item.options.find((o) => o.letter === letter);
+      const isOk = !!(opt && opt.ok);
+      recordSlotAttempt(item.slot, isOk);
+      persistSave();
+      isOk ? Sound.ok() : Sound.err();
+      render();
+    }
+
+    function leaveBlankCurrent() {
+      const s = State.session;
+      if (!s || s.mode !== 'official') return;
+      Sound.click();
+      s.items[s.idx].selected = null;
+      notify(`${s.items[s.idx].slot} dejada en blanco (0.00 pts)`, 'info', 1400);
+      render();
+    }
+
+    function jumpToExamQuestion(newIdx) {
+      const s = State.session;
+      if (!s || newIdx < 0 || newIdx >= s.items.length) return;
+      Sound.click();
+      s.idx = newIdx;
+      render();
+    }
+
+    // Pistas en 3 niveles para Entrenamiento Guiado y Francotirador
+    function revealNextHint() {
+      const s = State.session;
+      if (!s || s.mode === 'official') return;
+      const item = s.items[s.idx];
+      if (item.locked || item.hintLevel >= 3) return;
+      Sound.hint();
+      item.hintLevel += 1;
+      if (item.hintLevel === 3 && !item.eliminatedLetter) {
+        const wrongs = item.options.filter((o) => !o.ok);
+        item.eliminatedLetter = wrongs[Math.floor(Math.random() * wrongs.length)].letter;
+      }
+      render();
+    }
+
+    // Comodines tácticos en Simulacro Oficial (máximo 2 en todo el examen)
+    function openWildcardModal() {
+      const s = State.session;
+      if (!s || s.mode !== 'official' || s.wildcardsLeft <= 0) return;
+      Sound.click();
+      State.modal = 'wildcard';
+      render();
+    }
+
+    function applyOfficialWildcard(kind) {
+      const s = State.session;
+      if (!s || s.mode !== 'official' || s.wildcardsLeft <= 0) return;
+      const item = s.items[s.idx];
+
+      if (kind === 'brush') {
+        if (item.wildcardBrush) { notify('Ya activaste la Brújula en esta pregunta.', 'gold', 1700); return; }
+        item.wildcardBrush = true;
+      } else if (kind === '5050') {
+        if (item.eliminatedLetter) { notify('Ya descartaste una opción en esta pregunta.', 'gold', 1700); return; }
+        const wrongs = item.options.filter((o) => !o.ok && o.letter !== item.selected);
+        const pool = wrongs.length ? wrongs : item.options.filter((o) => !o.ok);
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        item.eliminatedLetter = pick.letter;
+        if (item.selected === pick.letter) item.selected = null;
+      }
+
+      s.wildcardsLeft -= 1;
+      s.wildcardsUsed += 1;
+      State.modal = null;
+      Sound.hint();
+      notify(`Comodín usado (${s.wildcardsLeft}/2 restantes · -0.15 bonus maestría)`, 'gold', 2400);
+      render();
+    }
+
+    /* =========================================================================
+       8. ENTREGA DE EXAMEN E INFORME COMPLETO (OFICIAL, GUIADO Y FRANCOTIRADOR)
+       ========================================================================= */
+    function requestSubmitExam() {
+      const s = State.session;
+      if (!s) return;
+      Sound.click();
+      if (s.mode === 'official') {
+        State.modal = 'confirm-submit';
+        render();
+      } else {
+        submitExam(false);
+      }
+    }
+
+    function submitExam(forcedTimeout = false) {
+      clearTimer();
+      State.modal = null;
+      const s = State.session;
+      if (!s) return;
+
+      let hits = 0, misses = 0, blanks = 0;
+      s.items.forEach((it) => {
+        if (!it.selected) {
+          blanks += 1;
+        } else {
+          const chosen = it.options.find((o) => o.letter === it.selected);
+          const ok = !!(chosen && chosen.ok);
+          if (ok) hits += 1;
+          else misses += 1;
+          // En oficial se registran al entregar; en guiado/sniper ya se registraron al contestar
+          if (s.mode === 'official') recordSlotAttempt(it.slot, ok);
+        }
+      });
+
+      const totalQ = s.items.length;
+      const maxOfficial = totalQ * 0.5;
+      const rawScore5 = Math.max(0, hits * 0.5 - misses * 0.25);
+      const score10 = maxOfficial > 0 ? (rawScore5 / maxOfficial) * 10 : 0;
+      const pct = maxOfficial > 0 ? (rawScore5 / maxOfficial) * 100 : 0;
+      const passesDevGate = pct >= 66.66; // Umbral 66.7% (equiv. 6/9 test UNED)
+      const wildcardPenalty = (s.wildcardsUsed || 0) * 0.15;
+      const masteryScore10 = Math.max(0, score10 - wildcardPenalty);
+
+      let medal = 'F', medalName = 'Suspenso', medalColor = '#f43f5e';
+      if (score10 >= 9.0) { medal = 'S'; medalName = 'Matrícula de Jefe Final'; medalColor = '#fcd34d'; }
+      else if (score10 >= 7.5) { medal = 'A'; medalName = 'Notable Alto UNED'; medalColor = '#34d399'; }
+      else if (score10 >= 6.0) { medal = 'B'; medalName = 'Aprobado Sólido'; medalColor = '#22d3ee'; }
+      else if (score10 >= 5.0) { medal = 'C'; medalName = 'Aprobado Justo'; medalColor = '#a78bfa'; }
+
+      const elapsedSec = s.mode === 'official' ? (s.totalSeconds - Math.max(0, s.secondsLeft)) : 0;
+
+      s.report = {
+        hits, misses, blanks, totalQ,
+        rawScore5, maxOfficial, score10, pct,
+        passesDevGate, wildcardPenalty, masteryScore10,
+        medal, medalName, medalColor,
+        elapsedSec, forcedTimeout
+      };
+
+      if (s.mode === 'official') {
+        const entry = {
+          date: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }),
+          score5: Number(fmtScore(rawScore5)),
+          score10: Number(fmtScore(score10)),
+          hits, misses, blanks, medal,
+          packP: s.packP.id, packF: s.packF.id,
+          wildcardsUsed: s.wildcardsUsed
+        };
+        State.save.history.unshift(entry);
+        if (State.save.history.length > 15) State.save.history.pop();
+        if (State.save.bestScore5 === null || rawScore5 > State.save.bestScore5) {
+          State.save.bestScore5 = Number(fmtScore(rawScore5));
+        }
+        persistSave();
+      }
+
+      State.screen = 'exam-report';
+      score10 >= 5 ? Sound.win() : Sound.err();
+      render();
+    }
+
+    function toggleReviewItem(idx) {
+      Sound.click();
+      const map = State.session.expandedReview;
+      map[idx] = !map[idx];
+      render();
+    }
+
+    /* =========================================================================
+       9. INTERACCIONES DEL MODO ARCADE (RÁFAGA ALEATORIA)
+       ========================================================================= */
+    function selectArcadeOption(letter) {
+      const s = State.session;
+      if (!s || s.current.locked) return;
+      clearTimer();
+      const it = s.current;
+      it.selected = letter;
+      it.locked = true;
+      s.answeredCount += 1;
+
+      const opt = it.options.find((o) => o.letter === letter);
+      const isOk = !!(opt && opt.ok);
+      recordSlotAttempt(it.slot, isOk);
+
+      if (isOk) {
+        s.hits += 1;
+        s.streak += 1;
+        if (s.streak > s.bestStreakRun) s.bestStreakRun = s.streak;
+        const mult = Math.min(4, 1 + Math.floor(s.streak / 2));
+        const pts = (100 + s.secondsLeft * 2) * mult;
+        s.score += pts;
+        s.streak >= 2 ? Sound.combo() : Sound.ok();
+        notify(`¡Correcto! +${pts} pts ${mult > 1 ? `(Combo ×${mult})` : ''}`, 'ok', 1700);
+      } else {
+        s.lives -= 1;
+        s.streak = 0;
+        Sound.err();
+        notify(`Fallo · Pierdes 1 vida (${s.lives} restantes)`, 'err', 1800);
+      }
+
+      if (s.score > State.save.arcadeBestScore) State.save.arcadeBestScore = s.score;
+      if (s.bestStreakRun > State.save.arcadeBestStreak) State.save.arcadeBestStreak = s.bestStreakRun;
+      persistSave();
+      render();
+    }
+
+    function handleArcadeTimeout() {
+      const s = State.session;
+      if (!s || s.current.locked) return;
+      s.current.locked = true;
+      s.timedOut = true;
+      s.answeredCount += 1;
+      s.lives -= 1;
+      s.streak = 0;
+      recordSlotAttempt(s.current.slot, false);
+      persistSave();
+      Sound.err();
+      notify('¡Tiempo agotado! Pierdes 1 vida.', 'err', 2000);
+      render();
+    }
+
+    function nextArcadeQuestion() {
+      const s = State.session;
+      if (!s) return;
+      Sound.click();
+      if (s.lives <= 0) {
+        State.screen = 'arcade-over';
+        render();
+        return;
+      }
+      s.deckPos += 1;
+      if (s.deckPos >= s.deck.length) {
+        s.deck = shuffle(s.deck);
+        s.deckPos = 0;
+      }
+      const nextRaw = s.deck[s.deckPos];
+      s.current = buildQuestionItem(nextRaw.pack, nextRaw.q);
+      s.secondsLeft = 60;
+      s.timedOut = false;
+      State.marks = {};
+      startArcadeTimer();
+      render();
+    }
+
+    /* =========================================================================
+       10. NAVEGACIÓN SEGURA Y MODALES
+       ========================================================================= */
+    function requestGoHome() {
+      Sound.click();
+      if (State.screen === 'exam' && State.session && State.session.mode === 'official') {
+        State.modal = 'confirm-exit';
+        render();
+        return;
+      }
+      if (State.screen === 'arcade' && State.session && State.session.lives > 0 && State.session.answeredCount > 0) {
+        State.modal = 'confirm-exit';
+        render();
+        return;
+      }
+      confirmGoHome();
+    }
+
+    function confirmGoHome() {
+      clearTimer();
+      State.modal = null;
+      State.session = null;
+      State.screen = 'home';
+      render();
+    }
+
+    function openManual(tab = null) {
+      if (State.screen === 'exam' && State.session && State.session.mode === 'official') {
+        Sound.err();
+        notify('🔒 Manual bloqueado durante el Simulacro Oficial. Usa un Comodín o practica en Entrenamiento Guiado.', 'gold', 2800);
+        return;
+      }
+      Sound.click();
+      if (tab) State.manualTab = tab;
+      State.modal = 'manual';
+      render();
+    }
+
+    function openRadar() {
+      Sound.click();
+      State.modal = 'radar';
+      render();
+    }
+
+    function closeModal() {
+      Sound.click();
+      State.modal = null;
+      render();
+    }
+
+    /* =========================================================================
+       11. RENDERIZADO DE COMPONENTES COMPARTIDOS
+       ========================================================================= */
+    function getOverallAccuracy() {
+      let ok = 0, tot = 0;
+      SLOTS.forEach((k) => {
+        ok += State.save.slotStats[k].ok;
+        tot += State.save.slotStats[k].total;
+      });
+      return tot > 0 ? Math.round((ok / tot) * 100) : null;
+    }
+
+    function renderTopbar() {
+      const isOfficialActive = State.screen === 'exam' && State.session && State.session.mode === 'official';
+      let title = 'Tableau Quest · Jefe Final';
+      let sub = 'Simulacro UNED (P1–P10)';
+      let showBack = State.screen !== 'home';
+
+      if (State.screen === 'sniper-menu') {
+        title = 'Francotirador por Tipo';
+        sub = 'Elige tu objetivo quirúrgico';
+      } else if (State.screen === 'exam' && State.session) {
+        title = State.session.title;
+        sub = State.session.mode === 'sniper'
+          ? `Ronda ${State.session.idx + 1}/${State.session.items.length}`
+          : `${State.session.packP.id} + ${State.session.packF.id}`;
+      } else if (State.screen === 'exam-report' && State.session) {
+        title = 'Informe de Resultados';
+        sub = State.session.title;
+      } else if (State.screen === 'arcade') {
+        title = '⚡ Ráfaga Aleatoria';
+        sub = 'Modo Arcade · 60 preguntas';
+      } else if (State.screen === 'arcade-over') {
+        title = 'Fin de la Ráfaga';
+        sub = 'Resumen Arcade';
+      }
+
+      return `
+        <header class="topbar">
+          <div class="flex aic g8 min0 f1">
+            ${showBack
+              ? `<button class="icon-btn btn" onclick="requestGoHome()" aria-label="Volver">←</button>`
+              : `<div style="width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;font-size:18px;color:#1a0d02;font-weight:900;flex-shrink:0">👑</div>`}
+            <div class="min0">
+              <div class="trunc" style="font-weight:900;font-size:13.8px">${esc(title)}</div>
+              <div class="trunc xs">${esc(sub)}</div>
+            </div>
+          </div>
+          <div class="flex aic g6">
+            ${isOfficialActive
+              ? `<button class="icon-btn locked btn" onclick="openManual()" title="Manual bloqueado en Simulacro Oficial">🔒 Manual</button>`
+              : `<button class="icon-btn manual btn" onclick="openManual()">📖 Manual</button>`}
+            <button class="icon-btn btn" onclick="Sound.toggle();render()" aria-label="Silenciar">${Sound.isMuted() ? '🔇' : '🔊'}</button>
+          </div>
+        </header>`;
+    }
+
+    // Tarjeta Sticky Colapsable de Datos con Marcador Táctil V/F
+    function renderDataCard(item) {
+      const pk = item.pack;
+      const scope = getMarkScopeKey(item);
+      const isProp = pk.kind === 'prop';
+      const accent = isProp ? 'var(--cyan-lt)' : 'var(--violet-lt)';
+      const badgeCls = isProp ? 'b-cyan' : 'b-violet';
+      const hiI1 = item.slot === 'P6';
+      const hiI2 = item.slot === 'P7';
+
+      const markSymbols = ['·', 'V', 'F', '✗'];
+      const rowClasses = ['', 'm-v', 'm-f', 'm-x'];
+
+      // Contador rápido de marcas activas
+      let markedCount = 0;
+      pk.formulas.forEach((f) => {
+        if ((State.marks[`${scope}__${f.key}`] || 0) > 0) markedCount++;
+      });
+
+      return `
+        <section class="data-panel">
+          <div class="data-head">
+            <button class="flex aic g6 min0 f1 btn" style="text-align:left" onclick="toggleDataPanel()">
+              <span class="badge ${badgeCls}">${isProp ? 'Prop. X1–X4' : 'Pred. Y1–Y4'}</span>
+              <span class="xs trunc" style="color:#cbd5e1;font-weight:700">${esc(pk.source)} ${pk.universe ? '· ' + pk.universe : ''}</span>
+              <span class="xs" style="color:${accent};font-weight:900;flex-shrink:0">${State.dataCollapsed ? '▼ Ver datos' : '▲ Plegar'}</span>
+            </button>
+            ${!State.dataCollapsed ? `
+              <button class="btn xs" style="padding:4px 8px;border-radius:8px;background:#162038;border:1px solid var(--border-hi);color:${markedCount ? '#fcd34d' : '#94a3b8'};font-weight:800;flex-shrink:0" onclick="clearMarks('${scope}')">
+                Limpiar${markedCount ? ` (${markedCount})` : ''}
+              </button>` : ''}
+          </div>
+
+          ${!State.dataCollapsed ? `
+            <div class="data-body scroll-y">
+              ${pk.formulas.map((f) => {
+                const st = State.marks[`${scope}__${f.key}`] || 0;
+                return `
+                  <div class="f-row ${rowClasses[st]}">
+                    <span class="f-tag" style="color:${accent}">${f.key}:</span>
+                    <span class="f-expr">${esc(f.expr)}</span>
+                    <button class="vf-btn st-${st} btn" onclick="cycleMark('${scope}','${f.key}')" title="Pizarra rápida: · / V / F / ✗">${markSymbols[st]}</button>
+                  </div>`;
+              }).join('')}
+
+              ${!isProp ? `
+                <div class="interp-box ${hiI1 ? 'hi' : ''}">
+                  <strong style="color:${hiI1 ? '#fcd34d' : '#a78bfa'}">I1${hiI1 ? ' ★' : ''}:</strong> ${esc(pk.I1)}
+                </div>
+                <div class="interp-box ${hiI2 ? 'hi' : ''}">
+                  <strong style="color:${hiI2 ? '#fcd34d' : '#a78bfa'}">I2${hiI2 ? ' ★' : ''}:</strong> ${esc(pk.I2)}
+                </div>` : ''}
+            </div>` : ''}
+        </section>`;
+    }
+
+    /* =========================================================================
+       12. PANTALLA DE INICIO (HOME) Y MENÚ FRANCOTIRADOR
+       ========================================================================= */
+    function renderHome() {
+      const acc = getOverallAccuracy();
+      const bestTxt = State.save.bestScore5 !== null
+        ? `${fmtScore(State.save.bestScore5)}/5`
+        : '—';
+      const best10Txt = State.save.bestScore5 !== null
+        ? `(${fmtScore(State.save.bestScore5 * 2)}/10)`
+        : 'Sin intento';
+
+      return `
+        <main class="pad scroll-y">
+          <!-- Cabecera épica Jefe Final -->
+          <section class="boss-hero">
+            <div class="flex aic jcb g8">
+              <div>
+                <span class="badge b-gold">Jefe Final · 60 Preguntas UNED</span>
+                <h1 style="margin:6px 0 3px;font-size:20px;font-weight:900;letter-spacing:-0.02em">Simulacro P1–P10</h1>
+                <div class="sm">36 combinaciones aleatorias de examen real + 4 modos táctiles.</div>
+              </div>
+              <div style="font-size:34px;line-height:1">🏆</div>
+            </div>
+
+            <div class="grid3" style="margin-top:12px">
+              <div style="background:rgba(9,13,26,0.72);border:1px solid var(--border-hi);border-radius:12px;padding:8px;text-align:center">
+                <div class="mono" style="font-size:14.5px;font-weight:900;color:var(--gold-lt)">${bestTxt}</div>
+                <div class="xs">Mejor Oficial</div>
+                <div class="xs" style="font-size:9.5px">${best10Txt}</div>
+              </div>
+              <div style="background:rgba(9,13,26,0.72);border:1px solid var(--border-hi);border-radius:12px;padding:8px;text-align:center">
+                <div class="mono" style="font-size:14.5px;font-weight:900;color:var(--cyan-lt)">🔥 ${State.save.arcadeBestStreak}</div>
+                <div class="xs">Racha Arcade</div>
+                <div class="xs" style="font-size:9.5px">${State.save.arcadeBestScore} pts</div>
+              </div>
+              <div style="background:rgba(9,13,26,0.72);border:1px solid var(--border-hi);border-radius:12px;padding:8px;text-align:center">
+                <div class="mono" style="font-size:14.5px;font-weight:900;color:var(--ok-lt)">${acc !== null ? acc + '%' : '—'}</div>
+                <div class="xs">Precisión</div>
+                <div class="xs" style="font-size:9.5px">P1–P10 global</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4 Modos de Juego -->
+          <button class="mode-card m-gold btn" onclick="startOfficialExam()">
+            <div class="flex aic jcb g6">
+              <span class="badge b-gold">Oficial · 35 min · +0.5 / -0.25</span>
+              <span class="xs" style="color:var(--gold-lt);font-weight:800">2 comodines</span>
+            </div>
+            <div style="font-weight:900;font-size:15.5px">🏆 Simulacro Oficial UNED (P1→P10)</div>
+            <div class="sm">1 Pack Proposicional + 1 Pack de Predicados al azar. Nota oficial sobre 5 y sobre 10, umbral 66.7%, dejar en blanco y revisión completa.</div>
+          </button>
+
+          <button class="mode-card m-ok btn" onclick="startGuidedExam()">
+            <div class="flex aic jcb g6">
+              <span class="badge b-ok">Sin reloj · 3 niveles de pista</span>
+              <span class="xs" style="color:var(--ok-lt);font-weight:800">Aprende paso a paso</span>
+            </div>
+            <div style="font-weight:900;font-size:15.5px">🎓 Entrenamiento Guiado (P1→P10)</div>
+            <div class="sm">Mismo examen aleatorio P1→P10 con Brújula táctica, Cálculo clave, 50/50, corrección inmediata y Consejo de Examen UNED.</div>
+          </button>
+
+          <button class="mode-card m-cyan btn" onclick="startArcade()">
+            <div class="flex aic jcb g6">
+              <span class="badge b-cyan">60s/preg · ❤️❤️❤️ · Combos</span>
+              <span class="xs" style="color:var(--cyan-lt);font-weight:800">Sin orden fijo</span>
+            </div>
+            <div style="font-weight:900;font-size:15.5px">⚡ Ráfaga Aleatoria (Modo Arcade)</div>
+            <div class="sm">Mezcla total de las 60 preguntas fuera de orden para romper la memorización. Multiplicador ×2, ×3, ×4 por racha.</div>
+          </button>
+
+          <button class="mode-card m-violet btn" onclick="Sound.click();State.screen='sniper-menu';render()">
+            <div class="flex aic jcb g6">
+              <span class="badge b-violet">7 bloques quirúrgicos</span>
+              <span class="xs" style="color:var(--violet-lt);font-weight:800">Con pistas</span>
+            </div>
+            <div style="font-weight:900;font-size:15.5px">🎯 Francotirador por Tipo</div>
+            <div class="sm">Entrena solo lo que más te cuesta: P1, P2, P3, Mega Truco (P4–P5), Universos U={1,2} (P6–P7), Equivalencias P8 o Predicados P9–P10.</div>
+          </button>
+
+          <!-- Botones grandes Manual y Radar -->
+          <button class="cta cta-gold btn" onclick="openManual('mapa')">
+            📖 Manual de Supervivencia UNED (Teoría y Trucos)
+          </button>
+          <button class="cta cta-ghost btn" onclick="openRadar()">
+            📊 Radar de Puntos Débiles (P1–P10) & Historial
+          </button>
+        </main>
+
+        <!-- Enlaces a Temporada 1 y Temporada 2 en GitHub Pages -->
+        <nav class="season-bar">
+          <a class="season-link t1 btn" href="./index.html">← Temp. 1 (Proposicional)</a>
+          <a class="season-link t2 btn" href="./predicados.html">← Temp. 2 (Predicados)</a>
+        </nav>`;
+    }
+
+    function renderSniperMenu() {
+      return `
+        <main class="pad scroll-y">
+          <div class="card" style="border-color:var(--violet-bd);background:linear-gradient(145deg,rgba(167,139,250,0.12),rgba(15,23,42,0.92))">
+            <span class="badge b-violet">Entrenador Quirúrgico</span>
+            <h2 style="margin:5px 0 3px;font-size:17px;font-weight:900">¿Qué tipo de pregunta quieres pulir hoy?</h2>
+            <div class="sm">Todas las rondas salen barajadas aleatoriamente e incluyen 3 niveles de pistas, pizarra V/F y consejos UNED.</div>
+          </div>
+
+          ${SNIPER_GROUPS.map((g) => {
+            // Calcular precisión acumulada en este grupo
+            let ok = 0, tot = 0;
+            g.slots.forEach((sl) => { ok += State.save.slotStats[sl].ok; tot += State.save.slotStats[sl].total; });
+            const pct = tot > 0 ? Math.round((ok / tot) * 100) : null;
+            return `
+              <button class="mode-card btn" onclick="startSniperGroup('${g.id}')">
+                <div class="flex aic jcb g6">
+                  <span class="badge ${g.cls}">${esc(g.badge)}</span>
+                  <span class="xs mono" style="color:${pct === null ? '#64748b' : pct >= 70 ? '#6ee7b7' : pct >= 50 ? '#fcd34d' : '#fda4af'};font-weight:800">
+                    ${pct !== null ? `Acierto: ${pct}%` : 'Sin datos'}
+                  </span>
+                </div>
+                <div style="font-weight:800;font-size:14px">${esc(g.title)}</div>
+                <div class="xs">${esc(g.desc)}</div>
+              </button>`;
+          }).join('')}
+        </main>`;
+    }
+
+    /* =========================================================================
+       13. PANTALLA DE EXAMEN (OFICIAL, ENT. GUIADO Y FRANCOTIRADOR)
+       ========================================================================= */
+    function renderExamScreen() {
+      const s = State.session;
+      const item = s.items[s.idx];
+      const isOfficial = s.mode === 'official';
+      const isProp = item.pack.kind === 'prop';
+      const answeredCount = s.items.filter((x) => x.selected !== null).length;
+      const blankCount = s.items.length - answeredCount;
+
+      return `
+        <!-- HUD de estado + Navegación P1..P10 -->
+        ${isOfficial ? `
+          <div style="padding:7px 12px;background:#0d1428;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0">
+            <span id="official-clock" class="mono" style="font-size:13px;font-weight:900;color:${s.secondsLeft <= 300 ? '#fda4af' : '#fcd34d'}">⏱ ${fmtClock(s.secondsLeft)}</span>
+            <span class="xs mono" style="color:#cbd5e1;font-weight:700">Resp: <strong style="color:#fcd34d">${answeredCount}</strong> · Blanco: <strong>${blankCount}</strong></span>
+            <button class="btn" style="padding:4px 9px;border-radius:9px;background:var(--gold-bg);border:1px solid var(--gold-bd);color:var(--gold-lt);font-size:11px;font-weight:900" onclick="openWildcardModal()" ${s.wildcardsLeft <= 0 ? 'disabled' : ''}>
+              🃏 ${s.wildcardsLeft}/2
+            </button>
+          </div>` : `
+          <div style="padding:7px 12px;background:#0d1428;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0">
+            <span class="badge ${s.mode === 'guided' ? 'b-ok' : 'b-violet'}">${s.mode === 'guided' ? 'Sin penalización' : 'Francotirador'}</span>
+            <span class="xs mono" style="color:#cbd5e1;font-weight:700">Completadas: <strong style="color:#6ee7b7">${answeredCount}/${s.items.length}</strong></span>
+          </div>`}
+
+        <!-- Barra rápida P1..P10 -->
+        <div class="qnav scroll-x">
+          ${s.items.map((it, i) => {
+            const pCls = it.pack.kind === 'prop' ? 'p-prop' : 'p-pred';
+            let stCls = '';
+            if (isOfficial) {
+              if (it.selected) stCls = 'answered';
+            } else if (it.locked) {
+              const ch = it.options.find((o) => o.letter === it.selected);
+              stCls = ch && ch.ok ? 'res-ok' : 'res-err';
+            }
+            const label = s.mode === 'sniper' ? `${i + 1}` : it.slot;
+            return `<button class="qpill ${pCls} ${stCls} ${i === s.idx ? 'active' : ''} btn" onclick="jumpToExamQuestion(${i})">${label}</button>`;
+          }).join('')}
+        </div>
+
+        <!-- Tarjeta Sticky Colapsable de Datos (X1..X4 / Y1..Y4 + Pizarra V/F) -->
+        ${renderDataCard(item)}
+
+        <!-- Área principal desplazable: Enunciado, Opciones, Pistas y Explicación -->
+        <main class="pad scroll-y">
+          <div class="flex aic jcb g6">
+            <span class="badge ${isProp ? 'b-cyan' : 'b-violet'}">${item.slot} · ${esc(SLOT_LABELS[item.slot])}</span>
+            ${isOfficial && item.selected ? `<span class="xs" style="color:var(--gold-lt);font-weight:800">Marcada: ${item.selected})</span>` : ''}
+            ${isOfficial && !item.selected ? `<span class="xs">En blanco (0.00)</span>` : ''}
+          </div>
+
+          <div style="font-size:14.2px;font-weight:800;line-height:1.42;color:#f8fafc">${esc(item.prompt)}</div>
+
+          <!-- Comodín Brújula en Simulacro Oficial -->
+          ${isOfficial && item.wildcardBrush ? `
+            <div class="card" style="padding:10px 12px;background:var(--gold-bg);border-color:var(--gold-bd);font-size:12.2px">
+              <strong style="color:var(--gold-lt)">🧭 Comodín Brújula:</strong> ${esc(item.pista1)}
+            </div>` : ''}
+
+          <!-- Opciones a, b, c -->
+          <div class="flex col g8">
+            ${item.options.map((o) => {
+              const isSel = item.selected === o.letter;
+              const isElim = item.eliminatedLetter === o.letter;
+              let cls = '';
+              if (isElim) cls = 'eliminated';
+              else if (!isOfficial && item.locked) {
+                if (o.ok) cls = 'correct';
+                else if (isSel) cls = 'wrong';
+              } else if (isSel) {
+                cls = 'selected';
+              }
+              return `
+                <button class="opt-btn ${cls} btn" onclick="selectExamOption('${o.letter}')" ${(!isOfficial && item.locked) || isElim ? 'disabled' : ''}>
+                  <span class="opt-letter">${o.letter})</span>
+                  <span class="opt-txt">${esc(o.text)}</span>
+                </button>`;
+            }).join('')}
+          </div>
+
+          <!-- Sistema de Pistas en 3 Niveles (Entrenamiento Guiado y Francotirador) -->
+          ${!isOfficial && !item.locked ? `
+            <div class="flex col g6" style="margin-top:2px">
+              <button class="cta cta-ghost btn" style="padding:10px;border-color:var(--gold-bd);color:var(--gold-lt)" onclick="revealNextHint()" ${item.hintLevel >= 3 ? 'disabled' : ''}>
+                ${item.hintLevel === 0 ? '💡 Pista Nivel 1: Brújula táctica'
+                  : item.hintLevel === 1 ? '🔍 Pista Nivel 2: Cálculo clave'
+                  : item.hintLevel === 2 ? '✂️ Pista Nivel 3: Descarte 50/50'
+                  : '✓ Las 3 pistas están activas'}
+              </button>
+              ${item.hintLevel >= 1 ? `<div class="card" style="padding:10px;background:var(--gold-bg);border-color:var(--gold-bd);font-size:12px"><strong style="color:var(--gold-lt)">1. Brújula:</strong> ${esc(item.pista1)}</div>` : ''}
+              ${item.hintLevel >= 2 ? `<div class="card" style="padding:10px;background:var(--cyan-bg);border-color:var(--cyan-bd);font-size:12px"><strong style="color:var(--cyan-lt)">2. Cálculo clave:</strong> ${esc(item.pista2)}</div>` : ''}
+              ${item.hintLevel >= 3 ? `<div class="xs" style="color:var(--ok-lt);font-weight:700">3. Descarte 50/50 aplicado: opción ${item.eliminatedLetter}) eliminada.</div>` : ''}
+            </div>` : ''}
+
+          <!-- Corrección inmediata + Consejo UNED (Guiado y Francotirador) -->
+          ${!isOfficial && item.locked ? (() => {
+            const ch = item.options.find((o) => o.letter === item.selected);
+            const ok = !!(ch && ch.ok);
+            return `
+              <div class="card" style="background:${ok ? 'var(--ok-bg)' : 'var(--err-bg)'};border-color:${ok ? 'var(--ok-bd)' : 'var(--err-bd)'}">
+                <div style="font-weight:900;font-size:13px;color:${ok ? 'var(--ok-lt)' : 'var(--err-lt)'};margin-bottom:5px">
+                  ${ok ? '✅ ¡Respuesta correcta!' : '❌ Fallo detectado'}
+                </div>
+                <div style="font-size:12.4px;color:#f1f5f9">${esc(item.explicacion)}</div>
+              </div>
+              <div class="card" style="background:var(--gold-bg);border-color:var(--gold-bd)">
+                <div style="font-weight:900;font-size:11.5px;color:var(--gold-lt);text-transform:uppercase;margin-bottom:3px">⚡ Consejo de Examen UNED</div>
+                <div style="font-size:12.2px;color:#fef3c7">${esc(item.consejo)}</div>
+              </div>`;
+          })() : ''}
+        </main>
+
+        <!-- Barra inferior de navegación y acciones -->
+        <footer class="footbar">
+          ${isOfficial ? `
+            <div class="grid3">
+              <button class="cta cta-ghost btn" style="padding:10px" onclick="jumpToExamQuestion(${s.idx - 1})" ${s.idx === 0 ? 'disabled' : ''}>← Ant.</button>
+              <button class="cta cta-ghost btn" style="padding:10px;font-size:12px" onclick="leaveBlankCurrent()" ${!item.selected ? 'disabled' : ''}>En blanco</button>
+              ${s.idx + 1 < s.items.length
+                ? `<button class="cta cta-cyan btn" style="padding:10px" onclick="jumpToExamQuestion(${s.idx + 1})">Sig. →</button>`
+                : `<button class="cta cta-gold btn" style="padding:10px" onclick="requestSubmitExam()">Entregar</button>`}
+            </div>
+            <button class="cta cta-gold btn" style="padding:10px" onclick="requestSubmitExam()">
+              📩 Entregar Examen (${answeredCount}/10 respondidas · ${blankCount} blanco)
+            </button>` : `
+            <div class="grid2">
+              <button class="cta cta-ghost btn" style="padding:10px" onclick="jumpToExamQuestion(${s.idx - 1})" ${s.idx === 0 ? 'disabled' : ''}>← Anterior</button>
+              ${s.idx + 1 < s.items.length
+                ? `<button class="cta cta-ok btn" style="padding:10px" onclick="jumpToExamQuestion(${s.idx + 1})">Siguiente →</button>`
+                : `<button class="cta cta-gold btn" style="padding:10px" onclick="requestSubmitExam()">Ver Informe Final 🏆</button>`}
+            </div>`}
+        </footer>`;
+    }
+
+    /* =========================================================================
+       14. INFORME COMPLETO DE EXAMEN + REVISIÓN PREGUNTA A PREGUNTA
+       ========================================================================= */
+    function renderExamReport() {
+      const s = State.session;
+      const r = s.report;
+      const isOfficial = s.mode === 'official';
+
+      return `
+        <main class="pad scroll-y">
+          <!-- Tarjeta principal de Nota y Medalla -->
+          <section class="boss-hero tc">
+            <div class="medal-circle" style="color:${r.medalColor};border-color:${r.medalColor};background:rgba(9,13,26,0.8)">${r.medal}</div>
+            <div style="font-size:18px;font-weight:900;margin-top:8px;color:${r.medalColor}">${esc(r.medalName)}</div>
+            <div class="xs" style="margin-top:2px">
+              ${isOfficial ? `Packs ${s.packP.id} (${s.packP.source}) + ${s.packF.id} (${s.packF.source}) · Tiempo: ${fmtClock(r.elapsedSec)}` : esc(s.title)}
+            </div>
+
+            <div class="grid2" style="margin-top:12px">
+              <div class="card" style="padding:10px;background:rgba(9,13,26,0.75)">
+                <div class="mono" style="font-size:21px;font-weight:900;color:var(--gold-lt)">${fmtScore(r.rawScore5)}<span style="font-size:12px;color:var(--muted)"> / ${fmtScore(r.maxOfficial)}</span></div>
+                <div class="xs">Nota Oficial Test</div>
+              </div>
+              <div class="card" style="padding:10px;background:rgba(9,13,26,0.75)">
+                <div class="mono" style="font-size:21px;font-weight:900;color:var(--cyan-lt)">${fmtScore(r.score10)}<span style="font-size:12px;color:var(--muted)"> / 10</span></div>
+                <div class="xs">Equivalente sobre 10</div>
+              </div>
+            </div>
+
+            <div class="grid3" style="margin-top:8px">
+              <div style="background:var(--ok-bg);border:1px solid var(--ok-bd);border-radius:11px;padding:7px">
+                <div class="mono" style="font-size:15px;font-weight:900;color:var(--ok-lt)">+${r.hits}</div>
+                <div class="xs">Aciertos</div>
+              </div>
+              <div style="background:var(--err-bg);border:1px solid var(--err-bd);border-radius:11px;padding:7px">
+                <div class="mono" style="font-size:15px;font-weight:900;color:var(--err-lt)">-${r.misses}</div>
+                <div class="xs">Fallos</div>
+              </div>
+              <div style="background:rgba(30,41,59,0.7);border:1px solid var(--border-hi);border-radius:11px;padding:7px">
+                <div class="mono" style="font-size:15px;font-weight:900;color:#cbd5e1">${r.blanks}</div>
+                <div class="xs">En blanco</div>
+              </div>
+            </div>
+
+            <!-- Umbral 66.7% desarrollo UNED -->
+            <div class="card" style="margin-top:10px;padding:9px 11px;text-align:left;background:${r.passesDevGate ? 'var(--ok-bg)' : 'var(--err-bg)'};border-color:${r.passesDevGate ? 'var(--ok-bd)' : 'var(--err-bd)'}">
+              <div style="font-size:12px;font-weight:800;color:${r.passesDevGate ? 'var(--ok-lt)' : 'var(--err-lt)'}">
+                ${r.passesDevGate
+                  ? `✅ Superas el umbral del 66.7% (${Math.round(r.pct)}%): en el examen UNED te corregirían la pregunta de Desarrollo.`
+                  : `⚠️ Por debajo del umbral del 66.7% (${Math.round(r.pct)}%): necesitas al menos 66.7% del test para que corrijan el Desarrollo.`}
+              </div>
+            </div>
+
+            ${isOfficial && s.wildcardsUsed > 0 ? `
+              <div class="xs" style="margin-top:8px;color:var(--gold-lt)">
+                🃏 Comodines usados: ${s.wildcardsUsed}/2 (-${fmtScore(r.wildcardPenalty)} de bonus de maestría → Maestría: ${fmtScore(r.masteryScore10)}/10)
+              </div>` : ''}
+          </section>
+
+          <!-- Botones de acción rápida -->
+          <div class="grid2">
+            <button class="cta cta-gold btn" onclick="${s.mode === 'official' ? 'startOfficialExam()' : s.mode === 'guided' ? 'startGuidedExam()' : `startSniperGroup('${s.group.id}')`}">
+              🔄 Nuevo Aleatorio
+            </button>
+            <button class="cta cta-ghost btn" onclick="confirmGoHome()">🏠 Inicio</button>
+          </div>
+
+          <!-- Revisión pregunta a pregunta -->
+          <div style="font-weight:900;font-size:13.5px;margin-top:4px">📋 Revisión detallada (toca para abrir explicación)</div>
+          <div class="flex col g8">
+            ${s.items.map((it, i) => {
+              const correctOpt = it.options.find((o) => o.ok);
+              const pickedOpt = it.selected ? it.options.find((o) => o.letter === it.selected) : null;
+              const status = !pickedOpt ? 'blank' : pickedOpt.ok ? 'ok' : 'err';
+              const isOpen = !!s.expandedReview[i];
+
+              return `
+                <div class="card" style="padding:11px;border-color:${status === 'ok' ? 'var(--ok-bd)' : status === 'err' ? 'var(--err-bd)' : 'var(--border-hi)'}">
+                  <button class="flex aic jcb g8 btn" style="width:100%;text-align:left" onclick="toggleReviewItem(${i})">
+                    <div class="flex aic g8 min0 f1">
+                      <span class="badge ${status === 'ok' ? 'b-ok' : status === 'err' ? 'b-err' : 'b-dim'}">${it.slot}</span>
+                      <div class="min0">
+                        <div class="trunc" style="font-size:12.4px;font-weight:800">${esc(it.prompt)}</div>
+                        <div class="xs mono" style="color:${status === 'ok' ? 'var(--ok-lt)' : status === 'err' ? 'var(--err-lt)' : '#94a3b8'}">
+                          ${status === 'ok' ? `✓ ${pickedOpt.letter}) ${esc(pickedOpt.text)} (+0.50)`
+                            : status === 'err' ? `✕ Marcaste ${pickedOpt.letter}) · Correcta: ${correctOpt.letter}) (-0.25)`
+                            : `○ En blanco · Correcta: ${correctOpt.letter}) (0.00)`}
+                        </div>
+                      </div>
+                    </div>
+                    <span class="xs" style="color:var(--gold-lt);font-weight:900;flex-shrink:0">${isOpen ? '▲' : '▼'}</span>
+                  </button>
+
+                  ${isOpen ? `
+                    <div class="flex col g6" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+                      <div class="xs mono" style="color:#94a3b8">
+                        ${it.pack.formulas.map((f) => `${f.key}: ${esc(f.expr)}`).join(' · ')}
+                        ${it.pack.I1 ? `<br/>I1: ${esc(it.pack.I1)} | I2: ${esc(it.pack.I2)}` : ''}
+                      </div>
+                      <div class="mono" style="font-size:12px;color:var(--ok-lt);font-weight:800">Correcta: ${correctOpt.letter}) ${esc(correctOpt.text)}</div>
+                      ${status === 'err' ? `<div style="font-size:11.8px;color:var(--err-lt);font-weight:700">⚠️ Trampa detectada: marcaste "${esc(pickedOpt.text)}". Revisa el paso clave abajo.</div>` : ''}
+                      <div style="font-size:12.2px;color:#e2e8f0">${esc(it.explicacion)}</div>
+                      <div style="background:var(--gold-bg);border:1px solid var(--gold-bd);border-radius:10px;padding:8px;font-size:11.8px;color:#fef3c7">
+                        <strong>⚡ Consejo UNED:</strong> ${esc(it.consejo)}
+                      </div>
+                    </div>` : ''}
+                </div>`;
+            }).join('')}
+          </div>
+        </main>`;
+    }
+
+    /* =========================================================================
+       15. PANTALLA DE MODO ARCADE (RÁFAGA ALEATORIA) Y GAME OVER
+       ========================================================================= */
+    function renderArcadeScreen() {
+      const s = State.session;
+      const item = s.current;
+      const isProp = item.pack.kind === 'prop';
+      const mult = Math.min(4, 1 + Math.floor(s.streak / 2));
+      const hearts = '❤️'.repeat(Math.max(0, s.lives)) + '🖤'.repeat(Math.max(0, 3 - s.lives));
+
+      return `
+        <!-- HUD Arcade -->
+        <div style="padding:8px 12px;background:#0d1428;border-bottom:1px solid var(--border);flex-shrink:0">
+          <div class="flex aic jcb g8">
+            <span style="font-size:14px;letter-spacing:2px">${hearts}</span>
+            <div class="flex aic g8 mono" style="font-size:12px;font-weight:900">
+              <span style="color:var(--gold-lt)">${s.score} pts</span>
+              <span style="color:var(--ok-lt)">🔥 ×${mult}</span>
+              <span id="arcade-clock" style="color:${s.secondsLeft <= 12 ? '#fda4af' : '#67e8f9'}">${s.secondsLeft}s</span>
+            </div>
+          </div>
+          <div class="bar-track" style="margin-top:6px">
+            <div id="arcade-bar" class="bar-fill" style="width:${(s.secondsLeft / 60) * 100}%;background:${s.secondsLeft <= 12 ? '#f43f5e' : '#22d3ee'}"></div>
+          </div>
+        </div>
+
+        <!-- Datos de la pregunta actual -->
+        ${renderDataCard(item)}
+
+        <main class="pad scroll-y">
+          <div class="flex aic jcb">
+            <span class="badge ${isProp ? 'b-cyan' : 'b-violet'}">${item.slot} · ${esc(SLOT_LABELS[item.slot])}</span>
+            <span class="xs mono">Racha actual: ${s.streak}</span>
+          </div>
+
+          <div style="font-size:14.2px;font-weight:800;line-height:1.42">${esc(item.prompt)}</div>
+
+          <div class="flex col g8">
+            ${item.options.map((o) => {
+              let cls = '';
+              if (item.locked) {
+                if (o.ok) cls = 'correct';
+                else if (item.selected === o.letter) cls = 'wrong';
+              }
+              return `
+                <button class="opt-btn ${cls} btn" onclick="selectArcadeOption('${o.letter}')" ${item.locked ? 'disabled' : ''}>
+                  <span class="opt-letter">${o.letter})</span>
+                  <span class="opt-txt">${esc(o.text)}</span>
+                </button>`;
+            }).join('')}
+          </div>
+
+          ${item.locked ? (() => {
+            const ch = item.options.find((o) => o.letter === item.selected);
+            const ok = !!(ch && ch.ok);
+            return `
+              <div class="card" style="background:${ok ? 'var(--ok-bg)' : 'var(--err-bg)'};border-color:${ok ? 'var(--ok-bd)' : 'var(--err-bd)'}">
+                <div style="font-weight:900;font-size:12.8px;color:${ok ? 'var(--ok-lt)' : 'var(--err-lt)'};margin-bottom:4px">
+                  ${s.timedOut ? '⏱ ¡Tiempo agotado!' : ok ? '✅ ¡Acierto en racha!' : '❌ Fallo (-1 vida)'}
+                </div>
+                <div style="font-size:12.2px;color:#f1f5f9">${esc(item.explicacion)}</div>
+              </div>
+              <button class="cta ${s.lives > 0 ? 'cta-cyan' : 'cta-err'} btn" onclick="nextArcadeQuestion()">
+                ${s.lives > 0 ? 'Siguiente Pregunta Aleatoria →' : 'Ver Puntuación Final 💀'}
+              </button>`;
+          })() : ''}
+        </main>`;
+    }
+
+    function renderArcadeOver() {
+      const s = State.session;
+      return `
+        <main class="pad scroll-y jcc">
+          <section class="boss-hero tc">
+            <div style="font-size:48px">⚡</div>
+            <span class="badge b-cyan" style="margin:4px auto">Ráfaga Aleatoria Terminada</span>
+            <h2 style="margin:6px 0 4px;font-size:22px;font-weight:900">${s.score} puntos</h2>
+            <div class="sm">Acertaste <strong>${s.hits}</strong> de ${s.answeredCount} preguntas mezcladas al azar.</div>
+
+            <div class="grid3" style="margin:14px 0">
+              <div class="card" style="padding:9px;background:rgba(9,13,26,0.75)">
+                <div class="mono" style="font-size:16px;font-weight:900;color:var(--ok-lt)">🔥 ${s.bestStreakRun}</div>
+                <div class="xs">Mejor Racha</div>
+              </div>
+              <div class="card" style="padding:9px;background:rgba(9,13,26,0.75)">
+                <div class="mono" style="font-size:16px;font-weight:900;color:var(--gold-lt)">${State.save.arcadeBestScore}</div>
+                <div class="xs">Récord Pts</div>
+              </div>
+              <div class="card" style="padding:9px;background:rgba(9,13,26,0.75)">
+                <div class="mono" style="font-size:16px;font-weight:900;color:var(--cyan-lt)">${State.save.arcadeBestStreak}</div>
+                <div class="xs">Récord Racha</div>
+              </div>
+            </div>
+
+            <div class="flex col g8">
+              <button class="cta cta-cyan btn" onclick="startArcade()">⚡ Jugar Otra Ráfaga</button>
+              <button class="cta cta-ghost btn" onclick="confirmGoHome()">🏠 Volver al Inicio</button>
+            </div>
+          </section>
+        </main>`;
+    }
+
+    /* =========================================================================
+       16. MODALES: MANUAL DE SUPERVIVENCIA UNED, RADAR, COMODÍN Y CONFIRMACIONES
+       ========================================================================= */
+    function renderManualModal() {
+      const t = State.manualTab;
+      return `
+        <div class="backdrop" onclick="if(event.target===this)closeModal()">
+          <div class="sheet">
+            <div class="flex aic jcb" style="margin-bottom:10px">
+              <div>
+                <div style="font-weight:900;font-size:15.5px;color:var(--gold-lt)">📖 Manual de Supervivencia UNED</div>
+                <div class="xs">Teoría condensada, trucos de velocidad y leyes</div>
+              </div>
+              <button class="icon-btn btn" onclick="closeModal()">✕</button>
+            </div>
+
+            <div class="tabs" style="grid-template-columns:repeat(3,1fr);margin-bottom:11px">
+              <button class="tab-btn ${t === 'mapa' ? 'active' : ''}" onclick="State.manualTab='mapa';Sound.click();render()">Mapa & Nota</button>
+              <button class="tab-btn ${t === 'trucos' ? 'active' : ''}" onclick="State.manualTab='trucos';Sound.click();render()">5 Mega Trucos</button>
+              <button class="tab-btn ${t === 'leyes' ? 'active' : ''}" onclick="State.manualTab='leyes';Sound.click();render()">Leyes & Reglas</button>
+            </div>
+
+            <div class="scroll-y flex col g10" style="padding-bottom:6px">
+              ${t === 'mapa' ? `
+                <div class="card" style="border-color:var(--gold-bd)">
+                  <span class="badge b-gold">Sistema de Puntuación UNED</span>
+                  <div class="grid3" style="margin-top:8px;text-align:center">
+                    <div style="background:var(--ok-bg);border:1px solid var(--ok-bd);border-radius:10px;padding:7px">
+                      <div class="mono" style="font-weight:900;color:var(--ok-lt)">+0.50</div><div class="xs">Acierto</div>
+                    </div>
+                    <div style="background:var(--err-bg);border:1px solid var(--err-bd);border-radius:10px;padding:7px">
+                      <div class="mono" style="font-weight:900;color:var(--err-lt)">-0.25</div><div class="xs">Fallo</div>
+                    </div>
+                    <div style="background:#162038;border:1px solid var(--border-hi);border-radius:10px;padding:7px">
+                      <div class="mono" style="font-weight:900">0.00</div><div class="xs">En blanco</div>
+                    </div>
+                  </div>
+                  <div class="sm" style="margin-top:8px;color:#e2e8f0">
+                    • <strong>Cuándo arriesgar vs. dejar en blanco:</strong> si descartas <strong>1 opción</strong> (dudas entre 2), el valor esperado es positivo (+0.125): <em>¡responde!</em> Si vas totalmente a ciegas entre 3, el valor esperado es 0 y el riesgo de perder -0.25 es alto: mejor <em>dejar en blanco</em>.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div style="font-weight:800;font-size:13px;color:var(--cyan-lt);margin-bottom:5px">Mapa P1–P5 · Lógica Proposicional</div>
+                  <div class="xs" style="color:#e2e8f0;line-height:1.55">
+                    • <strong>P1:</strong> Evaluar una interpretación I:(p,q,r,s) sobre X1..X4.<br/>
+                    • <strong>P2:</strong> Identificar el trío insatisfacible (clave de todo el bloque).<br/>
+                    • <strong>P3:</strong> Equivalencia lógica (De Morgan, contrarrecíproco, distributiva).<br/>
+                    • <strong>P4:</strong> Consecuencia lógica (<em>A, B ⊨ ¬C</em>) → sale gratis de P2.<br/>
+                    • <strong>P5:</strong> Tautología (<em>(A ∧ B) → ¬C</em>) → sale gratis de P2.
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div style="font-weight:800;font-size:13px;color:var(--violet-lt);margin-bottom:5px">Mapa P6–P10 · Lógica de Predicados</div>
+                  <div class="xs" style="color:#e2e8f0;line-height:1.55">
+                    • <strong>P6 y P7:</strong> Evaluar Y1..Y4 en universo finito U={1,2} bajo I1 e I2.<br/>
+                    • <strong>P8:</strong> Equivalencia con cuantificadores (extracción y negación).<br/>
+                    • <strong>P9:</strong> Pareja insatisfacible {Yi, Yj} (usa descartes de P6/P7).<br/>
+                    • <strong>P10:</strong> Consecuencia lógica en predicados (<em>Yi ⊨ ¬Yj</em>).
+                  </div>
+                  <div style="margin-top:8px;padding:8px;border-radius:10px;background:var(--gold-bg);border:1px solid var(--gold-bd);font-size:11.4px;color:#fef3c7">
+                    <strong>Nota exámenes 2025/2026:</strong> En las últimas convocatorias, la pregunta 10 del test pasó a Teoría de Conjuntos y la demostración por Tableau de Predicados (nuestra P10) vale <strong>1 punto en el Desarrollo</strong> (que solo se corrige si superas el <strong>66.7%</strong> = 6/9 del test).
+                  </div>
+                </div>` : ''}
+
+              ${t === 'trucos' ? `
+                <div class="card" style="border-color:var(--cyan-bd)">
+                  <div style="font-weight:900;font-size:13px;color:var(--cyan-lt)">1. Descarte Visual (P1, P6, P7)</div>
+                  <div class="sm" style="color:#e2e8f0;margin-top:3px">Si una fórmula aparece en las <strong>3 opciones</strong>, NO la evalúes nunca. Ataca primero la fórmula que sale en 2 opciones y falta en 1: si da Falsa, terminas en 10 segundos.</div>
+                </div>
+                <div class="card" style="border-color:var(--ok-bd)">
+                  <div style="font-weight:900;font-size:13px;color:var(--ok-lt)">2. Atajos Relámpago de Conectores</div>
+                  <div class="mono" style="font-size:12.5px;color:#f8fafc;margin-top:4px">0 → ? = 1 &nbsp;|&nbsp; 0 ∧ ? = 0 &nbsp;|&nbsp; 1 ∨ ? = 1</div>
+                  <div class="sm" style="color:#e2e8f0;margin-top:3px">Un condicional solo es 0 con <span class="mono">1 → 0</span>. En predicados, un conjunto vacío <span class="mono">P = ∅</span> hace toda <span class="mono">Px = F</span> y toda <span class="mono">¬Px = V</span>.</div>
+                </div>
+                <div class="card" style="border-color:var(--gold-bd);background:rgba(245,158,11,0.08)">
+                  <div style="font-weight:900;font-size:13px;color:var(--gold-lt)">3. El Puente de Oro (P2 → P4 → P5 y P9 → P10)</div>
+                  <div class="mono" style="font-size:11.8px;color:#fef3c7;margin-top:4px;line-height:1.5">
+                    {A, B, C} insatisfacible<br/>
+                    ⇔ A, B ⊨ ¬C &nbsp;(y cualquier permutación)<br/>
+                    ⇔ (A ∧ B) → ¬C es Tautología
+                  </div>
+                  <div class="sm" style="color:#e2e8f0;margin-top:4px">Si clavas P2, tienes P4 y P5 regaladas (+1.50 pts del tirón). Lo mismo une P9 y P10.</div>
+                </div>
+                <div class="card" style="border-color:var(--violet-bd)">
+                  <div style="font-weight:900;font-size:13px;color:var(--violet-lt)">4. Regla del Espejo para ⊨</div>
+                  <div class="sm" style="color:#e2e8f0;margin-top:3px">Para comprobar <span class="mono">A ⊨ B</span>, <strong>niega SOLO la derecha</strong> y junta <span class="mono">{A, ¬B}</span>. ¡Trampa mortal!: <span class="mono">{Y1, Y3}</span> insatisfacible prueba <span class="mono">Y1 ⊨ ¬Y3</span>, pero <strong>NO</strong> prueba <span class="mono">¬Y1 ⊨ Y3</span>.</div>
+                </div>
+                <div class="card" style="border-color:var(--err-bd)">
+                  <div style="font-weight:900;font-size:13px;color:var(--err-lt)">5. La Trampa de U = {1, 2}</div>
+                  <div class="sm" style="color:#e2e8f0;margin-top:3px">En Lógica de Predicados, <strong>1 y 2 son nombres de individuos</strong> (como Juan y Ana), <strong>NO</strong> son Verdadero y Falso. Usa siempre V/F para los valores de verdad.</div>
+                </div>` : ''}
+
+              ${t === 'leyes' ? `
+                <div class="card">
+                  <div style="font-weight:800;font-size:12.5px;color:var(--cyan-lt);margin-bottom:6px">Leyes Proposicionales Clave (P3)</div>
+                  <div class="mono xs" style="color:#e2e8f0;line-height:1.65">
+                    • <strong>De Morgan:</strong> ¬(A∨B) ≡ ¬A∧¬B &nbsp;|&nbsp; ¬(A∧B) ≡ ¬A∨¬B<br/>
+                    • <strong>Condicional:</strong> A → B ≡ ¬A ∨ B<br/>
+                    • <strong>Neg. Condicional:</strong> ¬(A → B) ≡ A ∧ ¬B<br/>
+                    • <strong>Contrarrecíproco:</strong> A → B ≡ ¬B → ¬A<br/>
+                    • <strong>Distributiva:</strong> (A∧B)∨C ≡ (A∨C)∧(B∨C)<br/>
+                    • <strong>Factor →:</strong> (p→q)∧(p→r) ≡ p → (q∧r)<br/>
+                    • <strong>Bicondicional:</strong> A↔B ≡ (A∧B) ∨ (¬A∧¬B)
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div style="font-weight:800;font-size:12.5px;color:var(--violet-lt);margin-bottom:6px">Cuantificadores: Negación y Extracción (P8)</div>
+                  <div class="mono xs" style="color:#e2e8f0;line-height:1.65">
+                    • <strong>Negación:</strong> ¬∀x A ≡ ∃x ¬A &nbsp;|&nbsp; ¬∃x A ≡ ∀x ¬A<br/>
+                    • <strong>Antecedente (INVIERTE):</strong> (∀y A)→B ≡ ∃y(A→B)<br/>
+                    • <strong>Antecedente (INVIERTE):</strong> (∃y A)→B ≡ ∀y(A→B)<br/>
+                    • <strong>Consecuente (IGUAL):</strong> A→(∃y B) ≡ ∃y(A→B)<br/>
+                    • <strong>Consecuente (IGUAL):</strong> A→(∀y B) ≡ ∀y(A→B)<br/>
+                    • <strong>Distribución SÍ:</strong> ∀x(A∧B) ≡ ∀xA ∧ ∀xB<br/>
+                    • <strong>Distribución SÍ:</strong> ∃x(A∨B) ≡ ∃xA ∨ ∃xB<br/>
+                    • <span style="color:#fda4af"><strong>PROHIBIDO:</strong> ∃x(A∧B) ≢ ∃xA ∧ ∃xB</span>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div style="font-weight:800;font-size:12.5px;color:var(--gold-lt);margin-bottom:6px">Tabla de Reglas de Tableaux (Orden: α → δ → γ → β)</div>
+                  <table class="mini-tbl mono">
+                    <tr><th>Tipo</th><th>Fórmulas</th><th>Acción</th></tr>
+                    <tr><td style="color:#67e8f9;font-weight:900">α</td><td>A∧B, ¬(A∨B), ¬(A→B), ¬¬A</td><td>Apila ↓</td></tr>
+                    <tr><td style="color:#fcd34d;font-weight:900">δ</td><td>∃x A, ¬∀x A</td><td>Constante NUEVA</td></tr>
+                    <tr><td style="color:#6ee7b7;font-weight:900">γ</td><td>∀x A, ¬∃x A</td><td>Cualquier const. ∞</td></tr>
+                    <tr><td style="color:#ddd6fe;font-weight:900">β</td><td>A∨B, A→B, ¬(A∧B), A↔B</td><td>Bifurca |</td></tr>
+                  </table>
+                </div>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderRadarModal() {
+      // Buscar punto débil con al menos 1 intento
+      let weakest = null;
+      SLOTS.forEach((sl) => {
+        const st = State.save.slotStats[sl];
+        if (st.total > 0) {
+          const pct = st.ok / st.total;
+          if (!weakest || pct < weakest.pct) weakest = { slot: sl, pct, st };
+        }
+      });
+
+      const sniperForSlot = (sl) => {
+        const g = SNIPER_GROUPS.find((x) => x.slots.includes(sl));
+        return g ? g.id : 'sg_p1';
+      };
+
+      return `
+        <div class="backdrop" onclick="if(event.target===this)closeModal()">
+          <div class="sheet">
+            <div class="flex aic jcb" style="margin-bottom:10px">
+              <div>
+                <div style="font-weight:900;font-size:15.5px">📊 Radar de Puntos Débiles (P1–P10)</div>
+                <div class="xs">Precisión acumulada en todos los modos</div>
+              </div>
+              <button class="icon-btn btn" onclick="closeModal()">✕</button>
+            </div>
+
+            <div class="scroll-y flex col g10">
+              ${weakest ? `
+                <div class="card" style="background:var(--err-bg);border-color:var(--err-bd)">
+                  <div class="flex aic jcb g8">
+                    <div>
+                      <div class="xs" style="color:var(--err-lt);font-weight:900;text-transform:uppercase">🎯 Punto más débil detectado</div>
+                      <div style="font-weight:900;font-size:13.5px;margin-top:2px">${weakest.slot} · ${esc(SLOT_LABELS[weakest.slot])} (${Math.round(weakest.pct * 100)}%)</div>
+                    </div>
+                    <button class="btn" style="padding:7px 10px;border-radius:10px;background:var(--err);color:#fff;font-size:11px;font-weight:900;flex-shrink:0" onclick="startSniperGroup('${sniperForSlot(weakest.slot)}')">Entrenar →</button>
+                  </div>
+                </div>` : `
+                <div class="card xs tc">Juega cualquier modo para empezar a rellenar tu radar de precisión P1–P10.</div>`}
+
+              <!-- Barras P1..P10 -->
+              <div class="card flex col g8">
+                ${SLOTS.map((sl) => {
+                  const st = State.save.slotStats[sl];
+                  const pct = st.total > 0 ? Math.round((st.ok / st.total) * 100) : 0;
+                  const col = st.total === 0 ? '#475569' : pct >= 75 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#f43f5e';
+                  return `
+                    <div>
+                      <div class="flex aic jcb xs" style="margin-bottom:3px">
+                        <span style="color:#e2e8f0;font-weight:700"><strong class="mono" style="color:${Number(sl.slice(1)) <= 5 ? '#67e8f9' : '#ddd6fe'}">${sl}</strong> · ${esc(SLOT_LABELS[sl])}</span>
+                        <span class="mono" style="color:${col};font-weight:800">${st.total > 0 ? `${pct}% (${st.ok}/${st.total})` : '—'}</span>
+                      </div>
+                      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div>
+                    </div>`;
+                }).join('')}
+              </div>
+
+              <!-- Historial de últimos Simulacros Oficiales -->
+              <div class="card">
+                <div style="font-weight:800;font-size:12.8px;color:var(--gold-lt);margin-bottom:7px">🏆 Últimos Simulacros Oficiales</div>
+                ${State.save.history.length === 0
+                  ? `<div class="xs">Aún no has entregado ningún Simulacro Oficial.</div>`
+                  : `<div class="flex col g6">
+                      ${State.save.history.slice(0, 8).map((h) => `
+                        <div class="flex aic jcb xs" style="background:#090d1a;border:1px solid var(--border);border-radius:10px;padding:7px 9px">
+                          <div>
+                            <strong class="mono" style="color:var(--gold-lt)">${h.medal}</strong> ·
+                            <span style="color:#e2e8f0;font-weight:700">${fmtScore(h.score5)}/5 (${fmtScore(h.score10)}/10)</span>
+                            <span class="xs">· ${h.packP}+${h.packF}</span>
+                          </div>
+                          <div class="mono">${h.date}</div>
+                        </div>`).join('')}
+                    </div>`}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderWildcardModal() {
+      const s = State.session;
+      const item = s.items[s.idx];
+      return `
+        <div class="backdrop center" onclick="if(event.target===this)closeModal()">
+          <div class="dialog">
+            <div class="tc" style="font-size:32px">🃏</div>
+            <h3 class="tc" style="margin:4px 0 4px;font-size:16.5px;font-weight:900">Comodín Táctico (${s.wildcardsLeft}/2 restantes)</h3>
+            <div class="xs tc" style="margin-bottom:12px">Cada comodín resta -0.15 de bonus de maestría en el informe (sin alterar tu nota oficial del test).</div>
+            <div class="flex col g8">
+              <button class="cta cta-gold btn" onclick="applyOfficialWildcard('brush')" ${item.wildcardBrush ? 'disabled' : ''}>
+                🧭 Brújula Táctica (truco UNED para ${item.slot})
+              </button>
+              <button class="cta cta-cyan btn" onclick="applyOfficialWildcard('5050')" ${item.eliminatedLetter ? 'disabled' : ''}>
+                ✂️ Descarte 50/50 (tacha 1 opción incorrecta)
+              </button>
+              <button class="cta cta-ghost btn" onclick="closeModal()">Cancelar</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderConfirmSubmitModal() {
+      const s = State.session;
+      const ans = s.items.filter((x) => x.selected !== null).length;
+      const blk = s.items.length - ans;
+      return `
+        <div class="backdrop center" onclick="if(event.target===this)closeModal()">
+          <div class="dialog tc">
+            <div style="font-size:34px">📩</div>
+            <h3 style="margin:5px 0 5px;font-size:17px;font-weight:900">¿Entregar Simulacro Oficial?</h3>
+            <div class="sm" style="margin-bottom:12px">
+              Llevas <strong style="color:var(--gold-lt)">${ans} respondidas</strong> y <strong>${blk} en blanco</strong>.<br/>
+              Recuerda: acierto +0.50, fallo -0.25, blanco 0.00.
+            </div>
+            <div class="grid2">
+              <button class="cta cta-ghost btn" onclick="closeModal()">Seguir revisando</button>
+              <button class="cta cta-gold btn" onclick="submitExam(false)">Sí, Entregar</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderConfirmExitModal() {
+      return `
+        <div class="backdrop center" onclick="if(event.target===this)closeModal()">
+          <div class="dialog tc">
+            <div style="font-size:32px">⚠️</div>
+            <h3 style="margin:5px 0 5px;font-size:16.5px;font-weight:900">¿Abandonar la partida actual?</h3>
+            <div class="sm" style="margin-bottom:14px">Si sales ahora perderás el progreso de este intento.</div>
+            <div class="grid2">
+              <button class="cta cta-ghost btn" onclick="closeModal()">Continuar</button>
+              <button class="cta cta-err btn" onclick="confirmGoHome()">Salir al Inicio</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    /* =========================================================================
+       17. RENDER PRINCIPAL
+       ========================================================================= */
+    function render() {
+      let body = '';
+      if (State.screen === 'home') body = renderHome();
+      else if (State.screen === 'sniper-menu') body = renderSniperMenu();
+      else if (State.screen === 'exam') body = renderExamScreen();
+      else if (State.screen === 'exam-report') body = renderExamReport();
+      else if (State.screen === 'arcade') body = renderArcadeScreen();
+      else if (State.screen === 'arcade-over') body = renderArcadeOver();
+
+      let modalHtml = '';
+      if (State.modal === 'manual') modalHtml = renderManualModal();
+      else if (State.modal === 'radar') modalHtml = renderRadarModal();
+      else if (State.modal === 'wildcard') modalHtml = renderWildcardModal();
+      else if (State.modal === 'confirm-submit') modalHtml = renderConfirmSubmitModal();
+      else if (State.modal === 'confirm-exit') modalHtml = renderConfirmExitModal();
+
+      const toastHtml = State.toast
+        ? `<div class="toast-wrap"><div class="toast-box t-${State.toast.type}">${esc(State.toast.text)}</div></div>`
+        : '';
+
+      document.getElementById('app').innerHTML = `
+        ${renderTopbar()}
+        ${body}
+        ${modalHtml}
+        ${toastHtml}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { render(); });
+  </script>
+</body>
+</html>

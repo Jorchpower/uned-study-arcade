@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Biyección Blitz — Funciones y Cardinalidad | UNED</title>
+  <style>
+    /* =========================================================================
+       DESIGN TOKENS — CYBER-SLATE DARK MODE (TRILOGÍA UNED)
+       ========================================================================= */
+    :root {
+      --bg: #0b1120;
+      --card: #111827;
+      --card2: #1e293b;
+      --surface: #0f172a;
+      --border: rgba(148, 163, 184, 0.17);
+      --border-hi: rgba(148, 163, 184, 0.35);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --dim: #64748b;
+
+      --cyan: #06b6d4;
+      --violet: #8b5cf6;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --magenta: #ec4899;
+      --orange: #fb923c;
+
+      --r-sm: 10px;
+      --r-md: 16px;
+      --r-lg: 22px;
+      --shadow: 0 12px 32px rgba(0, 0, 0, 0.44);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0; padding: 0; min-height: 100%;
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(6, 182, 212, 0.12), transparent 36%),
+        radial-gradient(circle at 88% 14%, rgba(139, 92, 246, 0.12), transparent 36%),
+        radial-gradient(circle at 50% 92%, rgba(16, 185, 129, 0.08), transparent 40%);
+      background-attachment: fixed;
+      color: var(--text); font-family: var(--font); line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    button, input { font-family: inherit; color: inherit; }
+    button { border: none; background: none; cursor: pointer; }
+
+    /* =========================================================================
+       TOP HEADER & NAVIGATION
+       ========================================================================= */
+    .topbar {
+      position: sticky; top: 0; z-index: 60;
+      background: rgba(11, 17, 32, 0.9);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 14px;
+    }
+    .topbar-inner {
+      max-width: 1140px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.05rem; cursor: pointer; }
+    .brand-icon {
+      width: 36px; height: 36px; border-radius: 11px;
+      background: linear-gradient(135deg, rgba(6,182,212,0.25), rgba(139,92,246,0.28));
+      border: 1px solid rgba(6,182,212,0.5);
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand small { display: block; font-size: 0.65rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.08em; line-height: 1; margin-top: 2px; }
+
+    .top-right { display: flex; align-items: center; gap: 8px; }
+    .xp-pill {
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 5px 11px; border-radius: 999px; font-size: 0.82rem; font-weight: 800; color: #fde68a;
+    }
+    .xp-lvl { background: var(--amber); color: #0b1120; font-size: 0.7rem; padding: 2px 7px; border-radius: 999px; font-weight: 900; }
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 11px;
+      background: var(--card); border: 1px solid var(--border);
+      display: grid; place-items: center; font-size: 1rem; transition: 0.18s;
+    }
+    .icon-btn:hover { border-color: var(--cyan); background: var(--card2); }
+
+    .quick-tabs {
+      max-width: 1140px; margin: 8px auto 0;
+      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .quick-tabs::-webkit-scrollbar { display: none; }
+    .qtab {
+      flex: 0 0 auto; padding: 7px 13px; border-radius: 10px;
+      font-size: 0.83rem; font-weight: 700; color: var(--muted);
+      background: rgba(17, 24, 39, 0.78); border: 1px solid var(--border);
+      transition: 0.18s; white-space: nowrap;
+    }
+    .qtab:hover { color: #fff; border-color: var(--border-hi); }
+    .qtab.active {
+      color: #06131f; border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), #38bdf8);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
+    }
+
+    /* =========================================================================
+       LAYOUT & COMMON COMPONENTS
+       ========================================================================= */
+    .app-wrap { max-width: 1140px; margin: 0 auto; padding: 18px 14px 48px; }
+    .view { display: none; animation: fadeIn 0.24s ease; }
+    .view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card {
+      background: rgba(17, 24, 39, 0.92); backdrop-filter: blur(10px);
+      border: 1px solid var(--border); border-radius: var(--r-lg);
+      padding: 20px; box-shadow: var(--shadow);
+    }
+    .card-soft {
+      background: rgba(15, 23, 42, 0.88); border: 1px solid var(--border);
+      border-radius: var(--r-md); padding: 14px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+    .sec-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+    .sec-title { margin: 0; font-size: 1.45rem; font-weight: 900; letter-spacing: -0.02em; }
+    .sec-sub { margin: 3px 0 0; color: var(--muted); font-size: 0.91rem; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 11px 17px; border-radius: 12px; font-weight: 700; font-size: 0.91rem;
+      min-height: 44px; transition: transform 0.12s, box-shadow 0.2s, background 0.2s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-sm { padding: 7px 13px; font-size: 0.82rem; min-height: 36px; border-radius: 10px; }
+
+    .btn-cyan { background: linear-gradient(135deg, var(--cyan), #0284c7); color: #fff; box-shadow: 0 5px 16px rgba(6,182,212,0.32); }
+    .btn-violet { background: linear-gradient(135deg, var(--violet), #6d28d9); color: #fff; box-shadow: 0 5px 16px rgba(139,92,246,0.32); }
+    .btn-emerald { background: linear-gradient(135deg, var(--emerald), #059669); color: #032117; box-shadow: 0 5px 16px rgba(16,185,129,0.3); }
+    .btn-amber { background: linear-gradient(135deg, var(--amber), #d97706); color: #0b1120; box-shadow: 0 5px 16px rgba(245,158,11,0.28); }
+    .btn-rose { background: linear-gradient(135deg, var(--rose), #be123c); color: #fff; box-shadow: 0 5px 16px rgba(244,63,94,0.3); }
+    .btn-ghost { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text); }
+    .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.11); border-color: var(--border-hi); }
+
+    /* Tags & Formulas */
+    .tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 999px; font-size: 0.72rem;
+      font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .t-cyan { background: rgba(6,182,212,0.16); color: #67e8f9; border: 1px solid rgba(6,182,212,0.38); }
+    .t-violet { background: rgba(139,92,246,0.16); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.38); }
+    .t-emerald { background: rgba(16,185,129,0.16); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.38); }
+    .t-amber { background: rgba(245,158,11,0.16); color: #fcd34d; border: 1px solid rgba(245,158,11,0.38); }
+    .t-rose { background: rgba(244,63,94,0.16); color: #fda4af; border: 1px solid rgba(244,63,94,0.38); }
+    .t-mag { background: rgba(236,72,153,0.16); color: #f9a8d4; border: 1px solid rgba(236,72,153,0.38); }
+
+    .f-inline {
+      font-family: var(--mono); background: rgba(6,182,212,0.11);
+      border: 1px solid rgba(6,182,212,0.28); color: #cffafe;
+      padding: 1px 7px; border-radius: 7px; font-weight: 700; font-size: 0.89em; display: inline-block;
+    }
+    .f-block {
+      font-family: var(--mono); background: rgba(15,23,42,0.94);
+      border: 1px solid var(--border-hi); color: #e2e8f0;
+      padding: 10px 13px; border-radius: 12px; font-size: 0.86rem; line-height: 1.65; word-break: break-word;
+    }
+
+    .c-cyan { color: #22d3ee; font-weight: 700; }
+    .c-violet { color: #a78bfa; font-weight: 700; }
+    .c-emerald { color: #34d399; font-weight: 700; }
+    .c-amber { color: #fbbf24; font-weight: 700; }
+    .c-rose { color: #fb7185; font-weight: 700; }
+    .c-mag { color: #f472b6; font-weight: 700; }
+
+    /* Progress Bar */
+    .p-track { width: 100%; height: 9px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+    .p-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--cyan), var(--violet), var(--emerald)); transition: width 0.4s ease; }
+
+    /* Hero & Hub */
+    .hero {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, rgba(17,24,39,0.97), rgba(15,31,60,0.92));
+      border: 1px solid rgba(6,182,212,0.38); border-radius: 24px;
+      padding: 24px; margin-bottom: 18px; box-shadow: 0 18px 44px rgba(0,0,0,0.48);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 20px; align-items: center; }
+    .hero h1 { margin: 8px 0 10px; font-size: clamp(1.5rem, 3.6vw, 2.2rem); font-weight: 900; line-height: 1.15; letter-spacing: -0.03em; }
+    .hero h1 span { background: linear-gradient(90deg, var(--cyan), var(--violet), var(--emerald)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+    .hub-card { display: flex; flex-direction: column; justify-content: space-between; gap: 12px; cursor: pointer; transition: transform 0.18s, border-color 0.18s; }
+    .hub-card:hover { transform: translateY(-3px); border-color: var(--cyan); }
+
+    /* =========================================================================
+       REUSABLE SVG STAGE & DIAGNOSTIC PILLS
+       ========================================================================= */
+    .svg-stage {
+      width: 100%;
+      background: radial-gradient(circle at 50% 45%, rgba(30,41,59,0.72), rgba(11,17,32,0.97));
+      border: 1px solid var(--border-hi); border-radius: 16px;
+      overflow: hidden; user-select: none; -webkit-user-select: none;
+    }
+    .svg-stage svg { display: block; width: 100%; height: auto; touch-action: manipulation; }
+    .svg-node { cursor: pointer; }
+    .svg-node:hover .n-ring { stroke-width: 3.4; }
+    .svg-edge-hit { cursor: pointer; }
+
+    .svg-legend {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+      padding: 7px 10px; background: rgba(11,17,32,0.78);
+      border-top: 1px solid var(--border); font-size: 0.76rem; color: var(--muted);
+    }
+    .ldot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+
+    .diag-grid { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0; }
+    .diag-pill {
+      padding: 5px 10px; border-radius: 9px; font-size: 0.79rem; font-weight: 800;
+      border: 1px solid var(--border); background: rgba(15,23,42,0.85); color: var(--muted);
+    }
+    .diag-pill.ok { border-color: var(--emerald); background: rgba(16,185,129,0.16); color: #6ee7b7; }
+    .diag-pill.bad { border-color: var(--rose); background: rgba(244,63,94,0.16); color: #fda4af; }
+    .diag-pill.warn { border-color: var(--amber); background: rgba(245,158,11,0.16); color: #fcd34d; }
+
+    /* =========================================================================
+       ACADEMY, PUZZLE CONTROLS & SIMULATOR
+       ========================================================================= */
+    .lesson-tabs { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 14px; }
+    .ltab {
+      flex: 0 0 auto; display: flex; align-items: center; gap: 7px;
+      padding: 8px 13px; border-radius: 12px; background: var(--card);
+      border: 1px solid var(--border); color: var(--muted); font-weight: 700; font-size: 0.84rem;
+    }
+    .ltab.active { border-color: var(--cyan); background: rgba(6,182,212,0.16); color: #fff; }
+    .ltab.done .lnum { background: var(--emerald); color: #032117; }
+    .lnum { width: 22px; height: 22px; border-radius: 7px; background: rgba(255,255,255,0.1); display: grid; place-items: center; font-size: 0.75rem; font-weight: 900; }
+
+    .lab-box {
+      background: linear-gradient(180deg, rgba(11,17,32,0.95), rgba(15,23,42,0.96));
+      border: 1px solid rgba(6,182,212,0.34); border-radius: 16px; padding: 16px; margin: 15px 0;
+    }
+    .lab-title { font-size: 0.84rem; font-weight: 900; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 10px; }
+
+    .theory-list { margin: 8px 0; padding-left: 18px; }
+    .theory-list li { margin-bottom: 7px; color: #cbd5e1; font-size: 0.94rem; }
+
+    .callout { border-left: 4px solid var(--amber); background: rgba(245,158,11,0.1); padding: 11px 14px; border-radius: 10px; margin: 12px 0; font-size: 0.91rem; }
+    .callout.danger { border-left-color: var(--rose); background: rgba(244,63,94,0.1); }
+
+    .chip-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .op-btn {
+      padding: 8px 12px; border-radius: 10px; background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border); font-weight: 700; font-size: 0.84rem; min-height: 38px; transition: 0.16s;
+    }
+    .op-btn:hover { border-color: var(--cyan); }
+    .op-btn.active { background: rgba(6,182,212,0.2); border-color: var(--cyan); color: #fff; box-shadow: 0 0 12px rgba(6,182,212,0.24); }
+    .op-btn.mono { font-family: var(--mono); }
+
+    .lvl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 9px; margin-top: 10px; }
+    .lvl-tile {
+      padding: 9px 5px; border-radius: 13px; background: var(--surface);
+      border: 1.5px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 2px; font-weight: 800; transition: 0.16s;
+    }
+    .lvl-tile:hover { border-color: var(--cyan); transform: translateY(-2px); }
+    .lvl-tile.active { border-color: var(--cyan); background: rgba(6,182,212,0.16); box-shadow: 0 0 12px rgba(6,182,212,0.26); }
+    .stars { font-size: 0.82rem; color: var(--amber); letter-spacing: 1px; }
+
+    .mini-quiz { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.32); border-radius: 15px; padding: 15px; margin-top: 16px; }
+    .q-opt {
+      width: 100%; text-align: left; padding: 12px 14px; border-radius: 11px;
+      background: rgba(17,24,39,0.92); border: 1.5px solid var(--border);
+      font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; gap: 10px;
+      margin-top: 8px; transition: 0.16s;
+    }
+    .q-opt:hover:not(:disabled) { border-color: var(--cyan); background: var(--card2); }
+    .q-opt.selected { border-color: var(--cyan); background: rgba(6,182,212,0.16); }
+    .q-opt.correct { border-color: var(--emerald); background: rgba(16,185,129,0.18); color: #ecfdf5; }
+    .q-opt.wrong { border-color: var(--rose); background: rgba(244,63,94,0.18); color: #fff1f2; }
+    .q-let { flex: 0 0 27px; height: 27px; border-radius: 8px; background: rgba(255,255,255,0.08); display: grid; place-items: center; font-weight: 800; font-size: 0.82rem; }
+
+    .fb { margin-top: 12px; padding: 13px 15px; border-radius: 12px; font-size: 0.91rem; display: none; }
+    .fb.show { display: block; animation: fadeIn 0.2s ease; }
+    .fb.ok { background: rgba(16,185,129,0.14); border: 1px solid rgba(16,185,129,0.45); color: #d1fae5; }
+    .fb.err { background: rgba(244,63,94,0.14); border: 1px solid rgba(244,63,94,0.45); color: #ffe4e6; }
+    .fb.info { background: rgba(6,182,212,0.14); border: 1px solid rgba(6,182,212,0.45); color: #cffafe; }
+
+    .edots { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .edot {
+      width: 33px; height: 33px; border-radius: 9px; background: var(--surface);
+      border: 1.5px solid var(--border); font-size: 0.8rem; font-weight: 800; color: var(--muted); display: grid; place-items: center;
+    }
+    .edot.cur { border-color: var(--cyan); color: #fff; box-shadow: 0 0 10px rgba(6,182,212,0.4); }
+    .edot.ans { background: rgba(6,182,212,0.2); border-color: var(--cyan); color: #ecfeff; }
+    .edot.blk { background: rgba(148,163,184,0.16); border-color: var(--dim); }
+    .edot.ok { background: rgba(16,185,129,0.2); border-color: var(--emerald); color: #d1fae5; }
+    .edot.bad { background: rgba(244,63,94,0.2); border-color: var(--rose); color: #ffe4e6; }
+
+    /* Sliders & Tables */
+    input[type="range"] { width: 100%; accent-color: var(--cyan); cursor: pointer; }
+    .inf-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.86rem; text-align: center; }
+    .inf-table th, .inf-table td { padding: 8px 6px; border: 1px solid var(--border); }
+    .inf-table th { background: rgba(6,182,212,0.12); color: #67e8f9; }
+    .ladder-step { padding: 9px 12px; border-radius: 11px; border: 1px solid var(--border); background: rgba(15,23,42,0.85); margin-bottom: 7px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    /* Toast & Modal */
+    .toast {
+      position: fixed; top: 72px; right: 14px; z-index: 120;
+      background: rgba(17,24,39,0.97); border: 1px solid var(--amber); color: #fff;
+      padding: 10px 15px; border-radius: 12px; box-shadow: 0 10px 28px rgba(0,0,0,0.52);
+      font-weight: 700; font-size: 0.86rem; transform: translateY(-14px); opacity: 0; pointer-events: none; transition: 0.25s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 150; background: rgba(5,8,18,0.78);
+      backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-bg.show { display: flex; }
+    .modal-box { width: 100%; max-width: 420px; background: var(--card); border: 1px solid var(--border-hi); border-radius: 18px; padding: 22px; }
+
+    @media (max-width: 860px) {
+      .hero-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .app-wrap { padding: 12px 10px 36px; }
+      .card, .hero { padding: 15px; border-radius: 16px; }
+      .toast { left: 12px; right: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================= TOP HEADER ======================= -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" onclick="goView('hub')" role="button" tabindex="0">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="5" cy="7" r="2.6" stroke="#06b6d4" stroke-width="2"/>
+            <circle cx="5" cy="17" r="2.6" stroke="#06b6d4" stroke-width="2"/>
+            <circle cx="19" cy="7" r="2.6" stroke="#10b981" stroke-width="2"/>
+            <circle cx="19" cy="17" r="2.6" stroke="#10b981" stroke-width="2"/>
+            <path d="M8 7.5C12 7.5 12 16.5 16 16.5M8 16.5C12 16.5 12 7.5 16 7.5" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          Biyección Blitz
+          <small>UNED · Funciones y Cardinalidad</small>
+        </div>
+      </div>
+
+      <div class="top-right">
+        <button class="btn btn-ghost btn-sm" onclick="goView('hub')">🏠 Inicio</button>
+        <div class="xp-pill" title="Nivel y experiencia">
+          <span class="xp-lvl" id="hdrLvl">Nv. 1</span>
+          <span id="hdrXp">0 XP</span>
+        </div>
+        <button class="icon-btn" id="sndBtn" onclick="toggleSound()" title="Sonido">🔊</button>
+      </div>
+    </div>
+
+    <nav class="quick-tabs" aria-label="Navegación rápida">
+      <button class="qtab active" data-tab="hub" onclick="goView('hub')">🏠 Hub</button>
+      <button class="qtab" data-tab="academy" onclick="goView('academy')">📖 Academia (6)</button>
+      <button class="qtab" data-tab="g1" onclick="goView('g1')">🔌 J1: Cableado</button>
+      <button class="qtab" data-tab="g2" onclick="goView('g2')">⚙️ J2: Fábrica g∘f</button>
+      <button class="qtab" data-tab="g3" onclick="goView('g3')">🧬 J3: Cirugía R/S</button>
+      <button class="qtab" data-tab="exam" onclick="goView('exam')">📝 Simulador UNED</button>
+    </nav>
+  </header>
+
+  <!-- ======================= MAIN APP ======================= -->
+  <main class="app-wrap">
+
+    <!-- ==================== HUB ==================== -->
+    <section id="view-hub" class="view active">
+      <div class="hero">
+        <div class="hero-grid">
+          <div>
+            <span class="tag t-cyan">Trilogía UNED · App 3 de 3</span>
+            <h1>Domina <span>Funciones, Composición y Cardinalidad</span></h1>
+            <p style="color:#cbd5e1; margin:0 0 16px; font-size:0.95rem;">
+              Aprende desde cero con un motor visual de cables interactivo, supera los <strong>3 puzles de ingeniería biyectiva</strong> y clava las <strong>preguntas P13 y P14</strong> de los exámenes oficiales UNED 2025–2026.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:9px;">
+              <button class="btn btn-cyan" id="hubStartBtn" onclick="goView('academy')">📖 Empezar Academia desde Cero</button>
+              <button class="btn btn-ghost" onclick="goView('exam')">📝 Ir al Simulador UNED</button>
+            </div>
+          </div>
+
+          <div class="card-soft">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <strong id="hubRank" style="font-size:0.92rem;">Aprendiz de Palomar</strong>
+              <span class="tag t-amber" id="hubXpTag">0 XP</span>
+            </div>
+            <div class="p-track" style="margin-bottom:12px;"><div class="p-fill" id="hubXpBar" style="width:0%"></div></div>
+
+            <div style="display:flex; justify-content:space-between; font-size:0.83rem; color:var(--muted); margin-bottom:5px;">
+              <span>Progreso Global</span>
+              <strong style="color:#fff;" id="hubGlobPct">0%</strong>
+            </div>
+            <div class="p-track" style="margin-bottom:12px;"><div class="p-fill" id="hubGlobBar" style="width:0%; background:linear-gradient(90deg, var(--emerald), var(--cyan));"></div></div>
+
+            <div class="grid-3" style="gap:8px; text-align:center;">
+              <div class="card-soft" style="padding:8px;">
+                <div class="c-emerald" id="hubLessCnt">0/6</div>
+                <div style="font-size:0.7rem; color:var(--muted);">Lecciones</div>
+              </div>
+              <div class="card-soft" style="padding:8px;">
+                <div class="c-amber" id="hubStarCnt">0/60 ★</div>
+                <div style="font-size:0.7rem; color:var(--muted);">Estrellas</div>
+              </div>
+              <div class="card-soft" style="padding:8px;">
+                <div class="c-cyan" id="hubExamBest">—</div>
+                <div style="font-size:0.7rem; color:var(--muted);">Mejor Nota</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:14px;">
+        <div class="card hub-card" onclick="goView('academy')">
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span class="tag t-emerald">Recomendado</span><span>📖</span></div>
+            <h3 style="margin:0 0 6px;">Academia desde Cero</h3>
+            <p style="margin:0; color:var(--muted); font-size:0.88rem;">6 lecciones con laboratorios táctiles: Disparo único, Inyectiva/Sobreyectiva, Palomar, g∘f, Cirugía R/S y Cardinalidad ∞.</p>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding-top:10px; border-top:1px solid var(--border); font-size:0.84rem;">
+            <span class="c-emerald" id="cAcadStat">0/6 completadas</span><span class="c-cyan">Entrar →</span>
+          </div>
+        </div>
+
+        <div class="card hub-card" onclick="goView('g1')">
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span class="tag t-cyan">Juego 1 · 8 Niveles</span><span>🔌</span></div>
+            <h3 style="margin:0 0 6px;">Cableado Biyectivo</h3>
+            <p style="margin:0; color:var(--muted); font-size:0.88rem;">Conecta nodos A→B evitando choques y huecos, repara fugas o pulsa "¡Imposible por tamaño!" ante trampas de Palomar.</p>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding-top:10px; border-top:1px solid var(--border); font-size:0.84rem;">
+            <span class="c-amber" id="cG1Stat">0 / 24 ★</span><span class="c-cyan">Jugar →</span>
+          </div>
+        </div>
+
+        <div class="card hub-card" onclick="goView('g2')">
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span class="tag t-violet">Juego 2 · 6 Niveles</span><span>⚙️</span></div>
+            <h3 style="margin:0 0 6px;">Fábrica g ∘ f</h3>
+            <p style="margin:0; color:var(--muted); font-size:0.88rem;">Toca entradas en A para trazar recorridos en vivo A→B→C, calcular imágenes y dominar los teoremas de composición.</p>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding-top:10px; border-top:1px solid var(--border); font-size:0.84rem;">
+            <span class="c-amber" id="cG2Stat">0 / 18 ★</span><span class="c-violet">Jugar →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card hub-card" onclick="goView('g3')">
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span class="tag t-mag">Juego 3 · 6 Niveles (2 Jefes UNED)</span><span>🧬</span></div>
+            <h3 style="margin:0 0 6px;">Cirugía de Biyecciones</h3>
+            <p style="margin:0; color:var(--muted); font-size:0.88rem;">Superpone dos relaciones R y S en X y aplica operaciones conjuntistas (∪, ∩, \, ~) viendo grados salida/llegada 1/1 hasta operar la biyección exacta.</p>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding-top:10px; border-top:1px solid var(--border); font-size:0.84rem;">
+            <span class="c-amber" id="cG3Stat">0 / 18 ★</span><span class="c-mag">Operar →</span>
+          </div>
+        </div>
+
+        <div class="card hub-card" onclick="goView('exam')">
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span class="tag t-amber">12 Preguntas Oficiales</span><span>📝</span></div>
+            <h3 style="margin:0 0 6px;">Simulador Oficial UNED</h3>
+            <p style="margin:0; color:var(--muted); font-size:0.88rem;">Las 8 preguntas reales de 2025–2026 + 4 de teoría fija UNED. Modo Entrenamiento con mini-SVG y Modo Examen Real (+0,50 / −0,25 / 0).</p>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding-top:10px; border-top:1px solid var(--border); font-size:0.84rem;">
+            <span class="c-amber" id="cExamStat">Sin intentos aún</span><span class="c-amber">Simular →</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+        <button class="btn btn-ghost btn-sm" style="color:var(--muted);" onclick="openReset()">🗑️ Reiniciar progreso</button>
+      </div>
+    </section>
+
+    <!-- ==================== ACADEMIA ==================== -->
+    <section id="view-academy" class="view">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title">📖 Academia de Funciones y Cardinalidad</h2>
+          <p class="sec-sub">6 lecciones interactivas desde cero (+50 XP por mini-reto superado).</p>
+        </div>
+        <span class="tag t-emerald" id="acadPill">0 / 6 Completadas</span>
+      </div>
+      <div class="lesson-tabs" id="lessonTabs"></div>
+      <div class="card" id="lessonBody"></div>
+    </section>
+
+    <!-- ==================== JUEGO 1: CABLEADO BIYECTIVO ==================== -->
+    <section id="view-g1" class="view">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title">🔌 Juego 1 — Cableado Biyectivo</h2>
+          <p class="sec-sub">Toca un nodo de A y luego uno de B para poner/quitar cable (o toca un cable para desconectarlo).</p>
+        </div>
+        <span class="tag t-amber" id="g1StarsTag">0 / 24 ★</span>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:0.78rem; font-weight:800; color:var(--muted); text-transform:uppercase;">8 Niveles de Ingeniería de Funciones</div>
+        <div class="lvl-grid" id="g1Grid"></div>
+      </div>
+      <div class="card" id="g1Stage"></div>
+    </section>
+
+    <!-- ==================== JUEGO 2: FÁBRICA g o f ==================== -->
+    <section id="view-g2" class="view">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title">⚙️ Juego 2 — Fábrica g ∘ f</h2>
+          <p class="sec-sub">Toca cualquier entrada en A para iluminar su viaje completo x → f(x) → g(f(x)) y resuelve el reto.</p>
+        </div>
+        <span class="tag t-amber" id="g2StarsTag">0 / 18 ★</span>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:0.78rem; font-weight:800; color:var(--muted); text-transform:uppercase;">6 Niveles de Composición</div>
+        <div class="lvl-grid" id="g2Grid"></div>
+      </div>
+      <div class="card" id="g2Stage"></div>
+    </section>
+
+    <!-- ==================== JUEGO 3: CIRUGÍA DE BIYECCIONES ==================== -->
+    <section id="view-g3" class="view">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title">🧬 Juego 3 — Cirugía de Biyecciones (R y S)</h2>
+          <p class="sec-sub">Prueba operaciones conjuntistas sobre R y S hasta dejar exactamente 1 salida y 1 llegada verde en cada nodo.</p>
+        </div>
+        <span class="tag t-amber" id="g3StarsTag">0 / 18 ★</span>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:0.78rem; font-weight:800; color:var(--muted); text-transform:uppercase;">6 Operaciones (Niveles 5 y 6: Exámenes Reales UNED 2025)</div>
+        <div class="lvl-grid" id="g3Grid"></div>
+      </div>
+      <div class="card" id="g3Stage"></div>
+    </section>
+
+    <!-- ==================== SIMULADOR OFICIAL UNED ==================== -->
+    <section id="view-exam" class="view">
+      <div class="sec-head">
+        <div>
+          <h2 class="sec-title">📝 Simulador Oficial UNED — Funciones y Cardinalidad</h2>
+          <p class="sec-sub">12 preguntas verificadas · Baremo oficial: <strong class="c-emerald">+0,50</strong> acierto · <strong class="c-rose">−0,25</strong> fallo · <strong>0,00</strong> blanco.</p>
+        </div>
+      </div>
+      <div id="examBox"></div>
+    </section>
+
+  </main>
+
+  <!-- ======================= TOAST & MODAL ======================= -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-bg" id="resetModal">
+    <div class="modal-box">
+      <h3 style="margin:0 0 8px;">¿Reiniciar todo el progreso?</h3>
+      <p style="margin:0 0 18px; color:var(--muted); font-size:0.9rem;">Se borrarán XP, lecciones, estrellas de los 3 juegos y mejor nota del simulador en este navegador.</p>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-ghost btn-sm" onclick="closeReset()">Cancelar</button>
+        <button class="btn btn-rose btn-sm" onclick="doReset()">Sí, reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       APPLICATION JAVASCRIPT (100% Self-Contained, Single Unified SVG Engine)
+       ========================================================================= -->
+  <script>
+    "use strict";
+
+    /* =========================================================================
+       1. PERSISTENCE, XP & WEB AUDIO SYNTH
+       ========================================================================= */
+    const STORE_KEY = "biyeccion_blitz_v1";
+    const DEF_STATE = {
+      xp: 0, soundOn: true,
+      completedLessons: [],
+      g1Stars: {}, g2Stars: {}, g3Stars: {},
+      examBestNote10: null, examBestScore6: null, examTries: 0
+    };
+
+    const clone = o => JSON.parse(JSON.stringify(o));
+    let state = (() => {
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        return raw ? Object.assign(clone(DEF_STATE), JSON.parse(raw)) : clone(DEF_STATE);
+      } catch { return clone(DEF_STATE); }
+    })();
+
+    function save() {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {}
+      syncGlobalUI();
+    }
+
+    let actx = null;
+    function sfx(type) {
+      if (!state.soundOn) return;
+      try {
+        if (!actx) { const C = window.AudioContext || window.webkitAudioContext; if (C) actx = new C(); }
+        if (!actx) return;
+        if (actx.state === "suspended") actx.resume();
+        const t = actx.currentTime;
+        const beep = (f, dt, d, w = "triangle", g = 0.065) => {
+          const o = actx.createOscillator(), gn = actx.createGain();
+          o.type = w; o.frequency.setValueAtTime(f, t + dt);
+          gn.gain.setValueAtTime(0.001, t + dt);
+          gn.gain.exponentialRampToValueAtTime(g, t + dt + 0.012);
+          gn.gain.exponentialRampToValueAtTime(0.0001, t + dt + d);
+          o.connect(gn); gn.connect(actx.destination);
+          o.start(t + dt); o.stop(t + dt + d + 0.02);
+        };
+        if (type === "click") beep(520, 0, 0.05, "triangle", 0.045);
+        else if (type === "wire") beep(680, 0, 0.07, "sine", 0.055);
+        else if (type === "ok") { beep(523, 0, 0.1); beep(659, 0.08, 0.12); beep(784, 0.16, 0.2); }
+        else if (type === "err") { beep(220, 0, 0.12, "sawtooth", 0.05); beep(170, 0.1, 0.18, "sawtooth", 0.05); }
+        else if (type === "lvl") { beep(523, 0, 0.09); beep(659, 0.08, 0.09); beep(784, 0.16, 0.09); beep(1046, 0.24, 0.26); }
+      } catch {}
+    }
+
+    function toggleSound() {
+      state.soundOn = !state.soundOn; save();
+      if (state.soundOn) sfx("click");
+      toast(state.soundOn ? "🔊 Sonido activado" : "🔇 Sonido silenciado");
+    }
+
+    let toastT = null;
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg; el.classList.add("show");
+      clearTimeout(toastT);
+      toastT = setTimeout(() => el.classList.remove("show"), 2500);
+    }
+
+    function levelInfo(xp) {
+      const lvl = Math.floor(xp / 150) + 1;
+      const pct = Math.round(((xp % 150) / 150) * 100);
+      const ranks = ["Aprendiz de Palomar", "Técnico de Cables", "Operador de g∘f", "Cirujano de Biyecciones", "Maestro de Cantor", "Leyenda UNED"];
+      return { lvl, pct, rank: ranks[Math.min(lvl - 1, ranks.length - 1)] };
+    }
+
+    function addXP(n, label) {
+      const prev = levelInfo(state.xp).lvl;
+      state.xp += n;
+      const next = levelInfo(state.xp).lvl;
+      save();
+      if (next > prev) { sfx("lvl"); toast(`🌟 ¡Nivel ${next} alcanzado! (+${n} XP)`); }
+      else toast(`+${n} XP · ${label}`);
+    }
+
+    function sumObj(o) { return Object.values(o || {}).reduce((a, v) => a + Number(v || 0), 0); }
+
+    function openReset() { document.getElementById("resetModal").classList.add("show"); }
+    function closeReset() { document.getElementById("resetModal").classList.remove("show"); }
+    function doReset() {
+      state = clone(DEF_STATE); save(); closeReset();
+      renderAcademy(); initG1(); initG2(); initG3(); renderExamHome();
+      toast("Progreso reiniciado");
+    }
+
+    /* =========================================================================
+       2. MATH ANALYSIS HELPERS (Functions, Composition & Set Operations)
+       ========================================================================= */
+    const pk = (u, v) => `${u}:::${v}`;
+    const unpk = k => k.split(":::");
+
+    function analyzeMapping(A, B, pairs) {
+      const outMap = {}, inMap = {};
+      A.forEach(a => outMap[a] = []);
+      B.forEach(b => inMap[b] = []);
+      pairs.forEach(([u, v]) => {
+        if (outMap[u]) outMap[u].push(v);
+        if (inMap[v]) inMap[v].push(u);
+      });
+      const multiOut = A.filter(a => outMap[a].length > 1);
+      const missingOut = A.filter(a => outMap[a].length === 0);
+      const collisions = B.filter(b => inMap[b].length > 1);
+      const holes = B.filter(b => inMap[b].length === 0);
+
+      const isFunction = multiOut.length === 0;
+      const isTotal = isFunction && missingOut.length === 0;
+      const isPartial = isFunction && missingOut.length > 0;
+      const isInjective = isFunction && collisions.length === 0;
+      const isSurjective = isTotal && holes.length === 0;
+      const isBijective = isTotal && isInjective && isSurjective;
+
+      return { outMap, inMap, multiOut, missingOut, collisions, holes, isFunction, isTotal, isPartial, isInjective, isSurjective, isBijective };
+    }
+
+    function evalRelationOp(X, R, S, opId) {
+      const rSet = new Set(R.map(([u, v]) => pk(u, v)));
+      const sSet = new Set(S.map(([u, v]) => pk(u, v)));
+      const res = [];
+      for (const a of X) {
+        for (const b of X) {
+          const k = pk(a, b);
+          const inR = rSet.has(k), inS = sSet.has(k);
+          let take = false;
+          if (opId === "R") take = inR;
+          else if (opId === "S") take = inS;
+          else if (opId === "R_U_S") take = inR || inS;
+          else if (opId === "R_I_S") take = inR && inS;
+          else if (opId === "R_M_S") take = inR && !inS;
+          else if (opId === "S_M_R") take = inS && !inR;
+          else if (opId === "SYM_DIFF") take = (inR || inS) && !(inR && inS);           // (R ∪ S) \ (R ∩ S)
+          else if (opId === "RI_M_NRS") take = (inR && inS) && !(!inS && !inR);         // (R ∩ S) \ (~S ∩ ~R)
+          else if (opId === "RU_M_NRS") take = (inR || inS) && !(!inR && inS);          // (R ∪ S) \ (~R ∩ S)
+          else if (opId === "RU_M_RNS") take = (inR || inS) && !(inR && !inS);          // (R ∪ S) \ (R ∩ ~S)
+          if (take) res.push([a, b]);
+        }
+      }
+      return res;
+    }
+
+    function fmtPairs(pairs) {
+      return pairs.length ? `{${pairs.map(([u, v]) => `(${u},${v})`).join(", ")}}` : "∅";
+    }
+
+    function renderDiagPillsHTML(info) {
+      const pill = (lbl, ok, warn = false) =>
+        `<span class="diag-pill ${ok ? "ok" : (warn ? "warn" : "bad")}">${ok ? "✓" : (warn ? "!" : "✕")} ${lbl}</span>`;
+      if (!info.isFunction) {
+        return `<div class="diag-grid">${pill("NO es función (disparo múltiple)", false)}</div>`;
+      }
+      return `<div class="diag-grid">
+        ${pill(info.isTotal ? "Función Total" : "Función Parcial", info.isTotal, info.isPartial)}
+        ${pill("Inyectiva", info.isInjective)}
+        ${pill("Sobreyectiva", info.isSurjective)}
+        ${pill("Biyectiva", info.isBijective)}
+      </div>`;
+    }
+
+    /* =========================================================================
+       3. UNIFIED REUSABLE SVG ENGINE — renderMappingSVG(container, config)
+       Supports:
+       - mode: 'twoCol'  (A -> B interactive wiring with live diagnostics)
+       - mode: 'threeCol'(A -> B -> C interactive trace for g ∘ f)
+       - mode: 'surgery' (X -> X overlay of R & S + live out/in 1/1 degree badges)
+       ========================================================================= */
+    let svgSeq = 0;
+
+    function colPositions(items, x, topY, botY) {
+      const n = items.length;
+      const map = {};
+      if (n === 1) { map[items[0]] = { x, y: (topY + botY) / 2 }; return map; }
+      const step = (botY - topY) / (n - 1);
+      items.forEach((it, i) => { map[it] = { x, y: topY + i * step }; });
+      return map;
+    }
+
+    function bezierCurve(x1, y1, x2, y2, r, lift = 0) {
+      const sx = x1 + r + 2, ex = x2 - r - 6;
+      const cx1 = sx + (ex - sx) * 0.42;
+      const cx2 = sx + (ex - sx) * 0.58;
+      return `M ${sx.toFixed(1)} ${y1.toFixed(1)} C ${cx1.toFixed(1)} ${(y1 + lift).toFixed(1)}, ${cx2.toFixed(1)} ${(y2 + lift).toFixed(1)}, ${ex.toFixed(1)} ${y2.toFixed(1)}`;
+    }
+
+    function renderMappingSVG(container, cfg) {
+      if (!container) return;
+      const uid = ++svgSeq;
+      const mode = cfg.mode || "twoCol";
+      const r = cfg.nodeR || 19;
+
+      const palette = {
+        cyan: "#06b6d4", violet: "#8b5cf6", emerald: "#10b981",
+        amber: "#f59e0b", rose: "#f43f5e", magenta: "#ec4899",
+        orange: "#fb923c", dim: "#475569", white: "#f8fafc"
+      };
+
+      const defs = Object.entries(palette).map(([k, col]) => `
+        <marker id="m-${uid}-${k}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto">
+          <path d="M 0 1.2 L 9.5 5 L 0 8.8 z" fill="${col}"/>
+        </marker>
+      `).join("");
+
+      /* ---------------- MODE 1: TWO COLUMNS (A -> B) ---------------- */
+      if (mode === "twoCol") {
+        const A = cfg.A, B = cfg.B, pairs = cfg.pairs || [];
+        const maxN = Math.max(A.length, B.length);
+        const w = 440, h = Math.max(210, 68 + maxN * 52);
+        const posA = colPositions(A, 92, 58, h - 34);
+        const posB = colPositions(B, w - 92, 58, h - 34);
+        const info = analyzeMapping(A, B, pairs);
+        const selA = cfg.selectedA !== undefined && cfg.selectedA !== null ? String(cfg.selectedA) : null;
+
+        const edgesHtml = pairs.map(([u, v], idx) => {
+          const p1 = posA[u], p2 = posB[v];
+          if (!p1 || !p2) return "";
+          let colKey = "cyan";
+          if (info.multiOut.includes(u)) colKey = "rose";
+          else if (info.collisions.includes(v)) colKey = "orange";
+          else if (info.isBijective) colKey = "emerald";
+
+          const d = bezierCurve(p1.x, p1.y, p2.x, p2.y, r);
+          return `
+            <g class="${cfg.onEdgeClick ? "svg-edge-hit" : ""}" data-eidx="${idx}">
+              ${cfg.onEdgeClick ? `<path d="${d}" fill="none" stroke="transparent" stroke-width="20"/>` : ""}
+              <path d="${d}" fill="none" stroke="${palette[colKey]}" stroke-width="2.8" stroke-linecap="round" marker-end="url(#m-${uid}-${colKey})"/>
+            </g>
+          `;
+        }).join("");
+
+        const nodesA = A.map(a => {
+          const p = posA[a], isSel = selA === String(a);
+          const isMulti = info.multiOut.includes(a), isMiss = info.missingOut.includes(a);
+          let stroke = palette.cyan, fill = "#111827", dash = "";
+          if (isSel) { stroke = palette.amber; fill = "#1e3a5f"; }
+          else if (isMulti) { stroke = palette.rose; fill = "#3b1122"; }
+          else if (isMiss) { stroke = palette.amber; dash = 'stroke-dasharray="4 3"'; }
+          else if (info.isBijective) { stroke = palette.emerald; fill = "#0c2d24"; }
+
+          return `
+            <g class="${cfg.onNodeA ? "svg-node" : ""}" data-a="${a}">
+              ${isSel ? `<circle cx="${p.x}" cy="${p.y}" r="${r + 6}" fill="none" stroke="${palette.amber}" stroke-width="2" stroke-dasharray="4 3"/>` : ""}
+              <circle class="n-ring" cx="${p.x}" cy="${p.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2.6" ${dash}/>
+              <text x="${p.x}" y="${p.y + 1}" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" font-family="JetBrains Mono,monospace" font-weight="800" font-size="14">${a}</text>
+              ${isMulti ? `<text x="${p.x - 32}" y="${p.y + 1}" text-anchor="end" dominant-baseline="central" fill="#fda4af" font-size="11" font-weight="800">✕×${info.outMap[a].length}</text>` : ""}
+              ${isMiss ? `<text x="${p.x - 30}" y="${p.y + 1}" text-anchor="end" dominant-baseline="central" fill="#fcd34d" font-size="11" font-weight="800">0</text>` : ""}
+            </g>
+          `;
+        }).join("");
+
+        const nodesB = B.map(b => {
+          const p = posB[b];
+          const isCol = info.collisions.includes(b), isHole = info.holes.includes(b);
+          let stroke = palette.violet, fill = "#111827", dash = "";
+          if (isCol) { stroke = palette.orange; fill = "#3a1f0d"; }
+          else if (isHole) { stroke = "#64748b"; dash = 'stroke-dasharray="4 3"'; }
+          else if (info.isBijective) { stroke = palette.emerald; fill = "#0c2d24"; }
+
+          return `
+            <g class="${cfg.onNodeB ? "svg-node" : ""}" data-b="${b}">
+              <circle class="n-ring" cx="${p.x}" cy="${p.y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2.6" ${dash}/>
+              <text x="${p.x}" y="${p.y + 1}" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" font-family="JetBrains Mono,monospace" font-weight="800" font-size="14">${b}</text>
+              ${isCol ? `<text x="${p.x + 28}" y="${p.y + 1}" text-anchor="start" dominant-baseline="central" fill="#fdba74" font-size="11" font-weight="800">⚡×${info.inMap[b].length}</text>` : ""}
+              ${isHole ? `<text x="${p.x + 28}" y="${p.y + 1}" text-anchor="start" dominant-baseline="central" fill="#94a3b8" font-size="11" font-weight="700">hueco</text>` : ""}
+            </g>
+          `;
+        }).join("");
+
+        container.innerHTML = `
+          <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Diagrama de función A hacia B">
+            <defs>${defs}</defs>
+            <text x="92" y="24" text-anchor="middle" fill="#67e8f9" font-weight="900" font-size="13">${cfg.labelA || "Dominio A"}</text>
+            <text x="${w - 92}" y="24" text-anchor="middle" fill="#c4b5fd" font-weight="900" font-size="13">${cfg.labelB || "Codominio B"}</text>
+            ${edgesHtml}${nodesA}${nodesB}
+          </svg>
+        `;
+
+        if (cfg.onNodeA) container.querySelectorAll("[data-a]").forEach(el => el.addEventListener("click", () => cfg.onNodeA(el.getAttribute("data-a"))));
+        if (cfg.onNodeB) container.querySelectorAll("[data-b]").forEach(el => el.addEventListener("click", () => cfg.onNodeB(el.getAttribute("data-b"))));
+        if (cfg.onEdgeClick) container.querySelectorAll("[data-eidx]").forEach(el => el.addEventListener("click", () => cfg.onEdgeClick(pairs[+el.getAttribute("data-eidx")], +el.getAttribute("data-eidx"))));
+        return;
+      }
+
+      /* ---------------- MODE 2: THREE COLUMNS (A -> B -> C for g ∘ f) ---------------- */
+      if (mode === "threeCol") {
+        const { A, B, C, f, g } = cfg;
+        const activeX = cfg.activeX !== undefined && cfg.activeX !== null ? String(cfg.activeX) : null;
+        const maxN = Math.max(A.length, B.length, C.length);
+        const w = 520, h = Math.max(210, 72 + maxN * 54);
+        const posA = colPositions(A, 76, 62, h - 32);
+        const posB = colPositions(B, w / 2, 62, h - 32);
+        const posC = colPositions(C, w - 76, 62, h - 32);
+
+        const activeY = activeX && f[activeX] !== undefined ? String(f[activeX]) : null;
+        const activeZ = activeY && g[activeY] !== undefined ? String(g[activeY]) : null;
+
+        const edgesF = A.map(a => {
+          const b = f[a]; if (b === undefined) return "";
+          const hi = activeX === String(a);
+          const col = hi ? "amber" : (activeX ? "dim" : "cyan");
+          const d = bezierCurve(posA[a].x, posA[a].y, posB[b].x, posB[b].y, r);
+          return `<path d="${d}" fill="none" stroke="${palette[col]}" stroke-width="${hi ? 4 : 2.3}" opacity="${activeX && !hi ? 0.35 : 1}" marker-end="url(#m-${uid}-${col})"/>`;
+        }).join("");
+
+        const edgesG = B.map(b => {
+          const c = g[b]; if (c === undefined) return "";
+          const hi = activeY === String(b);
+          const col = hi ? "emerald" : (activeX ? "dim" : "violet");
+          const d = bezierCurve(posB[b].x, posB[b].y, posC[c].x, posC[c].y, r);
+          return `<path d="${d}" fill="none" stroke="${palette[col]}" stroke-width="${hi ? 4 : 2.3}" opacity="${activeX && !hi ? 0.35 : 1}" marker-end="url(#m-${uid}-${col})"/>`;
+        }).join("");
+
+        const drawCol = (arr, pos, strokeDef, hiVal, clickAttr) => arr.map(v => {
+          const p = pos[v], hi = hiVal === String(v);
+          return `
+            <g class="${clickAttr ? "svg-node" : ""}" ${clickAttr ? `${clickAttr}="${v}"` : ""}>
+              ${hi ? `<circle cx="${p.x}" cy="${p.y}" r="${r + 6}" fill="none" stroke="${palette.amber}" stroke-width="2" stroke-dasharray="4 3"/>` : ""}
+              <circle class="n-ring" cx="${p.x}" cy="${p.y}" r="${r}" fill="${hi ? "#1e3a5f" : "#111827"}" stroke="${hi ? palette.amber : strokeDef}" stroke-width="${hi ? 3.2 : 2.4}"/>
+              <text x="${p.x}" y="${p.y + 1}" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" font-family="JetBrains Mono,monospace" font-weight="800" font-size="14">${v}</text>
+            </g>
+          `;
+        }).join("");
+
+        container.innerHTML = `
+          <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Composición g compuesta con f">
+            <defs>${defs}</defs>
+            <text x="76" y="24" text-anchor="middle" fill="#67e8f9" font-weight="900" font-size="13">A</text>
+            <text x="${w / 2}" y="24" text-anchor="middle" fill="#c4b5fd" font-weight="900" font-size="13">B</text>
+            <text x="${w - 76}" y="24" text-anchor="middle" fill="#6ee7b7" font-weight="900" font-size="13">C</text>
+            <text x="${(76 + w / 2) / 2}" y="24" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono,monospace" font-weight="800" font-size="12">f →</text>
+            <text x="${(w - 76 + w / 2) / 2}" y="24" text-anchor="middle" fill="#94a3b8" font-family="JetBrains Mono,monospace" font-weight="800" font-size="12">g →</text>
+            ${edgesF}${edgesG}
+            ${drawCol(A, posA, palette.cyan, activeX, cfg.onPickA ? "data-ca" : "")}
+            ${drawCol(B, posB, palette.violet, activeY, "")}
+            ${drawCol(C, posC, palette.emerald, activeZ, "")}
+          </svg>
+        `;
+
+        if (cfg.onPickA) container.querySelectorAll("[data-ca]").forEach(el => el.addEventListener("click", () => cfg.onPickA(el.getAttribute("data-ca"))));
+        return;
+      }
+
+      /* ---------------- MODE 3: SURGERY (R & S OVERLAY on X -> X) ---------------- */
+      if (mode === "surgery") {
+        const { X, R, S, activeOp } = cfg;
+        const w = 480, h = Math.max(240, 68 + X.length * 52);
+        const posL = colPositions(X, 118, 58, h - 32);
+        const posR = colPositions(X, w - 118, 58, h - 32);
+
+        const rSet = new Set(R.map(([u, v]) => pk(u, v)));
+        const sSet = new Set(S.map(([u, v]) => pk(u, v)));
+        const isOverlay = activeOp === "OVERLAY";
+        const activePairs = isOverlay ? evalRelationOp(X, R, S, "R_U_S") : evalRelationOp(X, R, S, activeOp);
+        const activeSet = new Set(activePairs.map(([u, v]) => pk(u, v)));
+        const info = analyzeMapping(X, X, activePairs);
+
+        // Background ghost arrows when viewing a specific operation
+        let ghostHtml = "";
+        if (!isOverlay) {
+          const unionAll = evalRelationOp(X, R, S, "R_U_S");
+          ghostHtml = unionAll.filter(([u, v]) => !activeSet.has(pk(u, v))).map(([u, v]) => {
+            const d = bezierCurve(posL[u].x, posL[u].y, posR[v].x, posR[v].y, r);
+            return `<path d="${d}" fill="none" stroke="#334155" stroke-width="1.6" stroke-dasharray="4 4" opacity="0.45"/>`;
+          }).join("");
+        }
+
+        const edgesHtml = activePairs.map(([u, v]) => {
+          const p1 = posL[u], p2 = posR[v];
+          const k = pk(u, v);
+          let colKey = "emerald";
+          if (isOverlay) {
+            if (rSet.has(k) && sSet.has(k)) colKey = "amber";
+            else if (rSet.has(k)) colKey = "cyan";
+            else colKey = "magenta";
+          } else {
+            if (info.multiOut.includes(u)) colKey = "rose";
+            else if (info.collisions.includes(v)) colKey = "orange";
+            else colKey = info.isBijective ? "emerald" : "cyan";
+          }
+          const d = bezierCurve(p1.x, p1.y, p2.x, p2.y, r);
+          return `<path d="${d}" fill="none" stroke="${palette[colKey]}" stroke-width="2.9" stroke-linecap="round" marker-end="url(#m-${uid}-${colKey})"/>`;
+        }).join("");
+
+        const nodesL = X.map(x => {
+          const p = posL[x], deg = info.outMap[x].length;
+          const ok = deg === 1;
+          const col = ok ? palette.emerald : (deg > 1 ? palette.rose : palette.amber);
+          return `
+            <g>
+              <rect x="16" y="${p.y - 12}" width="66" height="24" rx="7" fill="${ok ? "rgba(16,185,129,0.18)" : (deg > 1 ? "rgba(244,63,94,0.2)" : "rgba(245,158,11,0.18)")}" stroke="${col}" stroke-width="1.2"/>
+              <text x="49" y="${p.y + 1}" text-anchor="middle" dominant-baseline="central" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="800" font-size="11">sal:${deg} ${ok ? "✓" : "✕"}</text>
+              <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="#111827" stroke="${col}" stroke-width="2.5"/>
+              <text x="${p.x}" y="${p.y + 1}" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" font-family="JetBrains Mono,monospace" font-weight="800" font-size="14">${x}</text>
+            </g>
+          `;
+        }).join("");
+
+        const nodesR = X.map(x => {
+          const p = posR[x], deg = info.inMap[x].length;
+          const ok = deg === 1;
+          const col = ok ? palette.emerald : (deg > 1 ? palette.orange : palette.amber);
+          return `
+            <g>
+              <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="#111827" stroke="${col}" stroke-width="2.5"/>
+              <text x="${p.x}" y="${p.y + 1}" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" font-family="JetBrains Mono,monospace" font-weight="800" font-size="14">${x}</text>
+              <rect x="${w - 82}" y="${p.y - 12}" width="66" height="24" rx="7" fill="${ok ? "rgba(16,185,129,0.18)" : (deg > 1 ? "rgba(251,146,60,0.2)" : "rgba(245,158,11,0.18)")}" stroke="${col}" stroke-width="1.2"/>
+              <text x="${w - 49}" y="${p.y + 1}" text-anchor="middle" dominant-baseline="central" fill="${col}" font-family="JetBrains Mono,monospace" font-weight="800" font-size="11">lle:${deg} ${ok ? "✓" : "✕"}</text>
+            </g>
+          `;
+        }).join("");
+
+        container.innerHTML = `
+          <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Cirugía de biyecciones R y S">
+            <defs>${defs}</defs>
+            <text x="118" y="24" text-anchor="middle" fill="#67e8f9" font-weight="900" font-size="12.5">Salida (X)</text>
+            <text x="${w - 118}" y="24" text-anchor="middle" fill="#f9a8d4" font-weight="900" font-size="12.5">Llegada (X)</text>
+            ${ghostHtml}${edgesHtml}${nodesL}${nodesR}
+          </svg>
+        `;
+      }
+    }
+
+    /* =========================================================================
+       4. NAVIGATION & GLOBAL UI SYNC
+       ========================================================================= */
+    function goView(v) {
+      document.querySelectorAll(".view").forEach(el => el.classList.remove("active"));
+      const target = document.getElementById(`view-${v}`);
+      if (target) target.classList.add("active");
+      document.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("active", b.getAttribute("data-tab") === v));
+
+      if (v === "academy") renderAcademy();
+      else if (v === "g1") initG1();
+      else if (v === "g2") initG2();
+      else if (v === "g3") initG3();
+      else if (v === "exam" && !examSt.active) renderExamHome();
+
+      syncGlobalUI();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      sfx("click");
+    }
+
+    function syncGlobalUI() {
+      const li = levelInfo(state.xp);
+      document.getElementById("hdrLvl").textContent = `Nv. ${li.lvl}`;
+      document.getElementById("hdrXp").textContent = `${state.xp} XP`;
+      document.getElementById("sndBtn").textContent = state.soundOn ? "🔊" : "🔇";
+
+      const lDone = state.completedLessons.length;
+      const s1 = sumObj(state.g1Stars), s2 = sumObj(state.g2Stars), s3 = sumObj(state.g3Stars);
+      const sTot = s1 + s2 + s3;
+      const globPct = Math.round(((lDone / 6) * 0.4 + (sTot / 60) * 0.45 + (state.examBestNote10 !== null ? 0.15 : 0)) * 100);
+
+      document.getElementById("hubRank").textContent = li.rank;
+      document.getElementById("hubXpTag").textContent = `${state.xp} XP`;
+      document.getElementById("hubXpBar").style.width = `${li.pct}%`;
+      document.getElementById("hubGlobPct").textContent = `${globPct}%`;
+      document.getElementById("hubGlobBar").style.width = `${globPct}%`;
+      document.getElementById("hubLessCnt").textContent = `${lDone}/6`;
+      document.getElementById("hubStarCnt").textContent = `${sTot}/60 ★`;
+      document.getElementById("hubExamBest").textContent = state.examBestNote10 !== null ? `${state.examBestNote10.toFixed(1)}/10` : "—";
+
+      const sb = document.getElementById("hubStartBtn");
+      sb.textContent = lDone === 0 ? "📖 Empezar Academia desde Cero" : (lDone < 6 ? `📖 Continuar Academia (${lDone + 1}/6)` : "✅ Repasar Academia (6/6)");
+
+      document.getElementById("cAcadStat").textContent = `${lDone}/6 completadas`;
+      document.getElementById("cG1Stat").textContent = `${s1} / 24 ★`;
+      document.getElementById("cG2Stat").textContent = `${s2} / 18 ★`;
+      document.getElementById("cG3Stat").textContent = `${s3} / 18 ★`;
+      document.getElementById("cExamStat").textContent = state.examBestNote10 !== null ? `Mejor nota: ${state.examBestNote10.toFixed(2)}/10` : "Sin intentos aún";
+
+      document.getElementById("acadPill").textContent = `${lDone} / 6 Completadas`;
+      document.getElementById("g1StarsTag").textContent = `${s1} / 24 ★`;
+      document.getElementById("g2StarsTag").textContent = `${s2} / 18 ★`;
+      document.getElementById("g3StarsTag").textContent = `${s3} / 18 ★`;
+    }
+
+    /* =========================================================================
+       5. ACADEMIA DESDE CERO (6 INTERACTIVE LESSONS)
+       ========================================================================= */
+    let curLesson = 1;
+    const LESSONS = [
+      { id: 1, short: "Relación vs Función", title: "Lección 1 — ¿Relación o Función? (Regla del Disparo Único)" },
+      { id: 2, short: "Iny / Sob / Biy", title: "Lección 2 — Inyectiva, Sobreyectiva y Biyectiva" },
+      { id: 3, short: "Palomar y Tamaños", title: "Lección 3 — Principio del Palomar y Tamaños (|A| vs |B|)" },
+      { id: 4, short: "Composición g ∘ f", title: "Lección 4 — Composición (g ∘ f) e Inversa (f⁻¹)" },
+      { id: 5, short: "Cirugía R y S", title: "Lección 5 — Cirugía de Biyecciones desde Relaciones R y S" },
+      { id: 6, short: "Cardinalidad ∞", title: "Lección 6 — Cardinalidad Infinita y Teorema de Cantor" }
+    ];
+
+    const L_QUIZ = {
+      1: {
+        q: "Sea A = {1,2,3}, B = {a,b,c}. ¿Cuál de estas relaciones NO es una función?",
+        opts: ["{(1,a), (2,a), (3,a)}", "{(1,a), (1,b), (2,c)}", "{(1,a), (2,b)}"],
+        ok: 1, exp: "En {(1,a),(1,b),(2,c)}, el elemento 1 dispara DOS flechas distintas (hacia a y hacia b), violando la regla del disparo único. La tercera sí es función (parcial)."
+      },
+      2: {
+        q: "[UNED 2026 Mod A] Sea f: {1,2,3,4} → {a,b,c} definida por f = {(1,a), (2,b), (3,b), (4,c)}. ¿Qué tipo de función es?",
+        opts: ["Inyectiva pero no sobreyectiva", "Sobreyectiva pero no inyectiva", "Biyectiva"],
+        ok: 1, exp: "Todos los elementos de {a,b,c} reciben flecha (sin huecos ⇒ Sobreyectiva), pero 2 y 3 chocan en b ⇒ NO es inyectiva."
+      },
+      3: {
+        q: "[UNED 2026 Sept] Si |X| = 5, sobre una función total f: X → P(X) podemos afirmar que:",
+        opts: ["Puede ser inyectiva (nunca sobreyectiva ni biyectiva)", "Puede ser sobreyectiva", "Puede ser biyectiva"],
+        ok: 0, exp: "|X| = 5 y |P(X)| = 2⁵ = 32. Como 5 ≤ 32, sobra espacio para que sea inyectiva, pero jamás podrá cubrir los 32 destinos (nunca sobreyectiva ni biyectiva)."
+      },
+      4: {
+        q: "[UNED 2025 Mod A/B] Si f: A → B NO es inyectiva y g: B → C NO es sobreyectiva, ¿qué podemos asegurar de h = g ∘ f?",
+        opts: ["h es siempre sobreyectiva", "h NO es biyectiva", "h puede ser biyectiva si |A|=|C|"],
+        ok: 1, exp: "Si f ya fusiona dos entradas distintas (no inyectiva), g ∘ f tampoco podrá separarlas; además si g deja huecos en C, g ∘ f también los deja. Nunca será biyectiva."
+      },
+      5: {
+        q: "En X = {1,2,3}, sean R = {(1,2),(2,2)} y S = {(2,1),(2,2),(3,3)}. ¿Qué operación deja una biyección en X?",
+        opts: ["R ∪ S", "R ∩ S", "(R ∪ S) \\ (R ∩ S)"],
+        ok: 2, exp: "Al quitar el par común (2,2) de la unión queda {(1,2), (2,1), (3,3)}: cada elemento tiene exactamente 1 salida y 1 llegada."
+      },
+      6: {
+        q: "[UNED 2026 Mod B] Sea A = {2ⁿ : n ∈ ℕ} = {1, 2, 4, 8, 16, ...}. ¿Cuál afirmación es verdadera?",
+        opts: ["|A| < |ℕ|", "|A| = |ℕ|", "|A| = |ℝ|"],
+        ok: 1, exp: "La función f(n) = 2ⁿ establece una biyección perfecta entre ℕ y A. Por tanto A es infinito numerable y |A| = |ℕ| = ℵ₀."
+      }
+    };
+
+    // Interactive lab states
+    const lab1St = { A: ["1","2","3"], B: ["a","b","c"], pairs: [["1","a"],["2","b"]], selA: null };
+    const lab2St = { A: ["1","2","3"], B: ["a","b","c"], pairs: [["1","a"],["2","b"],["3","b"]], selA: null };
+    const lab3St = { a: 8, b: 5 };
+    const lab4St = { A: ["1","2","3"], B: ["a","b","c"], C: ["x","y","z"], f: { "1":"a", "2":"b", "3":"b" }, g: { "a":"x", "b":"y", "c":"y" }, activeX: "1" };
+    const lab5St = { X: ["1","2","3"], R: [["1","2"],["2","2"]], S: [["2","1"],["2","2"],["3","3"]], op: "OVERLAY" };
+    let lab6Offset = 0;
+
+    function renderAcademy() {
+      document.getElementById("lessonTabs").innerHTML = LESSONS.map(l => {
+        const done = state.completedLessons.includes(l.id);
+        return `<button class="ltab ${l.id === curLesson ? "active" : ""} ${done ? "done" : ""}" onclick="pickLesson(${l.id})"><span class="lnum">${done ? "✓" : l.id}</span>${l.short}</button>`;
+      }).join("");
+
+      const meta = LESSONS.find(l => l.id === curLesson);
+      const done = state.completedLessons.includes(curLesson);
+      const q = L_QUIZ[curLesson];
+
+      let body = "";
+      if (curLesson === 1) body = htmlL1();
+      if (curLesson === 2) body = htmlL2();
+      if (curLesson === 3) body = htmlL3();
+      if (curLesson === 4) body = htmlL4();
+      if (curLesson === 5) body = htmlL5();
+      if (curLesson === 6) body = htmlL6();
+
+      document.getElementById("lessonBody").innerHTML = `
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <h3 style="margin:0; font-size:1.25rem;">${meta.title}</h3>
+          <span class="tag t-cyan">Lección ${curLesson} / 6</span>
+        </div>
+        ${body}
+        <div class="mini-quiz">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+            <strong class="c-emerald">🎯 Mini-Reto de Lección ${curLesson}</strong>
+            ${done ? '<span class="tag t-emerald">✓ Completada (+50 XP)</span>' : '<span class="tag t-amber">+50 XP</span>'}
+          </div>
+          <div style="font-weight:700; margin-bottom:6px;">${q.q}</div>
+          <div id="lQuizOpts">${q.opts.map((o, i) => `<button class="q-opt" onclick="ansLQuiz(${curLesson},${i})"><span class="q-let">${String.fromCharCode(97 + i)}</span><span>${o}</span></button>`).join("")}</div>
+          <div id="lQuizFb" class="fb"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:16px; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" ${curLesson === 1 ? "disabled" : ""} onclick="pickLesson(${curLesson - 1})">← Anterior</button>
+          ${curLesson < 6
+            ? `<button class="btn btn-cyan btn-sm" onclick="pickLesson(${curLesson + 1})">Siguiente Lección →</button>`
+            : `<button class="btn btn-emerald btn-sm" onclick="goView('g1')">🔌 ¡Empezar Juego 1: Cableado!</button>`}
+        </div>
+      `;
+
+      if (curLesson === 1) drawLabWire("l1Svg", "l1Diag", lab1St);
+      if (curLesson === 2) drawLabWire("l2Svg", "l2Diag", lab2St);
+      if (curLesson === 3) renderLab3();
+      if (curLesson === 4) drawLab4();
+      if (curLesson === 5) drawLab5();
+      if (curLesson === 6) drawLab6();
+    }
+
+    function pickLesson(id) { curLesson = id; renderAcademy(); sfx("click"); }
+
+    function ansLQuiz(lid, idx) {
+      const q = L_QUIZ[lid];
+      const btns = document.querySelectorAll("#lQuizOpts .q-opt");
+      btns.forEach((b, i) => {
+        b.classList.remove("correct", "wrong");
+        if (i === q.ok) b.classList.add("correct");
+        else if (i === idx) b.classList.add("wrong");
+      });
+      const fb = document.getElementById("lQuizFb");
+      if (idx === q.ok) {
+        sfx("ok"); fb.className = "fb show ok"; fb.innerHTML = `<strong>✅ ¡Exacto!</strong> ${q.exp}`;
+        if (!state.completedLessons.includes(lid)) {
+          state.completedLessons.push(lid);
+          addXP(50, `Lección ${lid} completada`);
+          const tab = document.querySelectorAll("#lessonTabs .ltab")[lid - 1];
+          if (tab) { tab.classList.add("done"); tab.querySelector(".lnum").textContent = "✓"; }
+        }
+      } else {
+        sfx("err"); fb.className = "fb show err"; fb.innerHTML = `<strong>❌ Revisa esto:</strong> ${q.exp}`;
+      }
+    }
+
+    /* Lab helper for L1 & L2 */
+    function drawLabWire(svgId, diagId, st) {
+      const box = document.getElementById(svgId);
+      const diag = document.getElementById(diagId);
+      if (!box) return;
+      const info = analyzeMapping(st.A, st.B, st.pairs);
+      renderMappingSVG(box, {
+        mode: "twoCol", A: st.A, B: st.B, pairs: st.pairs, selectedA: st.selA,
+        onNodeA: a => { st.selA = st.selA === a ? null : a; sfx("click"); drawLabWire(svgId, diagId, st); },
+        onNodeB: b => {
+          if (!st.selA) { toast("Primero toca un nodo de la columna A"); return; }
+          const ix = st.pairs.findIndex(([u, v]) => u === st.selA && v === b);
+          if (ix >= 0) st.pairs.splice(ix, 1); else st.pairs.push([st.selA, b]);
+          st.selA = null; sfx("wire"); drawLabWire(svgId, diagId, st);
+        },
+        onEdgeClick: (_, ix) => { st.pairs.splice(ix, 1); sfx("click"); drawLabWire(svgId, diagId, st); }
+      });
+      if (diag) diag.innerHTML = renderDiagPillsHTML(info) + `<div style="font-size:0.83rem; color:var(--muted);">Pares actuales: <span class="f-inline">${fmtPairs(st.pairs)}</span></div>`;
+    }
+
+    function htmlL1() {
+      return `
+        <p>Toda función es una relación entre un <strong>Dominio (A)</strong> y un <strong>Codominio (B)</strong>, pero con una regla innegociable: la <strong>Regla del Disparo Único</strong>.</p>
+        <ul class="theory-list">
+          <li><strong>Función:</strong> De cada elemento de A puede salir <strong>como máximo UNA flecha</strong>. Si un elemento de A dispara 2 o más flechas, <span class="c-rose">NO es función</span>.</li>
+          <li><strong>Función Total:</strong> TODOS los elementos de A disparan exactamente 1 flecha. (En la UNED, "función" a secas suele referirse a función total).</li>
+          <li><strong>Función Parcial:</strong> Cumple disparo único, pero algún elemento de A queda sin imagen (0 salidas).</li>
+          <li><strong>Imagen (Im(f)):</strong> El subconjunto de elementos de B que realmente reciben al menos una flecha.</li>
+        </ul>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Lab L1 — Prueba el Disparo Único (toca nodo A → nodo B)</div>
+          <div class="chip-row" style="margin-bottom:10px;">
+            <button class="op-btn" onclick="lab1St.pairs=[['1','a'],['2','b']];lab1St.selA=null;drawLabWire('l1Svg','l1Diag',lab1St);sfx('click')">Parcial</button>
+            <button class="op-btn" onclick="lab1St.pairs=[['1','a'],['2','b'],['3','c']];lab1St.selA=null;drawLabWire('l1Svg','l1Diag',lab1St);sfx('click')">Total</button>
+            <button class="op-btn" onclick="lab1St.pairs=[['1','a'],['1','b'],['2','c']];lab1St.selA=null;drawLabWire('l1Svg','l1Diag',lab1St);sfx('click')">✕ NO función</button>
+          </div>
+          <div class="svg-stage" id="l1Svg"></div>
+          <div id="l1Diag"></div>
+        </div>
+      `;
+    }
+
+    function htmlL2() {
+      return `
+        <p>Una vez que <span class="f-inline">f: A → B</span> es una función total, clasifícala mirando <strong>solo las llegadas en B</strong>:</p>
+        <ul class="theory-list">
+          <li><strong class="c-cyan">Inyectiva (uno a uno):</strong> <strong>SIN CHOQUES en B.</strong> Ningún nodo de B recibe más de 1 flecha (<span class="f-inline">f(x₁) = f(x₂) ⇒ x₁ = x₂</span>).</li>
+          <li><strong class="c-violet">Sobreyectiva (suprayectiva):</strong> <strong>SIN HUECOS en B.</strong> Todo nodo de B recibe al menos 1 flecha (<span class="f-inline">Im(f) = B</span>).</li>
+          <li><strong class="c-emerald">Biyectiva:</strong> Inyectiva <strong>Y</strong> Sobreyectiva a la vez → emparejamiento <strong>1 a 1 perfecto</strong> (exactamente 1 flecha llegando a cada nodo de B).</li>
+        </ul>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Lab L2 — Semáforos de Inyectiva, Sobreyectiva y Biyectiva</div>
+          <div class="chip-row" style="margin-bottom:10px;">
+            <button class="op-btn" onclick="lab2St.pairs=[['1','a'],['2','b'],['3','c']];lab2St.selA=null;drawLabWire('l2Svg','l2Diag',lab2St);sfx('click')">✨ Biyectiva</button>
+            <button class="op-btn" onclick="lab2St.pairs=[['1','a'],['2','b'],['3','b']];lab2St.selA=null;drawLabWire('l2Svg','l2Diag',lab2St);sfx('click')">⚡ Choque + Hueco</button>
+          </div>
+          <div class="svg-stage" id="l2Svg"></div>
+          <div id="l2Diag"></div>
+        </div>
+      `;
+    }
+
+    function htmlL3() {
+      return `
+        <p>Antes de buscar una función entre conjuntos finitos, compara sus tamaños <span class="f-inline">|A|</span> y <span class="f-inline">|B|</span> con el <strong>Principio del Palomar</strong> (si hay más palomas que nidos, al menos dos palomas comparten nido):</p>
+        <ul class="theory-list">
+          <li>Para que exista una <strong>Inyectiva</strong> necesitas sitio libre para todos: <span class="f-inline">|A| ≤ |B|</span>.</li>
+          <li>Para que exista una <strong>Sobreyectiva</strong> necesitas suficientes entradas para tapar todo B: <span class="f-inline">|A| ≥ |B|</span>.</li>
+          <li>Para que exista una <strong>Biyectiva</strong> deben medir exactamente lo mismo: <span class="f-inline">|A| = |B|</span>.</li>
+          <li><strong>Número total de funciones</strong> de A en B: <span class="f-inline">|B|^|A|</span> (cada uno de los |A| elementos elige entre |B| destinos).</li>
+        </ul>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Lab L3 — Simulador de Palomar (Casos Reales UNED)</div>
+          <div class="chip-row" style="margin-bottom:12px;">
+            <button class="op-btn" onclick="setL3(8,5)">🔥 UNED 2025: |A|=8, |B|=5</button>
+            <button class="op-btn" onclick="setL3(5,32)">🔥 UNED 2026: X → P(X) (5 vs 32)</button>
+            <button class="op-btn" onclick="setL3(4,4)">✨ Iguales: 4 vs 4</button>
+          </div>
+          <div class="grid-2" style="margin-bottom:10px;">
+            <div class="card-soft">
+              <div style="display:flex; justify-content:space-between; font-size:0.86rem;"><span>Dominio |A| (palomas)</span><strong class="c-cyan" id="l3AV">8</strong></div>
+              <input type="range" id="l3AR" min="1" max="10" value="8" oninput="setL3(+this.value, lab3St.b)">
+            </div>
+            <div class="card-soft">
+              <div style="display:flex; justify-content:space-between; font-size:0.86rem;"><span>Codominio |B| (nidos)</span><strong class="c-violet" id="l3BV">5</strong></div>
+              <input type="range" id="l3BR" min="1" max="32" value="5" oninput="setL3(lab3St.a, +this.value)">
+            </div>
+          </div>
+          <div id="l3Out"></div>
+        </div>
+      `;
+    }
+
+    function setL3(a, b) { lab3St.a = a; lab3St.b = b; renderLab3(); sfx("click"); }
+    function renderLab3() {
+      const { a, b } = lab3St;
+      const ar = document.getElementById("l3AR"), br = document.getElementById("l3BR");
+      if (!ar) return;
+      ar.value = a; br.value = b;
+      document.getElementById("l3AV").textContent = a;
+      document.getElementById("l3BV").textContent = b;
+      const canInj = a <= b, canSur = a >= b, canBij = a === b;
+      document.getElementById("l3Out").innerHTML = `
+        <div class="diag-grid">
+          <span class="diag-pill ${canInj ? "ok" : "bad"}">${canInj ? "✓" : "✕"} Inyectiva (${a} ${canInj ? "≤" : ">"} ${b})</span>
+          <span class="diag-pill ${canSur ? "ok" : "bad"}">${canSur ? "✓" : "✕"} Sobreyectiva (${a} ${canSur ? "≥" : "<"} ${b})</span>
+          <span class="diag-pill ${canBij ? "ok" : "bad"}">${canBij ? "✓" : "✕"} Biyectiva (${a} ${canBij ? "=" : "≠"} ${b})</span>
+        </div>
+        <div class="card-soft" style="font-size:0.88rem; color:#cbd5e1;">
+          ${!canInj ? `🕊️ <strong>Principio del Palomar:</strong> Tienes ${a} entradas para solo ${b} destinos → obligatoriamente habrá colisión (imposible inyectiva). ` : ""}
+          ${!canSur ? `🕳️ <strong>Faltan entradas:</strong> Con solo ${a} flechas jamás puedes cubrir los ${b} destinos → siempre quedarán al menos ${b - a} huecos (imposible sobreyectiva). ` : ""}
+          ${canBij ? `✨ <strong>Tamaño perfecto (${a} = ${b}):</strong> Puedes construir una biyección 1 a 1 exacta.` : ""}
+        </div>
+      `;
+    }
+
+    function htmlL4() {
+      return `
+        <p>Dadas <span class="f-inline">f: A → B</span> y <span class="f-inline">g: B → C</span>, la composición <span class="f-inline">(g ∘ f): A → C</span> se evalúa <strong>de derecha a izquierda</strong>: <span class="f-inline">(g ∘ f)(x) = g(f(x))</span> (primero pasa por <strong>f</strong>, luego por <strong>g</strong>).</p>
+        <ul class="theory-list">
+          <li><strong>Conservación clave (UNED 2025):</strong> Si <strong>f NO es inyectiva</strong>, entonces <span class="f-inline">g ∘ f</span> NO puede ser inyectiva. Si <strong>g NO es sobreyectiva</strong>, entonces <span class="f-inline">g ∘ f</span> NO puede ser sobreyectiva. En ambos casos, <span class="c-rose">g ∘ f nunca es biyectiva</span>.</li>
+          <li><strong>Función Inversa (<span class="f-inline">f⁻¹: B → A</span>):</strong> Dar la vuelta a todas las flechas produce una función total <strong>si y solo si f es biyectiva</strong>.</li>
+        </ul>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Lab L4 — Trazador 3 Columnas (Toca cualquier nodo en A)</div>
+          <div class="svg-stage" id="l4Svg"></div>
+          <div id="l4Trace" class="card-soft" style="margin-top:10px; text-align:center; font-family:var(--mono); font-size:0.92rem;"></div>
+        </div>
+      `;
+    }
+
+    function drawLab4() {
+      const box = document.getElementById("l4Svg"); if (!box) return;
+      renderMappingSVG(box, {
+        mode: "threeCol", A: lab4St.A, B: lab4St.B, C: lab4St.C, f: lab4St.f, g: lab4St.g, activeX: lab4St.activeX,
+        onPickA: x => { lab4St.activeX = x; sfx("wire"); drawLab4(); }
+      });
+      const x = lab4St.activeX, y = lab4St.f[x], z = lab4St.g[y];
+      document.getElementById("l4Trace").innerHTML = `Recorrido activo: <span class="c-cyan">${x}</span> —f→ <span class="c-violet">${y}</span> —g→ <span class="c-emerald">${z}</span> &nbsp;|&nbsp; <strong>(g ∘ f)(${x}) = ${z}</strong><br><span style="font-family:var(--font); font-size:0.8rem; color:var(--muted);">Observa: 2 y 3 chocan en f(2)=f(3)=b, y z nunca se alcanza en g → g∘f ni es inyectiva ni sobreyectiva.</span>`;
+    }
+
+    function htmlL5() {
+      return `
+        <p>Uno de los ejercicios estrella de la P14 en la UNED te da dos relaciones <span class="f-inline">R</span> y <span class="f-inline">S</span> sobre un conjunto <span class="f-inline">X</span> y te pide qué operación conjuntista produce una <strong>función biyectiva</strong>.</p>
+        <div class="callout">
+          <strong>🩺 Receta del Cirujano:</strong> Para que una relación <span class="f-inline">M ⊆ X × X</span> sea una <strong>biyección</strong>, cada número de X debe aparecer <strong>exactamente 1 vez a la izquierda</strong> (1 salida) y <strong>exactamente 1 vez a la derecha</strong> (1 llegada).
+        </div>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Lab L5 — Cirugía Rápida en X = {1, 2, 3}</div>
+          <div style="font-size:0.84rem; margin-bottom:10px;">
+            <span class="c-cyan">R = {(1,2), (2,2)}</span> &nbsp;·&nbsp; <span class="c-mag">S = {(2,1), (2,2), (3,3)}</span>
+          </div>
+          <div class="chip-row" style="margin-bottom:10px;" id="l5Ops">
+            ${[["OVERLAY","Ver R y S"],["R_U_S","R ∪ S"],["R_I_S","R ∩ S"],["R_M_S","R \\ S"],["SYM_DIFF","(R ∪ S) \\ (R ∩ S)"]].map(([k, lbl]) =>
+              `<button class="op-btn mono ${lab5St.op === k ? "active" : ""}" onclick="lab5St.op='${k}';drawLab5();sfx('wire')">${lbl}</button>`
+            ).join("")}
+          </div>
+          <div class="svg-stage" id="l5Svg"></div>
+          <div id="l5Out" style="margin-top:8px;"></div>
+        </div>
+      `;
+    }
+
+    function drawLab5() {
+      const box = document.getElementById("l5Svg"); if (!box) return;
+      document.querySelectorAll("#l5Ops .op-btn").forEach(b => {
+        const map = { "Ver R y S":"OVERLAY", "R ∪ S":"R_U_S", "R ∩ S":"R_I_S", "R \\ S":"R_M_S", "(R ∪ S) \\ (R ∩ S)":"SYM_DIFF" };
+        b.classList.toggle("active", map[b.textContent] === lab5St.op);
+      });
+      renderMappingSVG(box, { mode: "surgery", X: lab5St.X, R: lab5St.R, S: lab5St.S, activeOp: lab5St.op });
+      const res = lab5St.op === "OVERLAY" ? evalRelationOp(lab5St.X, lab5St.R, lab5St.S, "R_U_S") : evalRelationOp(lab5St.X, lab5St.R, lab5St.S, lab5St.op);
+      const info = analyzeMapping(lab5St.X, lab5St.X, res);
+      document.getElementById("l5Out").innerHTML = renderDiagPillsHTML(info) + `<div style="font-size:0.84rem; color:var(--muted);">Resultado: <span class="f-inline">${fmtPairs(res)}</span></div>`;
+    }
+
+    function htmlL6() {
+      return `
+        <p>¿Cómo comparamos el tamaño de conjuntos <strong>infinitos</strong>? Dos conjuntos tienen el <strong>mismo cardinal</strong> (<span class="f-inline">|A| = |B|</span>, son <em>equipotentes</em>) si y solo si existe una <strong>biyección</strong> entre ellos.</p>
+        <ul class="theory-list">
+          <li><strong>Conjuntos Numerables (cardinal <span class="f-inline">ℵ₀ = |ℕ|</span>):</strong> Se pueden enumerar en lista 1º, 2º, 3º... Sorprendentemente: <span class="f-inline">|ℕ| = |ℤ| = |ℚ| = |Pares| = |{2ⁿ : n ∈ ℕ}|</span>.</li>
+          <li><strong>No Numerables (<span class="f-inline">|ℕ| &lt; |ℝ|</span>):</strong> Los números reales <span class="f-inline">ℝ</span> tienen un infinito estrictamente mayor (argumento diagonal de Cantor).</li>
+          <li><strong>Teorema de Cantor:</strong> Para TODO conjunto X (finito o infinito), <span class="f-inline">|X| &lt; |P(X)|</span>. ¡Siempre hay infinitos más grandes!</li>
+        </ul>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Lab L6 — Emparejamiento Biyectivo n ↔ 2ⁿ y Escalera de Infinitos</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+            <span style="font-size:0.85rem; color:var(--muted);">Desliza el índice inicial n para comprobar que la biyección nunca se rompe:</span>
+            <strong class="c-cyan" id="l6OffLbl">n = 0 .. 5</strong>
+          </div>
+          <input type="range" min="0" max="15" value="0" oninput="lab6Offset=+this.value;drawLab6()" style="margin-bottom:10px;">
+          <div id="l6Table" style="margin-bottom:14px;"></div>
+
+          <div style="font-size:0.78rem; font-weight:800; color:var(--violet); text-transform:uppercase; margin-bottom:6px;">Escalera de Cardinales (de menor a mayor)</div>
+          <div class="ladder-step"><span><strong>1. Finitos</strong> ({a,b,c}, {1..100})</span><span class="tag t-cyan">0, 1, 2, ..., n</span></div>
+          <div class="ladder-step"><span><strong>2. Infinito Numerable</strong> (ℕ, ℤ, ℚ, {2ⁿ : n ∈ ℕ})</span><span class="tag t-emerald">ℵ₀ = |ℕ|</span></div>
+          <div class="ladder-step"><span><strong>3. Continuo (No numerable)</strong> (ℝ, intervalo [0,1], P(ℕ))</span><span class="tag t-violet">𝔠 = 2^ℵ₀ = |ℝ|</span></div>
+          <div class="ladder-step"><span><strong>4. Infinitos superiores</strong> (P(ℝ), P(P(ℝ)), ...)</span><span class="tag t-amber">|X| &lt; |P(X)|</span></div>
+        </div>
+      `;
+    }
+
+    function drawLab6() {
+      const tb = document.getElementById("l6Table"); if (!tb) return;
+      const ns = Array.from({ length: 6 }, (_, i) => lab6Offset + i);
+      document.getElementById("l6OffLbl").textContent = `n = ${ns[0]} .. ${ns[5]}`;
+      tb.innerHTML = `
+        <table class="inf-table">
+          <tr><th>n ∈ ℕ</th>${ns.map(n => `<td>${n}</td>`).join("")}</tr>
+          <tr><th>f(n) = 2ⁿ</th>${ns.map(n => `<td class="c-emerald">${Math.pow(2, n).toLocaleString("es-ES")}</td>`).join("")}</tr>
+        </table>
+      `;
+    }
+
+    /* =========================================================================
+       6. JUEGO 1 — CABLEADO BIYECTIVO (8 LEVELS)
+       ========================================================================= */
+    const G1_LEVELS = [
+      { id: 1, tag: "Total", title: "Función Total Cualquiera", goal: "Conecta una función TOTAL cualquiera de A en B (exactamente 1 salida por cada nodo de A).", A: ["1","2","3"], B: ["a","b","c"], init: [], impossible: false, check: info => info.isTotal },
+      { id: 2, tag: "Iny ¬Sob", title: "Inyectiva pero NO Sobreyectiva", goal: "Logra una función total INYECTIVA (sin choques) pero NO sobreyectiva (al menos 1 hueco en B).", A: ["1","2","3"], B: ["a","b","c","d"], init: [], impossible: false, check: info => info.isTotal && info.isInjective && !info.isSurjective },
+      { id: 3, tag: "UNED 2026", title: "Sobreyectiva pero NO Inyectiva", goal: "Estilo UNED 2026 Mod A: cubre todo B (sin huecos) provocando al menos un choque.", A: ["1","2","3","4"], B: ["a","b","c"], init: [], impossible: false, check: info => info.isTotal && info.isSurjective && !info.isInjective },
+      { id: 4, tag: "Reparar", title: "Repara las Fugas Biyectivas", goal: "Arregla la colisión en 'b' y el hueco en 'c' hasta obtener una BIYECCIÓN perfecta.", A: ["1","2","3","4"], B: ["a","b","c","d"], init: [["1","a"],["2","b"],["3","b"],["4","d"]], impossible: false, check: info => info.isBijective },
+      { id: 5, tag: "Palomar 1", title: "Trampa de Palomar (Inyectiva)", goal: "Construye una función total INYECTIVA de A={1,2,3,4} en B={a,b,c}... ¡si es que se puede!", A: ["1","2","3","4"], B: ["a","b","c"], init: [], impossible: true, impReason: "|A| = 4 > |B| = 3: por el Principio del Palomar, 4 palomas en 3 nidos siempre producen al menos un choque. ¡Es imposible ser inyectiva!" },
+      { id: 6, tag: "Parcial", title: "Función Parcial Inyectiva (2 cables)", goal: "Construye una función PARCIAL e INYECTIVA usando exactamente 2 cables (1 elemento de A queda sin salida).", A: ["1","2","3"], B: ["a","b","c"], init: [], impossible: false, check: (info, pairs) => info.isPartial && info.isInjective && pairs.length === 2 },
+      { id: 7, tag: "Palomar 2", title: "Trampa de Palomar (Sobreyectiva)", goal: "Construye una función total SOBREYECTIVA de A={1,2,3} en B={a,b,c,d,e}... ¡o detecta si es imposible!", A: ["1","2","3"], B: ["a","b","c","d","e"], init: [], impossible: true, impReason: "|A| = 3 < |B| = 5: con solo 3 flechas de salida jamás puedes cubrir 5 destinos (siempre quedarán al menos 2 huecos)." },
+      { id: 8, tag: "👑 Jefe", title: "Caos Total 5×5 → Biyección", goal: "Repara los disparos dobles, choques y huecos en este panel de 5×5 hasta lograr una BIYECCIÓN perfecta.", A: ["1","2","3","4","5"], B: ["a","b","c","d","e"], init: [["1","a"],["1","b"],["2","b"],["3","d"],["5","d"]], impossible: false, check: info => info.isBijective }
+    ];
+
+    let g1Cur = 1, g1Pairs = [], g1SelA = null, g1Tries = 0, g1Won = false;
+
+    function initG1() { renderG1Grid(); loadG1(g1Cur); }
+    function renderG1Grid() {
+      document.getElementById("g1Grid").innerHTML = G1_LEVELS.map(lv => {
+        const s = state.g1Stars[lv.id] || 0;
+        return `<button class="lvl-tile ${lv.id === g1Cur ? "active" : ""}" onclick="loadG1(${lv.id})">
+          <span style="font-size:0.68rem; color:var(--cyan);">${lv.tag}</span>
+          <span>N${lv.id}</span>
+          <span class="stars">${"★".repeat(s)}${"☆".repeat(3 - s)}</span>
+        </button>`;
+      }).join("");
+    }
+
+    function loadG1(id) {
+      g1Cur = id; g1SelA = null; g1Tries = 0; g1Won = false;
+      const lv = G1_LEVELS.find(x => x.id === id);
+      g1Pairs = clone(lv.init);
+      renderG1Grid();
+      drawG1();
+    }
+
+    function drawG1() {
+      const lv = G1_LEVELS.find(x => x.id === g1Cur);
+      const info = analyzeMapping(lv.A, lv.B, g1Pairs);
+      document.getElementById("g1Stage").innerHTML = `
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <div><span class="tag t-cyan">Nivel ${lv.id} · ${lv.tag}</span><h3 style="margin:5px 0 0;">${lv.title}</h3></div>
+          <span class="tag t-violet">|A|=${lv.A.length} → |B|=${lv.B.length}</span>
+        </div>
+        <div class="callout" style="margin-top:0;">🎯 <strong>Misión:</strong> ${lv.goal}</div>
+        <div class="grid-2" style="align-items:start;">
+          <div>
+            <div class="svg-stage" id="g1Svg"></div>
+            <div class="svg-legend">
+              <span><i class="ldot" style="background:var(--rose);"></i>Disparo múltiple</span>
+              <span><i class="ldot" style="background:var(--orange);"></i>Choque</span>
+              <span><i class="ldot" style="background:var(--amber);"></i>Sin salida</span>
+              <span><i class="ldot" style="background:var(--emerald);"></i>Biyectiva</span>
+            </div>
+          </div>
+          <div>
+            <div class="card-soft" style="margin-bottom:12px;">
+              <div style="font-size:0.78rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Diagnóstico en vivo</div>
+              ${renderDiagPillsHTML(info)}
+              <div style="font-size:0.83rem; color:var(--muted); margin-top:6px;">
+                ${g1SelA ? `<span class="c-amber">⚡ Origen A seleccionado: <strong>${g1SelA}</strong> → toca destino en B</span>` : `Cables (${g1Pairs.length}): <span class="f-inline">${fmtPairs(g1Pairs)}</span>`}
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <button class="btn btn-emerald" onclick="checkG1(false)" ${g1Won ? "disabled" : ""}>✅ Validar Cableado</button>
+              <button class="btn btn-amber" onclick="checkG1(true)" ${g1Won ? "disabled" : ""}>🚫 ¡Imposible por tamaño!</button>
+              <button class="btn btn-ghost btn-sm" onclick="g1Pairs=[];g1SelA=null;sfx('click');drawG1()" ${g1Won ? "disabled" : ""}>🧹 Limpiar cables</button>
+            </div>
+            <div id="g1Fb" class="fb"></div>
+          </div>
+        </div>
+      `;
+
+      renderMappingSVG(document.getElementById("g1Svg"), {
+        mode: "twoCol", A: lv.A, B: lv.B, pairs: g1Pairs, selectedA: g1SelA,
+        onNodeA: g1Won ? null : a => { g1SelA = g1SelA === a ? null : a; sfx("click"); drawG1(); },
+        onNodeB: g1Won ? null : b => {
+          if (!g1SelA) { toast("Toca primero un nodo de la columna A"); return; }
+          const ix = g1Pairs.findIndex(([u, v]) => u === g1SelA && v === b);
+          if (ix >= 0) g1Pairs.splice(ix, 1); else g1Pairs.push([g1SelA, b]);
+          g1SelA = null; sfx("wire"); drawG1();
+        },
+        onEdgeClick: g1Won ? null : (_, ix) => { g1Pairs.splice(ix, 1); sfx("click"); drawG1(); }
+      });
+    }
+
+    function checkG1(claimedImpossible) {
+      const lv = G1_LEVELS.find(x => x.id === g1Cur);
+      const info = analyzeMapping(lv.A, lv.B, g1Pairs);
+      const fb = document.getElementById("g1Fb");
+      g1Tries++;
+
+      if (claimedImpossible) {
+        if (lv.impossible) {
+          winG1(lv, `🎯 ¡Atrapaste la trampa de Palomar! ${lv.impReason}`);
+        } else {
+          sfx("err"); fb.className = "fb show err";
+          fb.innerHTML = `<strong>❌ ¡Sí es posible!</strong> Con |A|=${lv.A.length} y |B|=${lv.B.length} el objetivo SÍ tiene solución. Intenta cablearlo.`;
+        }
+        return;
+      }
+
+      if (lv.impossible) {
+        sfx("err"); fb.className = "fb show err";
+        fb.innerHTML = `<strong>⚠️ Pista de Palomar:</strong> Compara |A|=${lv.A.length} con |B|=${lv.B.length}. ¿De verdad es posible cumplir el requisito, o deberías pulsar <em>"¡Imposible por tamaño!"</em>?`;
+        return;
+      }
+
+      if (lv.check(info, g1Pairs)) {
+        winG1(lv, `¡Cableado validado! Pares: <span class="f-inline">${fmtPairs(g1Pairs)}</span>.`);
+      } else {
+        sfx("err");
+        const errs = [];
+        if (info.multiOut.length) errs.push(`El nodo <strong>${info.multiOut.join(", ")}</strong> de A tiene disparos múltiples (no es función).`);
+        if (lv.id !== 6 && info.missingOut.length) errs.push(`Falta salida en el nodo <strong>${info.missingOut.join(", ")}</strong> de A.`);
+        if (lv.id === 6 && g1Pairs.length !== 2) errs.push(`Debes colocar exactamente 2 cables (tienes ${g1Pairs.length}).`);
+        if (info.collisions.length && (lv.id === 2 || lv.id === 4 || lv.id === 6 || lv.id === 8)) errs.push(`Hay colisión en el destino <strong>${info.collisions.join(", ")}</strong> (rompe inyectividad).`);
+        if (info.holes.length && (lv.id === 3 || lv.id === 4 || lv.id === 8)) errs.push(`Queda hueco sin cubrir en <strong>${info.holes.join(", ")}</strong> (rompe sobreyectividad).`);
+        if (lv.id === 2 && !info.holes.length) errs.push(`No quedó ningún hueco en B (es sobreyectiva, pero pedíamos NO sobreyectiva).`);
+        if (lv.id === 3 && !info.collisions.length) errs.push(`No hay ningún choque en B (pedíamos NO inyectiva).`);
+
+        fb.className = "fb show err";
+        fb.innerHTML = `<strong>🔧 Revisa tu panel:</strong><br>• ${errs.join("<br>• ")}`;
+      }
+    }
+
+    function winG1(lv, msg) {
+      g1Won = true; sfx("ok");
+      const stars = g1Tries === 1 ? 3 : (g1Tries === 2 ? 2 : 1);
+      const prev = state.g1Stars[lv.id] || 0;
+      if (stars > prev) { state.g1Stars[lv.id] = stars; addXP(prev === 0 ? 45 : 15, `Cableado N${lv.id}`); }
+      else save();
+      renderG1Grid(); drawG1();
+      const fb = document.getElementById("g1Fb");
+      const nxt = lv.id < G1_LEVELS.length
+        ? `<button class="btn btn-emerald btn-sm" style="margin-top:9px;" onclick="loadG1(${lv.id + 1})">Siguiente Nivel (N${lv.id + 1}) →</button>`
+        : `<button class="btn btn-violet btn-sm" style="margin-top:9px;" onclick="goView('g2')">⚙️ ¡Todos completados! Ir a Fábrica g ∘ f</button>`;
+      fb.className = "fb show ok";
+      fb.innerHTML = `<strong>⚡ ¡Nivel ${lv.id} Superado! ${"★".repeat(stars)}${"☆".repeat(3 - stars)}</strong><br>${msg}<br>${nxt}`;
+    }
+
+    /* =========================================================================
+       7. JUEGO 2 — FÁBRICA g ∘ f (6 LEVELS, 3-COLUMN SVG)
+       ========================================================================= */
+    const G2_LEVELS = [
+      {
+        id: 1, tag: "Evaluar", title: "Derecha a Izquierda: (g ∘ f)(2)",
+        A: ["1","2","3"], B: ["a","b","c"], C: ["x","y","z"],
+        f: { "1":"b", "2":"c", "3":"a" }, g: { "a":"z", "b":"x", "c":"y" },
+        q: "Toca el nodo 2 en A para seguir la cadena. ¿Cuánto vale (g ∘ f)(2) = g(f(2))?",
+        opts: ["x", "y", "z"], ok: 1,
+        exp: "Primero aplicamos f: f(2) = c. Después aplicamos g: g(c) = y. Por tanto (g ∘ f)(2) = y."
+      },
+      {
+        id: 2, tag: "Imagen", title: "Imagen Completa de g ∘ f",
+        A: ["1","2","3"], B: ["a","b","c"], C: ["x","y","z"],
+        f: { "1":"a", "2":"a", "3":"c" }, g: { "a":"y", "b":"x", "c":"z" },
+        q: "Traza los 3 nodos de A. ¿Cuál es el conjunto Imagen Im(g ∘ f) en C?",
+        opts: ["{x, y, z}", "{y, z}", "{x, z}"], ok: 1,
+        exp: "(g∘f)(1)=y, (g∘f)(2)=y y (g∘f)(3)=z. Como 'b' no recibe nada de f, 'x' nunca se alcanza ⇒ Im(g∘f) = {y, z}."
+      },
+      {
+        id: 3, tag: "Clasificar", title: "Detector Inyectivo en Cadena",
+        A: ["1","2"], B: ["a","b","c"], C: ["x","y","z"],
+        f: { "1":"a", "2":"c" }, g: { "a":"x", "b":"y", "c":"z" },
+        q: "Inspecciona todos los caminos de A hasta C. ¿Qué tipo de función es g ∘ f: A → C?",
+        opts: ["Inyectiva pero NO sobreyectiva", "Sobreyectiva pero NO inyectiva", "Biyectiva", "Ni inyectiva ni sobreyectiva"], ok: 0,
+        exp: "1→a→x y 2→c→z llegan a destinos distintos (Inyectiva), pero 'y' queda vacío en C (NO sobreyectiva)."
+      },
+      {
+        id: 4, tag: "Clasificar", title: "Choque en Cadena",
+        A: ["1","2","3"], B: ["a","b","c"], C: ["x","y"],
+        f: { "1":"a", "2":"b", "3":"c" }, g: { "a":"x", "b":"x", "c":"y" },
+        q: "f es biyectiva, pero g fusiona a y b en x. ¿Cómo resulta g ∘ f: A → C?",
+        opts: ["Inyectiva pero NO sobreyectiva", "Sobreyectiva pero NO inyectiva", "Biyectiva", "Ni inyectiva ni sobreyectiva"], ok: 1,
+        exp: "Se cubren tanto x como y en C (Sobreyectiva), pero 1 y 2 acaban ambos en x (NO inyectiva)."
+      },
+      {
+        id: 5, tag: "UNED 2025", title: "Teorema Real UNED 2025 Mod A/B",
+        A: ["1","2","3"], B: ["a","b","c"], C: ["x","y","z"],
+        f: { "1":"a", "2":"b", "3":"b" }, g: { "a":"x", "b":"y", "c":"y" },
+        q: "Aquí f NO es inyectiva (2,3→b) y g NO es sobreyectiva (z sin flecha). En general, con estas hipótesis, h = g ∘ f:",
+        opts: ["Puede ser biyectiva si B es grande", "NO es biyectiva (ni inyectiva ni sobreyectiva)", "Es siempre sobreyectiva"], ok: 1,
+        exp: "Si f no es inyectiva, g∘f tampoco es inyectiva; si g no es sobreyectiva, g∘f tampoco es sobreyectiva. Jamás será biyectiva."
+      },
+      {
+        id: 6, tag: "👑 Sorpresa", title: "¡Paradoja Biyectiva!",
+        A: ["1","2"], B: ["a","b","c"], C: ["x","y"],
+        f: { "1":"a", "2":"b" }, g: { "a":"x", "b":"y", "c":"y" },
+        q: "¡Ojo! f NO es sobreyectiva (c queda libre) y g NO es inyectiva (b,c→y). Toca 1 y 2 en A: ¿cómo resulta g ∘ f?",
+        opts: ["No puede ser biyectiva", "¡SÍ es BIYECTIVA!", "Sobreyectiva pero no inyectiva"], ok: 1,
+        exp: "¡Exacto! 1→a→x y 2→b→y. Como f nunca pisa el nodo 'c', el choque de g en c no afecta a g∘f, que resulta perfectamente BIYECTIVA."
+      }
+    ];
+
+    let g2Cur = 1, g2ActiveX = null, g2Tries = 0, g2Won = false;
+
+    function initG2() { renderG2Grid(); loadG2(g2Cur); }
+    function renderG2Grid() {
+      document.getElementById("g2Grid").innerHTML = G2_LEVELS.map(lv => {
+        const s = state.g2Stars[lv.id] || 0;
+        return `<button class="lvl-tile ${lv.id === g2Cur ? "active" : ""}" onclick="loadG2(${lv.id})">
+          <span style="font-size:0.68rem; color:var(--violet);">${lv.tag}</span>
+          <span>N${lv.id}</span>
+          <span class="stars">${"★".repeat(s)}${"☆".repeat(3 - s)}</span>
+        </button>`;
+      }).join("");
+    }
+
+    function loadG2(id) {
+      g2Cur = id; g2Tries = 0; g2Won = false;
+      const lv = G2_LEVELS.find(x => x.id === id);
+      g2ActiveX = lv.A[0];
+      renderG2Grid(); drawG2();
+    }
+
+    function drawG2() {
+      const lv = G2_LEVELS.find(x => x.id === g2Cur);
+      const y = g2ActiveX ? lv.f[g2ActiveX] : null;
+      const z = y ? lv.g[y] : null;
+
+      document.getElementById("g2Stage").innerHTML = `
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <div><span class="tag t-violet">Nivel ${lv.id} · ${lv.tag}</span><h3 style="margin:5px 0 0;">${lv.title}</h3></div>
+          <span class="f-inline">${g2ActiveX ? `(g∘f)(${g2ActiveX}) = g(${y}) = ${z}` : "Toca un nodo en A"}</span>
+        </div>
+        <div class="grid-2" style="align-items:center;">
+          <div>
+            <div class="svg-stage" id="g2Svg"></div>
+            <div style="text-align:center; font-size:0.8rem; color:var(--amber); margin-top:6px;">
+              👆 Toca cada nodo de la columna A para iluminar su ruta completa
+            </div>
+          </div>
+          <div>
+            <p style="margin:0 0 8px; font-weight:700;">${lv.q}</p>
+            <div id="g2Opts">
+              ${lv.opts.map((o, i) => `<button class="q-opt" ${g2Won ? "disabled" : ""} onclick="ansG2(${i})"><span class="q-let">${String.fromCharCode(97 + i)}</span><span>${o}</span></button>`).join("")}
+            </div>
+            <div id="g2Fb" class="fb"></div>
+          </div>
+        </div>
+      `;
+
+      renderMappingSVG(document.getElementById("g2Svg"), {
+        mode: "threeCol", A: lv.A, B: lv.B, C: lv.C, f: lv.f, g: lv.g, activeX: g2ActiveX,
+        onPickA: x => { g2ActiveX = x; sfx("wire"); drawG2(); }
+      });
+    }
+
+    function ansG2(idx) {
+      const lv = G2_LEVELS.find(x => x.id === g2Cur);
+      const fb = document.getElementById("g2Fb");
+      const btns = document.querySelectorAll("#g2Opts .q-opt");
+      g2Tries++;
+      btns.forEach((b, i) => { b.classList.remove("correct", "wrong"); if (i === idx) b.classList.add(i === lv.ok ? "correct" : "wrong"); });
+
+      if (idx === lv.ok) {
+        g2Won = true; sfx("ok");
+        const stars = g2Tries === 1 ? 3 : (g2Tries === 2 ? 2 : 1);
+        const prev = state.g2Stars[lv.id] || 0;
+        if (stars > prev) { state.g2Stars[lv.id] = stars; addXP(prev === 0 ? 50 : 15, `Fábrica g∘f N${lv.id}`); }
+        else save();
+        renderG2Grid();
+        btns.forEach((b, i) => { b.disabled = true; if (i === lv.ok) b.classList.add("correct"); });
+        const nxt = lv.id < G2_LEVELS.length
+          ? `<button class="btn btn-emerald btn-sm" style="margin-top:9px;" onclick="loadG2(${lv.id + 1})">Siguiente Nivel (N${lv.id + 1}) →</button>`
+          : `<button class="btn btn-cyan btn-sm" style="margin-top:9px;" onclick="goView('g3')">🧬 ¡Fábrica dominada! Ir a Cirugía R/S</button>`;
+        fb.className = "fb show ok";
+        fb.innerHTML = `<strong>⚙️ ¡Correcto! ${"★".repeat(stars)}${"☆".repeat(3 - stars)}</strong><br>${lv.exp}<br>${nxt}`;
+      } else {
+        sfx("err"); fb.className = "fb show err";
+        fb.innerHTML = `<strong>❌ Casi...</strong> Toca todos los nodos de A en el esquema de la izquierda y observa qué valores salen en C.`;
+      }
+    }
+
+    /* =========================================================================
+       8. JUEGO 3 — CIRUGÍA DE BIYECCIONES (6 LEVELS, INCL. 2 UNED 2025 BOSSES)
+       ========================================================================= */
+    const G3_LEVELS = [
+      {
+        id: 1, tag: "Calent. 1", title: "Fusión Limpia en {1,2,3}",
+        X: ["1","2","3"], R: [["1","2"],["2","3"]], S: [["3","1"]],
+        ops: [["OVERLAY","👁️ Ver R y S"],["R_U_S","R ∪ S"],["R_I_S","R ∩ S"],["R_M_S","R \\ S"],["S_M_R","S \\ R"]],
+        sol: "R_U_S", exp: "R y S son disjuntas y se complementan: R ∪ S = {(1,2), (2,3), (3,1)} logra 1 salida y 1 llegada en todo X."
+      },
+      {
+        id: 2, tag: "Calent. 2", title: "Recorte Común en {1,2,3}",
+        X: ["1","2","3"], R: [["1","1"],["1","3"],["2","2"],["3","3"]], S: [["1","1"],["2","2"],["3","3"],["3","1"]],
+        ops: [["OVERLAY","👁️ Ver R y S"],["R_U_S","R ∪ S"],["R_I_S","R ∩ S"],["SYM_DIFF","(R ∪ S) \\ (R ∩ S)"],["R_M_S","R \\ S"]],
+        sol: "R_I_S", exp: "Los pares sobrantes (1,3) y (3,1) desaparecen al quedarnos solo con la intersección R ∩ S = {(1,1), (2,2), (3,3)}."
+      },
+      {
+        id: 3, tag: "Calent. 3", title: "Extirpación Directa en {1,2,3,4}",
+        X: ["1","2","3","4"], R: [["1","2"],["2","4"],["3","1"],["4","3"],["2","1"]], S: [["2","1"],["4","4"]],
+        ops: [["OVERLAY","👁️ Ver R y S"],["R_U_S","R ∪ S"],["R_I_S","R ∩ S"],["R_M_S","R \\ S"],["SYM_DIFF","(R ∪ S) \\ (R ∩ S)"]],
+        sol: "R_M_S", exp: "R tenía el disparo doble (2,1). Al restar S eliminamos (2,1) sin añadir (4,4): R \\ S = {(1,2),(2,4),(3,1),(4,3)}."
+      },
+      {
+        id: 4, tag: "Dif. Sim.", title: "Cirugía de Diferencia Simétrica 4×4",
+        X: ["1","2","3","4"], R: [["1","3"],["2","1"],["2","4"],["3","2"]], S: [["2","4"],["3","2"],["3","4"],["4","2"]],
+        ops: [["OVERLAY","👁️ Ver R y S"],["R_U_S","R ∪ S"],["R_I_S","R ∩ S"],["R_M_S","R \\ S"],["SYM_DIFF","(R ∪ S) \\ (R ∩ S)"]],
+        sol: "SYM_DIFF", exp: "Quitando los pares repetidos R ∩ S = {(2,4),(3,2)} de la unión queda {(1,3),(2,1),(3,4),(4,2)}: ¡biyección exacta!"
+      },
+      {
+        id: 5, tag: "👑 UNED 25 AB", title: "JEFE 1 · UNED 2025 Mod A/B (P14)",
+        X: ["1","2","3","4","5"],
+        R: [["2","1"],["2","4"],["3","1"],["3","3"],["4","3"]],
+        S: [["1","2"],["3","1"],["2","4"],["3","4"],["3","3"],["5","5"]],
+        ops: [["OVERLAY","👁️ Ver R y S"],["R_U_S","R ∪ S"],["R_I_S","R ∩ S"],["SYM_DIFF","(R ∪ S) \\ (R ∩ S)"],["RU_M_NRS","(R ∪ S) \\ (~R ∩ S)"],["R_M_S","R \\ S"]],
+        sol: "SYM_DIFF", exp: "R ∩ S = {(2,4),(3,1),(3,3)}. Al quitarlos de R ∪ S queda exactamente M = {(1,2),(2,1),(3,4),(4,3),(5,5)} (1/1 verde en los 5 nodos)."
+      },
+      {
+        id: 6, tag: "👑 UNED 25 CD", title: "JEFE 2 · UNED 2025 Mod C/D (P14)",
+        X: ["1","2","3","4","5"],
+        R: [["1","1"],["2","1"],["2","4"],["3","2"],["4","3"],["5","5"]],
+        S: [["1","1"],["1","2"],["2","4"],["3","2"],["4","3"],["5","5"]],
+        ops: [["OVERLAY","👁️ Ver R y S"],["SYM_DIFF","(R ∪ S) \\ (R ∩ S)"],["RI_M_NRS","(R ∩ S) \\ (~S ∩ ~R)"],["RU_M_NRS","(R ∪ S) \\ (~R ∩ S)"],["R_M_S","R \\ S"]],
+        sol: "RI_M_NRS", exp: "Como (~S ∩ ~R) es disjunto de (R ∩ S), restarlo no quita nada: (R ∩ S) \\ (~S ∩ ~R) = R ∩ S = {(1,1),(2,4),(3,2),(4,3),(5,5)}, que es biyectiva."
+      }
+    ];
+
+    let g3Cur = 1, g3Op = "OVERLAY", g3Tries = 0, g3Won = false;
+
+    function initG3() { renderG3Grid(); loadG3(g3Cur); }
+    function renderG3Grid() {
+      document.getElementById("g3Grid").innerHTML = G3_LEVELS.map(lv => {
+        const s = state.g3Stars[lv.id] || 0;
+        return `<button class="lvl-tile ${lv.id === g3Cur ? "active" : ""}" onclick="loadG3(${lv.id})">
+          <span style="font-size:0.65rem; color:var(--magenta);">${lv.tag}</span>
+          <span>N${lv.id}</span>
+          <span class="stars">${"★".repeat(s)}${"☆".repeat(3 - s)}</span>
+        </button>`;
+      }).join("");
+    }
+
+    function loadG3(id) {
+      g3Cur = id; g3Op = "OVERLAY"; g3Tries = 0; g3Won = false;
+      renderG3Grid(); drawG3();
+    }
+
+    function drawG3() {
+      const lv = G3_LEVELS.find(x => x.id === g3Cur);
+      const activePairs = g3Op === "OVERLAY" ? evalRelationOp(lv.X, lv.R, lv.S, "R_U_S") : evalRelationOp(lv.X, lv.R, lv.S, g3Op);
+      const info = analyzeMapping(lv.X, lv.X, activePairs);
+
+      document.getElementById("g3Stage").innerHTML = `
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+          <div><span class="tag t-mag">Nivel ${lv.id} · ${lv.tag}</span><h3 style="margin:5px 0 0;">${lv.title}</h3></div>
+          <span class="tag ${info.isBijective && g3Op !== "OVERLAY" ? "t-emerald" : "t-amber"}">${g3Op === "OVERLAY" ? "Vista Superpuesta" : (info.isBijective ? "✓ 1/1 Biyectiva" : "Ajusta Operación")}</span>
+        </div>
+
+        <div class="f-block" style="margin-bottom:12px;">
+          <span class="c-cyan">R</span> = ${fmtPairs(lv.R)}<br>
+          <span class="c-mag">S</span> = ${fmtPairs(lv.S)}
+        </div>
+
+        <div class="grid-2" style="align-items:start;">
+          <div>
+            <div class="svg-stage" id="g3Svg"></div>
+            <div class="svg-legend">
+              ${g3Op === "OVERLAY"
+                ? `<span><i class="ldot" style="background:var(--cyan);"></i>Solo R</span><span><i class="ldot" style="background:var(--magenta);"></i>Solo S</span><span><i class="ldot" style="background:var(--amber);"></i>Común R∩S</span>`
+                : `<span><i class="ldot" style="background:var(--emerald);"></i>Biyección 1/1</span><span><i class="ldot" style="background:var(--rose);"></i>Error salida</span><span><i class="ldot" style="background:#475569;"></i>Recortadas</span>`}
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:0.78rem; font-weight:800; color:var(--muted); text-transform:uppercase; margin-bottom:7px;">Selecciona una operación conjuntista:</div>
+            <div class="chip-row" style="margin-bottom:12px;">
+              ${lv.ops.map(([id, lbl]) => `<button class="op-btn mono ${g3Op === id ? "active" : ""}" ${g3Won ? "disabled" : ""} onclick="g3Op='${id}';sfx('wire');drawG3()">${lbl}</button>`).join("")}
+            </div>
+            <div class="card-soft" style="margin-bottom:12px;">
+              <div style="font-size:0.78rem; color:var(--muted);">Pares activos (${activePairs.length}):</div>
+              <div style="font-family:var(--mono); font-size:0.83rem; margin-top:3px;">${fmtPairs(activePairs)}</div>
+              ${renderDiagPillsHTML(info)}
+            </div>
+            <button class="btn btn-emerald" style="width:100%;" onclick="confirmG3()" ${g3Won || g3Op === "OVERLAY" ? "disabled" : ""}>🧬 Confirmar Cirugía</button>
+            <div id="g3Fb" class="fb"></div>
+          </div>
+        </div>
+      `;
+
+      renderMappingSVG(document.getElementById("g3Svg"), { mode: "surgery", X: lv.X, R: lv.R, S: lv.S, activeOp: g3Op });
+    }
+
+    function confirmG3() {
+      const lv = G3_LEVELS.find(x => x.id === g3Cur);
+      const activePairs = evalRelationOp(lv.X, lv.R, lv.S, g3Op);
+      const info = analyzeMapping(lv.X, lv.X, activePairs);
+      const fb = document.getElementById("g3Fb");
+      g3Tries++;
+
+      if (info.isBijective) {
+        g3Won = true; sfx("ok");
+        const stars = g3Tries === 1 ? 3 : (g3Tries === 2 ? 2 : 1);
+        const prev = state.g3Stars[lv.id] || 0;
+        if (stars > prev) { state.g3Stars[lv.id] = stars; addXP(prev === 0 ? 55 : 15, `Cirugía N${lv.id}`); }
+        else save();
+        renderG3Grid(); drawG3();
+        const fb2 = document.getElementById("g3Fb");
+        const nxt = lv.id < G3_LEVELS.length
+          ? `<button class="btn btn-emerald btn-sm" style="margin-top:9px;" onclick="loadG3(${lv.id + 1})">Siguiente Operación (N${lv.id + 1}) →</button>`
+          : `<button class="btn btn-amber btn-sm" style="margin-top:9px;" onclick="goView('exam')">📝 ¡Cirujano UNED! Ir al Simulador Oficial</button>`;
+        fb2.className = "fb show ok";
+        fb2.innerHTML = `<strong>🧬 ¡Cirugía Exitosa! ${"★".repeat(stars)}${"☆".repeat(3 - stars)}</strong><br>${lv.exp}<br>${nxt}`;
+      } else {
+        sfx("err");
+        const errs = [];
+        if (info.multiOut.length) errs.push(`Salidas múltiples en: <strong>${info.multiOut.join(", ")}</strong>.`);
+        if (info.missingOut.length) errs.push(`Sin salida en: <strong>${info.missingOut.join(", ")}</strong>.`);
+        if (info.collisions.length) errs.push(`Colisión de llegadas en: <strong>${info.collisions.join(", ")}</strong>.`);
+        if (info.holes.length) errs.push(`Sin llegada en: <strong>${info.holes.join(", ")}</strong>.`);
+        fb.className = "fb show err";
+        fb.innerHTML = `<strong>❌ Aún no es biyección:</strong><br>• ${errs.join("<br>• ")}`;
+      }
+    }
+
+    /* =========================================================================
+       9. SIMULADOR OFICIAL UNED (12 VERIFIED QUESTIONS + MINI-SVG)
+       ========================================================================= */
+    const EXAM_QS = [
+      {
+        id: 1, tag: "UNED 2026 Mod A · P13",
+        q: "Sea f: A → B con A = {1,2,3,4}, B = {a,b,c} definida por f = {(1,a), (2,b), (3,b), (4,c)}. Indique la afirmación correcta:",
+        opts: ["Inyectiva pero no sobreyectiva", "Sobreyectiva pero no inyectiva", "Biyectiva"], ok: 1,
+        exp: "Los 3 destinos {a,b,c} reciben flecha (sobreyectiva), pero 2 y 3 colisionan en b (no inyectiva).",
+        svg: { mode: "twoCol", A: ["1","2","3","4"], B: ["a","b","c"], pairs: [["1","a"],["2","b"],["3","b"],["4","c"]] }
+      },
+      {
+        id: 2, tag: "UNED 2026 Sept · P13",
+        q: "Sea f: X → Y con X = {1,2,3,4}, Y = {a,b,c} dada por f = {(1,a), (2,b), (3,c), (4,b)}. ¿Qué propiedad cumple f?",
+        opts: ["Sobreyectiva pero no inyectiva", "Inyectiva pero no sobreyectiva", "Ni inyectiva ni sobreyectiva"], ok: 0,
+        exp: "Todo Y queda cubierto (sobreyectiva), pero f(2) = f(4) = b provoca colisión (no inyectiva).",
+        svg: { mode: "twoCol", A: ["1","2","3","4"], B: ["a","b","c"], pairs: [["1","a"],["2","b"],["3","c"],["4","b"]] }
+      },
+      {
+        id: 3, tag: "UNED 2026 Sept · P14",
+        q: "Sea X un conjunto con |X| = 5 y sea f: X → P(X) una función total. Señale la afirmación correcta:",
+        opts: ["f puede ser biyectiva.", "f puede ser sobreyectiva.", "f puede ser inyectiva (pero nunca sobreyectiva ni biyectiva)."], ok: 2,
+        exp: "|P(X)| = 2⁵ = 32. Como |X| = 5 ≤ 32, f puede ser inyectiva, pero jamás sobreyectiva ni biyectiva (también por Teorema de Cantor)."
+      },
+      {
+        id: 4, tag: "UNED 2025 Sept · P14",
+        q: "Sea f: A → B una función total entre conjuntos finitos con |A| = 8 y |B| = 5. Indique qué es posible:",
+        opts: ["f puede ser inyectiva.", "f puede ser sobreyectiva.", "f puede ser biyectiva."], ok: 1,
+        exp: "Como |A| = 8 ≥ |B| = 5, hay suficientes entradas para cubrir B (puede ser sobreyectiva), pero por Palomar nunca será inyectiva ni biyectiva."
+      },
+      {
+        id: 5, tag: "UNED 2025 Mod A/B · P13",
+        q: "Sean f: A → B y g: B → C dos funciones totales tales que f NO es inyectiva y g NO es sobreyectiva. Sobre h = g ∘ f podemos asegurar que:",
+        opts: ["h es biyectiva.", "h NO es biyectiva.", "h es inyectiva si |A| = |C|."], ok: 1,
+        exp: "Si f no es inyectiva, g∘f tampoco es inyectiva; si g no es sobreyectiva, g∘f tampoco es sobreyectiva. Por tanto h nunca es biyectiva."
+      },
+      {
+        id: 6, tag: "UNED 2025 Mod A/B · P14",
+        q: "En X = {1,2,3,4,5}, sean R = {(2,1),(2,4),(3,1),(3,3),(4,3)} y S = {(1,2),(3,1),(2,4),(3,4),(3,3),(5,5)}. ¿Cuál expresión define una función BIYECTIVA en X?",
+        opts: ["M = R ∪ S", "M = (R ∪ S) \\ (R ∩ S)", "M = R ∩ S"], ok: 1,
+        exp: "Quitando los 3 pares comunes {(2,4),(3,1),(3,3)} a la unión obtenemos M = {(1,2),(2,1),(3,4),(4,3),(5,5)}, con grado 1/1 en todo X.",
+        svg: { mode: "surgery", X: ["1","2","3","4","5"], R: [["2","1"],["2","4"],["3","1"],["3","3"],["4","3"]], S: [["1","2"],["3","1"],["2","4"],["3","4"],["3","3"],["5","5"]], activeOp: "SYM_DIFF" }
+      },
+      {
+        id: 7, tag: "UNED 2025 Mod C/D · P14",
+        q: "En X = {1,2,3,4,5}, sean R = {(1,1),(2,1),(2,4),(3,2),(4,3),(5,5)} y S = {(1,1),(1,2),(2,4),(3,2),(4,3),(5,5)}. ¿Cuál expresión define una BIYECCIÓN?",
+        opts: ["M = (R ∪ S) \\ (R ∩ S)", "M = (R ∩ S) \\ (~S ∩ ~R)", "M = (R ∪ S) \\ (~R ∩ S)"], ok: 1,
+        exp: "R ∩ S = {(1,1),(2,4),(3,2),(4,3),(5,5)} ya es biyectiva, y restar (~S ∩ ~R) (que es disjunto) la deja intacta.",
+        svg: { mode: "surgery", X: ["1","2","3","4","5"], R: [["1","1"],["2","1"],["2","4"],["3","2"],["4","3"],["5","5"]], S: [["1","1"],["1","2"],["2","4"],["3","2"],["4","3"],["5","5"]], activeOp: "RI_M_NRS" }
+      },
+      {
+        id: 8, tag: "UNED 2026 Mod B · P13",
+        q: "Sea el conjunto A = {2ⁿ : n ∈ ℕ}. ¿Cuál de las siguientes afirmaciones sobre su cardinalidad es correcta?",
+        opts: ["|A| < |ℕ|", "|A| = |ℕ|", "|A| = |ℝ|"], ok: 1,
+        exp: "Existe la biyección f: ℕ → A dada por f(n) = 2ⁿ, luego A es infinito numerable: |A| = |ℕ|."
+      },
+      {
+        id: 9, tag: "Teoría UNED · Parcial",
+        q: "Dados A = {1,2,3} y B = {a,b,c}, considere f = {(1,a), (2,b)}. ¿Cómo se clasifica correctamente f?",
+        opts: ["No es una función.", "Función parcial inyectiva (no total porque 3 no tiene imagen).", "Función total biyectiva."], ok: 1,
+        exp: "Cumple la regla del disparo único y no tiene choques (inyectiva), pero al faltar imagen para el 3 es función parcial, no total.",
+        svg: { mode: "twoCol", A: ["1","2","3"], B: ["a","b","c"], pairs: [["1","a"],["2","b"]] }
+      },
+      {
+        id: 10, tag: "Teoría UNED · Inversa",
+        q: "¿Cuándo existe la función inversa f⁻¹: B → A como función total?",
+        opts: ["Siempre que f sea inyectiva.", "Siempre que f sea sobreyectiva.", "Si y solo si f es biyectiva."], ok: 2,
+        exp: "Invertir las flechas exige que cada elemento de B tenga exactamente 1 flecha entrante (ni 0 ni >1), lo que equivale a ser biyectiva."
+      },
+      {
+        id: 11, tag: "Teoría UNED · Conteo",
+        q: "Si |A| = 3 y |B| = 2, ¿cuántas funciones totales distintas f: A → B existen?",
+        opts: ["6", "8", "9"], ok: 1,
+        exp: "El número de funciones totales es |B|^|A| = 2³ = 8 (cada uno de los 3 elementos de A tiene 2 opciones en B)."
+      },
+      {
+        id: 12, tag: "Teoría UNED · Infinitos",
+        q: "¿Cuál de los siguientes conjuntos infinitos NO es numerable?",
+        opts: ["ℤ (números enteros)", "ℚ (números racionales)", "ℝ (números reales)"], ok: 2,
+        exp: "Tanto ℤ como ℚ tienen cardinal ℵ₀ = |ℕ| (son numerables). ℝ no es numerable (|ℕ| < |ℝ|)."
+      }
+    ];
+
+    const examSt = { active: false, mode: "train", idx: 0, ans: {} };
+
+    function renderExamHome() {
+      examSt.active = false;
+      document.getElementById("examBox").innerHTML = `
+        <div class="grid-2">
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; gap:14px;">
+            <div>
+              <span class="tag t-emerald">Estudio Guiado</span>
+              <h3 style="margin:8px 0 6px;">🎓 Modo Entrenamiento</h3>
+              <p style="margin:0; color:var(--muted); font-size:0.9rem;">Corrección al instante en cada una de las 12 preguntas con explicación clara y mini-diagrama SVG del motor visual.</p>
+            </div>
+            <button class="btn btn-cyan" onclick="startExam('train')">Empezar Entrenamiento</button>
+          </div>
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; gap:14px;">
+            <div>
+              <span class="tag t-amber">Simulacro Oficial UNED</span>
+              <h3 style="margin:8px 0 6px;">⏱️ Modo Examen Real</h3>
+              <p style="margin:0; color:var(--muted); font-size:0.9rem;">Navegación libre, botón de <strong>En blanco (0,00)</strong> para evitar el <strong>−0,25</strong>, nota sobre 6,00 y equivalente sobre 10,00 con revisión completa.</p>
+            </div>
+            <button class="btn btn-amber" onclick="startExam('real')">Empezar Examen Real</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function startExam(m) {
+      examSt.active = true; examSt.mode = m; examSt.idx = 0; examSt.ans = {};
+      renderExamQ(); sfx("click");
+    }
+
+    function renderExamQ() {
+      const q = EXAM_QS[examSt.idx], ch = examSt.ans[q.id];
+      const rev = examSt.mode === "train" && ch !== undefined;
+      const dots = EXAM_QS.map((it, i) => {
+        const a = examSt.ans[it.id];
+        let c = i === examSt.idx ? "cur" : "";
+        if (examSt.mode === "train" && a !== undefined) c += a === "blk" ? " blk" : (a === it.ok ? " ok" : " bad");
+        else if (a !== undefined) c += a === "blk" ? " blk" : " ans";
+        return `<button class="edot ${c}" onclick="examSt.idx=${i};renderExamQ();sfx('click')">${i + 1}</button>`;
+      }).join("");
+
+      const opts = q.opts.map((o, i) => {
+        let c = "";
+        if (rev) { if (i === q.ok) c = "correct"; else if (i === ch) c = "wrong"; }
+        else if (ch === i) c = "selected";
+        return `<button class="q-opt ${c}" ${rev ? "disabled" : ""} onclick="pickExam(${q.id},${i})"><span class="q-let">${String.fromCharCode(97 + i)}</span><span>${o}</span></button>`;
+      }).join("");
+
+      const cnt = Object.keys(examSt.ans).length;
+      document.getElementById("examBox").innerHTML = `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <span class="tag ${examSt.mode === "train" ? "t-emerald" : "t-amber"}">${examSt.mode === "train" ? "🎓 Entrenamiento" : "⏱️ Examen Real"} · ${examSt.idx + 1} / 12</span>
+            <button class="btn btn-ghost btn-sm" onclick="renderExamHome()">Salir</button>
+          </div>
+          <div class="edots">${dots}</div>
+          <span class="tag t-cyan" style="margin-bottom:6px;">${q.tag}</span>
+          <h3 style="margin:6px 0 12px; font-size:1.06rem; line-height:1.45;">${q.q}</h3>
+          <div>${opts}</div>
+          <div style="margin-top:10px;">
+            <button class="btn btn-ghost btn-sm" style="${ch === "blk" ? "border-color:var(--amber);color:var(--amber);" : ""}" ${rev ? "disabled" : ""} onclick="pickExam(${q.id},'blk')">⚪ Dejar en blanco (0,00)</button>
+          </div>
+          ${rev ? `
+            <div class="fb show ${ch === "blk" ? "info" : (ch === q.ok ? "ok" : "err")}">
+              <div class="${q.svg ? "grid-2" : ""}" style="align-items:center;">
+                <div>
+                  <strong>${ch === "blk" ? "⚪ En blanco (0,00)" : (ch === q.ok ? "✅ ¡Correcto! (+0,50)" : "❌ Fallo (−0,25)")}</strong>
+                  <p style="margin:5px 0 0; font-size:0.89rem;">${q.exp}</p>
+                </div>
+                ${q.svg ? `<div class="svg-stage" id="exMiniSvg"></div>` : ""}
+              </div>
+            </div>
+          ` : ""}
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:18px; padding-top:12px; border-top:1px solid var(--border);">
+            <button class="btn btn-ghost btn-sm" ${examSt.idx === 0 ? "disabled" : ""} onclick="examSt.idx--;renderExamQ();sfx('click')">← Anterior</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              ${examSt.idx < 11
+                ? `<button class="btn btn-cyan btn-sm" onclick="examSt.idx++;renderExamQ();sfx('click')">Siguiente →</button>`
+                : `<button class="btn btn-emerald btn-sm" onclick="finishExam()">🏁 Entregar (${cnt}/12)</button>`}
+              ${examSt.mode === "real" && examSt.idx < 11 ? `<button class="btn btn-amber btn-sm" onclick="finishExam()">🏁 Entregar ya</button>` : ""}
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (rev && q.svg) renderMappingSVG(document.getElementById("exMiniSvg"), { ...q.svg, nodeR: 16 });
+    }
+
+    function pickExam(qid, val) {
+      examSt.ans[qid] = val;
+      if (examSt.mode === "train") {
+        const q = EXAM_QS.find(x => x.id === qid);
+        sfx(val === "blk" ? "click" : (val === q.ok ? "ok" : "err"));
+      } else sfx("wire");
+      renderExamQ();
+    }
+
+    function finishExam() {
+      let ok = 0, bad = 0, blk = 0;
+      EXAM_QS.forEach(q => {
+        const a = examSt.ans[q.id];
+        if (a === undefined || a === "blk") blk++;
+        else if (a === q.ok) ok++;
+        else bad++;
+      });
+      const raw = ok * 0.5 - bad * 0.25;
+      const n10 = Math.max(0, (raw / 6) * 10);
+      state.examTries++;
+      if (state.examBestNote10 === null || n10 > state.examBestNote10) {
+        state.examBestNote10 = n10; state.examBestScore6 = raw;
+      }
+      addXP(Math.max(25, ok * 10), "Simulador UNED Funciones");
+      sfx(n10 >= 5 ? "lvl" : "click");
+
+      const revHtml = EXAM_QS.map((q, i) => {
+        const a = examSt.ans[q.id], isBlk = a === undefined || a === "blk", isOk = !isBlk && a === q.ok;
+        const bdg = isBlk ? `<span class="tag" style="background:rgba(148,163,184,0.18);color:#cbd5e1;">Blanco (0)</span>`
+          : (isOk ? `<span class="tag t-emerald">Acierto (+0,50)</span>` : `<span class="tag t-rose">Fallo (−0,25)</span>`);
+        return `
+          <div class="card-soft" style="margin-bottom:10px; border-left:4px solid ${isBlk ? "var(--dim)" : (isOk ? "var(--emerald)" : "var(--rose)")};">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+              <strong>#${i + 1} · ${q.tag}</strong>${bdg}
+            </div>
+            <div class="${q.svg ? "grid-2" : ""}" style="align-items:center;">
+              <div>
+                <div style="font-size:0.9rem; margin-bottom:6px;">${q.q}</div>
+                ${!isBlk && !isOk ? `<div class="c-rose" style="font-size:0.84rem;">Tu respuesta: (${String.fromCharCode(97 + a)}) ${q.opts[a]}</div>` : ""}
+                <div class="c-emerald" style="font-size:0.84rem;">Correcta: (${String.fromCharCode(97 + q.ok)}) ${q.opts[q.ok]}</div>
+                <div style="color:var(--muted); font-size:0.84rem; margin-top:4px;">${q.exp}</div>
+              </div>
+              ${q.svg ? `<div class="svg-stage" id="revSvg-${q.id}"></div>` : ""}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("examBox").innerHTML = `
+        <div class="card" style="text-align:center; margin-bottom:16px;">
+          <span class="tag ${n10 >= 5 ? "t-emerald" : "t-rose"}">${n10 >= 5 ? "🎉 ¡Aprobado!" : "📚 Sigue practicando"}</span>
+          <h2 style="margin:8px 0 4px; font-size:2.1rem; color:${n10 >= 5 ? "var(--emerald)" : "var(--rose)"};">${n10.toFixed(2)} / 10</h2>
+          <p style="margin:0 0 14px; color:var(--muted);">Puntuación UNED: <strong style="color:#fff;">${raw.toFixed(2)} / 6,00 pts</strong></p>
+          <div class="grid-3" style="max-width:500px; margin:0 auto 16px;">
+            <div class="card-soft"><div class="c-emerald" style="font-size:1.25rem;">${ok}</div><div style="font-size:0.75rem; color:var(--muted);">Aciertos (+${(ok * 0.5).toFixed(2)})</div></div>
+            <div class="card-soft"><div class="c-rose" style="font-size:1.25rem;">${bad}</div><div style="font-size:0.75rem; color:var(--muted);">Fallos (−${(bad * 0.25).toFixed(2)})</div></div>
+            <div class="card-soft"><div style="font-size:1.25rem; font-weight:800;">${blk}</div><div style="font-size:0.75rem; color:var(--muted);">En blanco (0,00)</div></div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-cyan" onclick="startExam('${examSt.mode}')">🔁 Repetir</button>
+            <button class="btn btn-ghost" onclick="renderExamHome()">Cambiar Modo</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin:0 0 12px;">📋 Revisión Completa (12 Preguntas)</h3>
+          ${revHtml}
+        </div>
+      `;
+
+      EXAM_QS.forEach(q => { if (q.svg) renderMappingSVG(document.getElementById(`revSvg-${q.id}`), { ...q.svg, nodeR: 16 }); });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* =========================================================================
+       10. BOOTSTRAP
+       ========================================================================= */
+    window.addEventListener("DOMContentLoaded", () => {
+      syncGlobalUI();
+      renderExamHome();
+    });
+  </script>
+</body>
+</html>

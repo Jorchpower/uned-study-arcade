@@ -1,0 +1,3185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Tableau Quest — Temporada 2: Lógica de Predicados</title>
+
+  <!-- Metaetiquetas PWA para instalación móvil -->
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Tableau T2" />
+  <meta name="description" content="Juego táctil de Tableaux Semánticos de Lógica de Predicados (Primer Orden) con Academia desde cero, Campaña y Mini-Mundos." />
+
+  <!-- Favicon SVG moderno incrustado (árbol lógico con ∀ y ∃) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230b1020'/%3E%3Cstop offset='100%25' stop-color='%23162040'/%3E%3C/linearGradient%3E%3ClinearGradient id='ring' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2310b981'/%3E%3Cstop offset='50%25' stop-color='%2322d3ee'/%3E%3Cstop offset='100%25' stop-color='%23f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23bg)'/%3E%3Crect x='26' y='26' width='460' height='460' rx='94' fill='none' stroke='url(%23ring)' stroke-width='14' stroke-opacity='0.75'/%3E%3Cline x1='256' y1='130' x2='256' y2='228' stroke='%2322d3ee' stroke-width='16' stroke-linecap='round'/%3E%3Cpath d='M256 228 L156 340 M256 228 L356 340' stroke='%23a78bfa' stroke-width='16' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='124' r='44' fill='%230f172a' stroke='%2322d3ee' stroke-width='12'/%3E%3Ctext x='256' y='140' text-anchor='middle' fill='%2322d3ee' font-family='sans-serif' font-size='44' font-weight='900'%3E%CE%B1%3C/text%3E%3Ccircle cx='256' cy='228' r='16' fill='%23a78bfa'/%3E%3Ccircle cx='156' cy='350' r='52' fill='%23064e3b' stroke='%2310b981' stroke-width='12'/%3E%3Ctext x='156' y='370' text-anchor='middle' fill='%2334d399' font-family='sans-serif' font-size='56' font-weight='900'%3E%E2%88%80%3C/text%3E%3Ccircle cx='356' cy='350' r='52' fill='%23451a03' stroke='%23f59e0b' stroke-width='12'/%3E%3Ctext x='356' y='370' text-anchor='middle' fill='%23fcd34d' font-family='sans-serif' font-size='56' font-weight='900'%3E%E2%88%83%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230b1020'/%3E%3Cstop offset='100%25' stop-color='%23162040'/%3E%3C/linearGradient%3E%3ClinearGradient id='ring' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%2310b981'/%3E%3Cstop offset='50%25' stop-color='%2322d3ee'/%3E%3Cstop offset='100%25' stop-color='%23f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='url(%23bg)'/%3E%3Crect x='26' y='26' width='460' height='460' rx='94' fill='none' stroke='url(%23ring)' stroke-width='14' stroke-opacity='0.75'/%3E%3Cline x1='256' y1='130' x2='256' y2='228' stroke='%2322d3ee' stroke-width='16' stroke-linecap='round'/%3E%3Cpath d='M256 228 L156 340 M256 228 L356 340' stroke='%23a78bfa' stroke-width='16' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='124' r='44' fill='%230f172a' stroke='%2322d3ee' stroke-width='12'/%3E%3Ctext x='256' y='140' text-anchor='middle' fill='%2322d3ee' font-family='sans-serif' font-size='44' font-weight='900'%3E%CE%B1%3C/text%3E%3Ccircle cx='256' cy='228' r='16' fill='%23a78bfa'/%3E%3Ccircle cx='156' cy='350' r='52' fill='%23064e3b' stroke='%2310b981' stroke-width='12'/%3E%3Ctext x='156' y='370' text-anchor='middle' fill='%2334d399' font-family='sans-serif' font-size='56' font-weight='900'%3E%E2%88%80%3C/text%3E%3Ccircle cx='356' cy='350' r='52' fill='%23451a03' stroke='%23f59e0b' stroke-width='12'/%3E%3Ctext x='356' y='370' text-anchor='middle' fill='%23fcd34d' font-family='sans-serif' font-size='56' font-weight='900'%3E%E2%88%83%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    /* =========================================================================
+       1. DESIGN TOKENS & ESTÉTICA PUZZLE GAME OSCURO (#0b1020)
+       ========================================================================= */
+    :root {
+      --bg-deep: #060913;
+      --bg-app: #0b1020;
+      --glass: rgba(19, 28, 52, 0.78);
+      --glass-strong: rgba(15, 23, 42, 0.94);
+      --border: rgba(148, 163, 184, 0.16);
+      --border-hi: rgba(148, 163, 184, 0.30);
+
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --dim: #64748b;
+
+      /* Colores semánticos por tipo de regla */
+      --alpha: #22d3ee;       /* α Cian */
+      --alpha-bg: rgba(34, 211, 238, 0.13);
+      --alpha-bd: rgba(34, 211, 238, 0.45);
+
+      --beta: #a78bfa;        /* β Violeta */
+      --beta-bg: rgba(167, 139, 250, 0.14);
+      --beta-bd: rgba(167, 139, 250, 0.48);
+
+      --delta: #f59e0b;       /* δ Ámbar/Naranja (constante nueva) */
+      --delta-lt: #fcd34d;
+      --delta-bg: rgba(245, 158, 11, 0.14);
+      --delta-bd: rgba(245, 158, 11, 0.52);
+
+      --gamma: #10b981;       /* γ Esmeralda/Turquesa (reutilizable ∞) */
+      --gamma-lt: #6ee7b7;
+      --gamma-bg: rgba(16, 185, 129, 0.14);
+      --gamma-bd: rgba(16, 185, 129, 0.50);
+
+      --close: #22c55e;       /* Cierre verde neón */
+      --close-lt: #86efac;
+      --close-bg: rgba(34, 197, 94, 0.16);
+      --close-bd: rgba(34, 197, 94, 0.55);
+
+      --coral: #f43f5e;       /* Alertas rojo coral */
+      --coral-lt: #fda4af;
+      --coral-bg: rgba(244, 63, 94, 0.16);
+      --coral-bd: rgba(244, 63, 94, 0.55);
+
+      --lit: #60a5fa;
+      --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg-deep);
+      color: var(--text);
+      font-family: var(--font);
+      overscroll-behavior: none;
+      line-height: 1.44;
+    }
+
+    body {
+      background-image:
+        radial-gradient(circle at 14% 10%, rgba(16, 185, 129, 0.11), transparent 36%),
+        radial-gradient(circle at 88% 85%, rgba(245, 158, 11, 0.10), transparent 38%),
+        radial-gradient(circle at 50% 42%, rgba(167, 139, 250, 0.06), transparent 55%);
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 480px;
+      height: 100dvh;
+      margin: 0 auto;
+      background: var(--bg-app);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 560px) {
+      body {
+        display: flex; align-items: center; justify-content: center;
+        min-height: 100vh; padding: 14px;
+      }
+      .app-shell {
+        height: min(880px, calc(100vh - 28px));
+        border-radius: 30px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        box-shadow: 0 32px 96px -14px rgba(0, 0, 0, 0.92), 0 0 65px -24px rgba(16, 185, 129, 0.26);
+      }
+    }
+
+    .scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .scroll-y::-webkit-scrollbar, .tree-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+    .scroll-y::-webkit-scrollbar-thumb, .tree-scroll::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.45); border-radius: 99px;
+    }
+
+    button, a { font-family: inherit; color: inherit; text-decoration: none; background: none; border: none; cursor: pointer; padding: 0; }
+    .btn { transition: transform 0.11s ease, filter 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease; user-select: none; }
+    .btn:active:not(:disabled) { transform: scale(0.965); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mono { font-family: var(--mono); letter-spacing: -0.02em; }
+
+    /* Cabecera fija */
+    .topbar {
+      padding: 10px 12px;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(11, 16, 32, 0.94));
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      flex-shrink: 0; z-index: 25;
+    }
+    .icon-btn {
+      height: 38px; min-width: 38px; padding: 0 11px;
+      border-radius: 12px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid var(--border-hi);
+      display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+      font-size: 12px; font-weight: 800; color: #e2e8f0; flex-shrink: 0;
+    }
+    .icon-btn.grim {
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(16, 185, 129, 0.18));
+      border-color: rgba(167, 139, 250, 0.48); color: #ede9fe;
+    }
+
+    /* Glassmorphism Cards & Layouts */
+    .pad { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .card {
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+    }
+    .sec-card {
+      border-radius: 22px; padding: 15px;
+      border: 1px solid var(--border);
+      background: linear-gradient(160deg, rgba(20, 31, 58, 0.88), rgba(11, 16, 32, 0.96));
+      backdrop-filter: blur(12px);
+      display: flex; flex-direction: column; gap: 10px;
+      box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.65);
+    }
+    .sec-card.ac { border-color: rgba(16, 185, 129, 0.45); background: linear-gradient(155deg, rgba(8, 47, 45, 0.58), rgba(13, 21, 42, 0.96)); }
+    .sec-card.cmp { border-color: rgba(167, 139, 250, 0.38); }
+    .sec-card.forge { border-color: rgba(245, 158, 11, 0.45); background: linear-gradient(155deg, rgba(56, 31, 10, 0.52), rgba(13, 21, 42, 0.96)); }
+
+    /* Badges */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 9px; border-radius: 99px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      border: 1px solid transparent; white-space: nowrap;
+    }
+    .b-alpha { background: var(--alpha-bg); border-color: var(--alpha-bd); color: #67e8f9; }
+    .b-beta { background: var(--beta-bg); border-color: var(--beta-bd); color: #ddd6fe; }
+    .b-delta { background: var(--delta-bg); border-color: var(--delta-bd); color: var(--delta-lt); }
+    .b-gamma { background: var(--gamma-bg); border-color: var(--gamma-bd); color: var(--gamma-lt); }
+    .b-close { background: var(--close-bg); border-color: var(--close-bd); color: var(--close-lt); }
+    .b-coral { background: var(--coral-bg); border-color: var(--coral-bd); color: var(--coral-lt); }
+
+    /* Botones CTA */
+    .cta {
+      width: 100%; padding: 13px 16px; border-radius: 15px;
+      font-weight: 800; font-size: 13.5px;
+      display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+      box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.7);
+    }
+    .cta-gamma { background: linear-gradient(90deg, #10b981, #22d3ee); color: #031915; }
+    .cta-beta { background: linear-gradient(90deg, #a78bfa, #38bdf8); color: #09061a; }
+    .cta-delta { background: linear-gradient(90deg, #f59e0b, #fb923c); color: #1f0d02; }
+    .cta-ghost { background: rgba(30, 41, 59, 0.85); border: 1px solid var(--border-hi); color: #e2e8f0; box-shadow: none; }
+
+    /* Filas táctiles */
+    .row-btn {
+      width: 100%; text-align: left;
+      background: rgba(15, 23, 42, 0.86);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 11px 12px;
+      display: flex; align-items: center; gap: 11px;
+    }
+    .row-btn:hover { border-color: var(--border-hi); }
+    .row-num {
+      width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-weight: 900; font-size: 13px;
+      background: #080d1b; border: 1px solid var(--border-hi);
+    }
+
+    /* Enlace discreto a Temporada 1 */
+    .s1-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 11px; border-radius: 99px;
+      font-size: 11.5px; font-weight: 700; color: var(--muted);
+      background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border);
+      width: fit-content;
+    }
+    .s1-link:hover { color: #e2e8f0; border-color: var(--alpha-bd); }
+
+    /* Pestañas */
+    .tabs {
+      display: grid; gap: 5px;
+      background: rgba(6, 9, 19, 0.65);
+      padding: 4px; border-radius: 14px; border: 1px solid var(--border);
+    }
+    .tab-btn { padding: 8px 6px; border-radius: 10px; font-size: 11px; font-weight: 800; color: var(--muted); text-align: center; }
+    .tab-btn.active { background: #1e293b; color: #f8fafc; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); }
+
+    /* =========================================================================
+       2. MOTOR VISUAL DEL ÁRBOL SEMÁNTICO DE PRIMER ORDEN
+       ========================================================================= */
+    .tree-wrap {
+      position: relative; flex: 1; overflow: hidden;
+      display: flex; flex-direction: column;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.06), transparent 55%),
+        var(--bg-app);
+    }
+    .tree-float-l { position: absolute; top: 8px; left: 10px; z-index: 15; display: flex; gap: 5px; }
+    .tree-float-r {
+      position: absolute; top: 8px; right: 10px; z-index: 15;
+      display: flex; align-items: center; gap: 4px;
+      background: rgba(15, 23, 42, 0.92); border: 1px solid var(--border-hi);
+      border-radius: 12px; padding: 4px; backdrop-filter: blur(8px);
+    }
+    .mini-btn {
+      height: 30px; min-width: 30px; padding: 0 8px; border-radius: 9px;
+      background: #1e293b; border: 1px solid var(--border-hi);
+      color: #e2e8f0; font-size: 11.5px; font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    }
+
+    .tree-scroll { flex: 1; padding: 48px 18px 62px; overflow: auto; -webkit-overflow-scrolling: touch; }
+    .tree-inner {
+      min-width: 100%; width: max-content; margin: 0 auto;
+      display: flex; justify-content: center;
+      transform-origin: top center; transition: transform 0.14s ease;
+    }
+
+    .t-col { display: flex; flex-direction: column; align-items: center; }
+    .t-vline { width: 2px; height: 13px; background: rgba(148, 163, 184, 0.36); margin: 0 auto; }
+    .t-vline-sm { width: 2px; height: 7px; background: rgba(148, 163, 184, 0.25); margin: 0 auto; }
+    .t-fork-stem { width: 2px; height: 13px; background: rgba(167, 139, 250, 0.78); margin: 0 auto; }
+
+    .t-split {
+      display: flex; justify-content: center; align-items: flex-start;
+      position: relative; padding-top: 16px; gap: 16px; width: 100%;
+    }
+    .t-branch { display: flex; flex-direction: column; align-items: center; position: relative; }
+    .t-branch::before {
+      content: ''; position: absolute; top: -16px; height: 16px; width: calc(50% + 9px);
+      border-top: 2px solid rgba(167, 139, 250, 0.7);
+    }
+    .t-branch:first-child::before { right: -9px; border-left: 2px solid rgba(167, 139, 250, 0.7); border-top-left-radius: 11px; }
+    .t-branch:last-child::before { left: -9px; border-right: 2px solid rgba(167, 139, 250, 0.7); border-top-right-radius: 11px; }
+
+    /* Nodo de fórmula con borde luminoso por tipo */
+    .t-node {
+      position: relative; border-radius: 14px;
+      border: 1px solid var(--border-hi); border-left-width: 4px;
+      padding: 9px 12px; min-width: 96px; max-width: 280px;
+      background: rgba(18, 28, 52, 0.95); color: #f8fafc;
+      display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
+      text-align: left;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.34);
+    }
+    .t-node.k-alpha { border-left-color: var(--alpha); box-shadow: 0 4px 16px -6px rgba(34, 211, 238, 0.35); }
+    .t-node.k-beta { border-left-color: var(--beta); box-shadow: 0 4px 16px -6px rgba(167, 139, 250, 0.38); }
+    .t-node.k-delta { border-left-color: var(--delta); box-shadow: 0 4px 16px -6px rgba(245, 158, 11, 0.42); }
+    .t-node.k-gamma { border-left-color: var(--gamma); box-shadow: 0 4px 16px -6px rgba(16, 185, 129, 0.42); }
+    .t-node.k-literal { border-left-color: var(--lit); background: rgba(19, 36, 66, 0.96); }
+
+    .t-node.done {
+      background: rgba(13, 20, 38, 0.65);
+      border-color: rgba(71, 85, 105, 0.42);
+      color: #94a3b8; opacity: 0.72; box-shadow: none;
+    }
+    .t-node.done .t-f { text-decoration: line-through; text-decoration-color: #64748b; }
+    .t-node.sel {
+      background: rgba(245, 158, 11, 0.24);
+      border-color: var(--delta);
+      color: #fef3c7;
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.55);
+      transform: scale(1.03);
+    }
+    .t-node.closed-leaf {
+      background: rgba(6, 78, 59, 0.45);
+      border-color: var(--close);
+      color: #bbf7d0;
+    }
+
+    .t-f { font-family: var(--mono); font-size: 13px; font-weight: 700; word-break: break-word; line-height: 1.32; }
+
+    .rchip {
+      font-size: 9.5px; font-weight: 900; padding: 2px 6px; border-radius: 7px; flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 3px;
+    }
+    .rchip.alpha { background: var(--alpha-bg); color: #67e8f9; }
+    .rchip.beta { background: var(--beta-bg); color: #ddd6fe; }
+    .rchip.delta { background: var(--delta-bg); color: var(--delta-lt); }
+    .rchip.gamma { background: var(--gamma-bg); color: var(--gamma-lt); }
+
+    .g-tag {
+      display: inline-block; padding: 0 4px; border-radius: 4px;
+      background: rgba(16, 185, 129, 0.28); border: 1px solid rgba(110, 231, 183, 0.45);
+      color: #ecfdf5; font-family: var(--mono); font-size: 9.5px; font-weight: 900;
+    }
+
+    /* Barra de Inventario de Constantes */
+    .const-bar {
+      padding: 7px 12px;
+      background: rgba(10, 26, 36, 0.92);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.26);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-shrink: 0;
+    }
+    .const-pill {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 24px; height: 24px; padding: 0 7px; border-radius: 8px;
+      font-family: var(--mono); font-size: 12px; font-weight: 900;
+      background: var(--delta-bg); border: 1px solid var(--delta-bd); color: var(--delta-lt);
+    }
+
+    /* Barra inferior de herramientas en partida */
+    .play-foot {
+      padding: 9px 10px;
+      background: rgba(11, 16, 32, 0.98);
+      border-top: 1px solid var(--border);
+      display: grid; gap: 7px; flex-shrink: 0;
+    }
+    .tool-btn {
+      border-radius: 13px; padding: 8px 4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      border: 1px solid var(--border);
+    }
+
+    /* Modales, Bottom Sheets & Toasts */
+    .backdrop {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(4, 7, 16, 0.84);
+      backdrop-filter: blur(5px);
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .backdrop.center { align-items: center; padding: 16px; }
+    .sheet {
+      width: 100%; max-width: 480px; max-height: 86vh;
+      background: #0f172a;
+      border-top: 1px solid var(--border-hi);
+      border-radius: 26px 26px 0 0;
+      padding: 16px 16px 24px;
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: sheetUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dialog {
+      width: 100%; max-width: 410px; max-height: 88vh;
+      background: #0f172a;
+      border: 1px solid var(--border-hi);
+      border-radius: 24px; padding: 18px;
+      overflow-y: auto; animation: popIn 0.2s ease;
+    }
+
+    .toast-wrap {
+      position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+      z-index: 80; width: calc(100% - 28px); max-width: 444px; pointer-events: none;
+    }
+    .toast-box {
+      border-radius: 15px; padding: 11px 14px; font-size: 12.2px; font-weight: 700;
+      text-align: center; border: 1px solid;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.72);
+      animation: popIn 0.18s ease;
+    }
+    .t-ok { background: rgba(6, 78, 59, 0.97); border-color: var(--close); color: #dcfce7; }
+    .t-err { background: rgba(136, 19, 55, 0.97); border-color: var(--coral); color: #ffe4e6; }
+    .t-warn { background: rgba(120, 53, 15, 0.97); border-color: var(--delta); color: #fef3c7; }
+    .t-info { background: rgba(15, 23, 42, 0.97); border-color: var(--alpha); color: #cffafe; }
+
+    /* Coach flotante en Academia */
+    .coach-bar {
+      padding: 9px 12px;
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.16), rgba(34, 211, 238, 0.12));
+      border-bottom: 1px solid rgba(16, 185, 129, 0.35);
+      display: flex; align-items: flex-start; gap: 9px; flex-shrink: 0;
+    }
+
+    /* Animaciones */
+    @keyframes popIn { 0% { opacity: 0; transform: translateY(-6px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes sheetUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+    @keyframes shakeX { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+    @keyframes hintPulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0.82)} 50%{box-shadow:0 0 0 8px rgba(245,158,11,0)} }
+    @keyframes closeSpark {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.95); transform: scale(1); }
+      45% { box-shadow: 0 0 28px 10px rgba(34, 197, 94, 0.55); transform: scale(1.05); }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); transform: scale(1); }
+    }
+    .anim-shake { animation: shakeX 0.34s ease; }
+    .anim-hint { animation: hintPulse 1.2s infinite; border-color: var(--delta) !important; background: rgba(245, 158, 11, 0.2) !important; }
+    .anim-spark { animation: closeSpark 0.72s ease-out; }
+
+    /* Utilidades */
+    .flex { display: flex; }
+    .col { flex-direction: column; }
+    .aic { align-items: center; }
+    .ais { align-items: flex-start; }
+    .jcb { justify-content: space-between; }
+    .jcc { justify-content: center; }
+    .f1 { flex: 1; }
+    .min0 { min-width: 0; }
+    .wrap { flex-wrap: wrap; }
+    .g4 { gap: 4px; } .g6 { gap: 6px; } .g8 { gap: 8px; } .g10 { gap: 10px; } .g12 { gap: 12px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .tc { text-align: center; }
+    .w100 { width: 100%; }
+    .trunc { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .small { font-size: 12px; color: var(--muted); }
+    .xs { font-size: 10.5px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div id="app" class="app-shell"></div>
+
+  <script>
+    /* =========================================================================
+       1. SINTETIZADOR DE SONIDO (WEB AUDIO API · SIN ARCHIVOS EXTERNOS)
+       ========================================================================= */
+    const Sound = (() => {
+      let ctx = null;
+      let muted = false;
+
+      function getCtx() {
+        if (muted) return null;
+        if (!ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) ctx = new AC();
+        }
+        if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+        return ctx;
+      }
+
+      function tone(f1, dur, type = 'sine', vol = 0.055, delay = 0, f2 = null) {
+        const c = getCtx();
+        if (!c) return;
+        try {
+          const t = c.currentTime + delay;
+          const osc = c.createOscillator();
+          const gain = c.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(f1, t);
+          if (f2) osc.frequency.exponentialRampToValueAtTime(f2, t + dur);
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.exponentialRampToValueAtTime(vol, t + 0.014);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          osc.connect(gain);
+          gain.connect(c.destination);
+          osc.start(t);
+          osc.stop(t + dur + 0.02);
+        } catch (_) {}
+      }
+
+      return {
+        isMuted: () => muted,
+        toggle: () => {
+          muted = !muted;
+          if (!muted) tone(587, 0.08, 'sine', 0.05);
+          return muted;
+        },
+        tap: () => tone(480, 0.045, 'triangle', 0.032, 0, 560),
+        alpha: () => { tone(523, 0.1, 'sine', 0.055, 0); tone(659, 0.13, 'sine', 0.06, 0.05); },
+        beta: () => { tone(360, 0.13, 'triangle', 0.05, 0, 587); tone(523, 0.14, 'sine', 0.055, 0.05, 784); },
+        delta: () => { tone(440, 0.11, 'sine', 0.055, 0); tone(698, 0.16, 'triangle', 0.06, 0.055); },
+        gamma: () => { tone(392, 0.1, 'sine', 0.055, 0); tone(587, 0.15, 'sine', 0.06, 0.055); },
+        close: () => {
+          tone(640, 0.07, 'triangle', 0.07, 0, 920);
+          tone(920, 0.14, 'sine', 0.072, 0.05);
+          tone(1318, 0.22, 'sine', 0.055, 0.1);
+        },
+        error: () => {
+          tone(190, 0.12, 'sawtooth', 0.045, 0, 145);
+          tone(145, 0.16, 'sawtooth', 0.04, 0.08, 110);
+        },
+        hint: () => { tone(440, 0.09, 'sine', 0.05, 0); tone(587, 0.14, 'sine', 0.055, 0.06); },
+        win: () => [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.24, 'sine', 0.068, i * 0.08))
+      };
+    })();
+
+    /* =========================================================================
+       2. MOTOR DE LÓGICA DE PREDICADOS DE PRIMER ORDEN (AST + SUSTITUCIÓN REAL)
+       ========================================================================= */
+    const FOL = (() => {
+      const CONSTS = ['a', 'b', 'c', 'd'];
+
+      // Constructores AST
+      const pred = (name, args) => ({ op: 'PRED', name, args: [...args] });
+      const not = (arg) => ({ op: 'NOT', arg });
+      const bin = (op, left, right) => ({ op, left, right });
+      const forall = (v, body) => ({ op: 'FORALL', v, body });
+      const exists = (v, body) => ({ op: 'EXISTS', v, body });
+      const isBin = (a) => a && (a.op === 'AND' || a.op === 'OR' || a.op === 'IMP' || a.op === 'IFF');
+
+      // Tokenizador para fórmulas de primer orden
+      function tokenize(str) {
+        const toks = [];
+        for (let i = 0; i < str.length; ) {
+          const ch = str[i];
+          if (/\s/.test(ch)) { i++; continue; }
+          if ('(),¬∧∨→↔∀∃'.includes(ch)) {
+            toks.push({ t: 'SYM', v: ch }); i++;
+          } else if (/[A-Z]/.test(ch)) {
+            let w = ch; i++;
+            while (i < str.length && /[A-Za-z0-9_]/.test(str[i])) w += str[i++];
+            toks.push({ t: 'PRED', v: w });
+          } else if (/[a-z]/.test(ch)) {
+            toks.push({ t: 'TERM', v: ch }); i++;
+          } else {
+            throw new Error('Carácter no reconocido en fórmula: ' + ch);
+          }
+        }
+        return toks;
+      }
+
+      // Parser recursivo descendente con precedencia estándar: ¬,∀,∃ > ∧ > ∨ > → > ↔
+      function parse(str) {
+        const toks = tokenize(str);
+        let pos = 0;
+        const peek = () => toks[pos];
+        const eat = (sym) => {
+          const tk = toks[pos];
+          if (!tk || (sym && tk.v !== sym)) throw new Error(`Error de sintaxis en "${str}"`);
+          pos++;
+          return tk;
+        };
+
+        function pIff() {
+          let left = pImp();
+          while (peek() && peek().v === '↔') { eat('↔'); left = bin('IFF', left, pImp()); }
+          return left;
+        }
+        function pImp() {
+          let left = pOr();
+          if (peek() && peek().v === '→') { eat('→'); left = bin('IMP', left, pImp()); }
+          return left;
+        }
+        function pOr() {
+          let left = pAnd();
+          while (peek() && peek().v === '∨') { eat('∨'); left = bin('OR', left, pAnd()); }
+          return left;
+        }
+        function pAnd() {
+          let left = pUnary();
+          while (peek() && peek().v === '∧') { eat('∧'); left = bin('AND', left, pUnary()); }
+          return left;
+        }
+        function pUnary() {
+          const tk = peek();
+          if (!tk) throw new Error('Fórmula incompleta: ' + str);
+          if (tk.v === '¬') { eat('¬'); return not(pUnary()); }
+          if (tk.v === '∀' || tk.v === '∃') {
+            const q = eat().v;
+            const v = eat().v;
+            const body = pUnary();
+            return q === '∀' ? forall(v, body) : exists(v, body);
+          }
+          if (tk.v === '(') {
+            eat('(');
+            const inner = pIff();
+            eat(')');
+            return inner;
+          }
+          if (tk.t === 'PRED') {
+            const name = eat().v;
+            eat('(');
+            const args = [eat().v];
+            while (peek() && peek().v === ',') {
+              eat(',');
+              args.push(eat().v);
+            }
+            eat(')');
+            return pred(name, args);
+          }
+          throw new Error('Token inesperado: ' + tk.v);
+        }
+
+        const ast = pIff();
+        if (pos !== toks.length) throw new Error('Tokens sobrantes en: ' + str);
+        return ast;
+      }
+
+      // Formateador canónico legible
+      function format(ast, root = true) {
+        if (!ast) return '';
+        if (ast.op === 'PRED') return `${ast.name}(${ast.args.join(',')})`;
+        if (ast.op === 'NOT') {
+          return isBin(ast.arg) ? `¬(${format(ast.arg, true)})` : `¬${format(ast.arg, false)}`;
+        }
+        if (ast.op === 'FORALL' || ast.op === 'EXISTS') {
+          const q = ast.op === 'FORALL' ? '∀' : '∃';
+          return isBin(ast.body) ? `${q}${ast.v}(${format(ast.body, true)})` : `${q}${ast.v} ${format(ast.body, false)}`;
+        }
+        const sym = { AND: '∧', OR: '∨', IMP: '→', IFF: '↔' }[ast.op];
+        const out = `${format(ast.left, false)} ${sym} ${format(ast.right, false)}`;
+        return root ? out : `(${out})`;
+      }
+
+      // Sustitución real de variable libre v -> constante c (respetando variables ligadas)
+      function substitute(ast, v, c) {
+        if (!ast) return ast;
+        if (ast.op === 'PRED') return pred(ast.name, ast.args.map((a) => (a === v ? c : a)));
+        if (ast.op === 'NOT') return not(substitute(ast.arg, v, c));
+        if (isBin(ast)) return bin(ast.op, substitute(ast.left, v, c), substitute(ast.right, v, c));
+        if (ast.op === 'FORALL' || ast.op === 'EXISTS') {
+          if (ast.v === v) return ast; // Variable ligada: no sustituir
+          return { op: ast.op, v: ast.v, body: substitute(ast.body, v, c) };
+        }
+        return ast;
+      }
+
+      // Extrae constantes activas presentes en el AST
+      function getConstants(ast, acc = new Set()) {
+        if (!ast) return acc;
+        if (ast.op === 'PRED') {
+          ast.args.forEach((a) => { if (CONSTS.includes(a)) acc.add(a); });
+        } else if (ast.op === 'NOT') {
+          getConstants(ast.arg, acc);
+        } else if (isBin(ast)) {
+          getConstants(ast.left, acc);
+          getConstants(ast.right, acc);
+        } else if (ast.op === 'FORALL' || ast.op === 'EXISTS') {
+          getConstants(ast.body, acc);
+        }
+        return acc;
+      }
+
+      // Información de literales atómicos
+      function literalInfo(ast) {
+        if (ast && ast.op === 'PRED') return { isLit: true, key: format(ast, true), neg: false, atom: ast };
+        if (ast && ast.op === 'NOT' && ast.arg.op === 'PRED') {
+          return { isLit: true, key: format(ast.arg, true), neg: true, atom: ast.arg };
+        }
+        return { isLit: false };
+      }
+
+      function areComplementary(a, b) {
+        const la = literalInfo(a), lb = literalInfo(b);
+        return la.isLit && lb.isLit && la.key === lb.key && la.neg !== lb.neg;
+      }
+
+      function samePredDiffArgs(a, b) {
+        const la = literalInfo(a), lb = literalInfo(b);
+        if (!la.isLit || !lb.isLit || la.neg === lb.neg) return false;
+        return la.atom.name === lb.atom.name && la.key !== lb.key;
+      }
+
+      // Clasificador completo de reglas α, β, δ, γ y literales
+      function classify(ast) {
+        const lit = literalInfo(ast);
+        if (lit.isLit) return { kind: 'literal', ...lit };
+
+        // α (Cian · Lineal vertical)
+        if (ast.op === 'NOT' && ast.arg.op === 'NOT') {
+          return { kind: 'alpha', name: 'Doble Negación (α)', branches: [[ast.arg.arg]], tip: '¬¬A equivale a A en la misma rama (α).' };
+        }
+        if (ast.op === 'AND') {
+          return { kind: 'alpha', name: 'Conjunción (α)', branches: [[ast.left, ast.right]], tip: 'A ∧ B apila A y B en vertical (α).' };
+        }
+        if (ast.op === 'NOT' && ast.arg.op === 'OR') {
+          return { kind: 'alpha', name: 'De Morgan · ¬(A ∨ B) (α)', branches: [[not(ast.arg.left), not(ast.arg.right)]], tip: 'De Morgan: ¬(A ∨ B) ≡ ¬A ∧ ¬B apila ambos en vertical (α).' };
+        }
+        if (ast.op === 'NOT' && ast.arg.op === 'IMP') {
+          return { kind: 'alpha', name: 'Condicional Negado (α)', branches: [[ast.arg.left, not(ast.arg.right)]], tip: '¬(A → B) ≡ A ∧ ¬B apila A y ¬B en vertical (α).' };
+        }
+
+        // β (Violeta · Bifurcación en 2 ramas)
+        if (ast.op === 'OR') {
+          return { kind: 'beta', name: 'Disyunción (β)', branches: [[ast.left], [ast.right]], tip: 'A ∨ B bifurca en dos ramas: A | B (β).' };
+        }
+        if (ast.op === 'IMP') {
+          return { kind: 'beta', name: 'Condicional (β)', branches: [[not(ast.left)], [ast.right]], tip: 'A → B ≡ ¬A ∨ B bifurca en ¬A | B (β).' };
+        }
+        if (ast.op === 'NOT' && ast.arg.op === 'AND') {
+          return { kind: 'beta', name: 'De Morgan · ¬(A ∧ B) (β)', branches: [[not(ast.arg.left)], [not(ast.arg.right)]], tip: 'De Morgan: ¬(A ∧ B) ≡ ¬A ∨ ¬B bifurca en ¬A | ¬B (β).' };
+        }
+        if (ast.op === 'IFF') {
+          return { kind: 'beta', name: 'Bicondicional (β)', branches: [[ast.left, ast.right], [not(ast.left), not(ast.right)]], tip: 'A ↔ B bifurca en valores iguales: [A, B] | [¬A, ¬B] (β).' };
+        }
+        if (ast.op === 'NOT' && ast.arg.op === 'IFF') {
+          return { kind: 'beta', name: 'Bicondicional Negado (β)', branches: [[ast.arg.left, not(ast.arg.right)], [not(ast.arg.left), ast.arg.right]], tip: '¬(A ↔ B) bifurca en valores opuestos: [A, ¬B] | [¬A, B] (β).' };
+        }
+
+        // δ (Ámbar · Existencial · Exige constante NUEVA en la rama)
+        if (ast.op === 'EXISTS') {
+          return {
+            kind: 'delta', v: ast.v, neg: false,
+            name: 'Existencial · ∃ (δ)',
+            instantiate: (c) => substitute(ast.body, ast.v, c),
+            tip: `Regla δ: sustituye ${ast.v} por una constante NUEVA en la rama.`
+          };
+        }
+        if (ast.op === 'NOT' && ast.arg.op === 'FORALL') {
+          return {
+            kind: 'delta', v: ast.arg.v, neg: true,
+            name: 'Universal Negado · ¬∀ (δ)',
+            instantiate: (c) => not(substitute(ast.arg.body, ast.arg.v, c)),
+            tip: `Espejo ¬∀${ast.arg.v} ≡ ∃${ast.arg.v}¬ (δ): niega el cuerpo y usa una constante NUEVA.`
+          };
+        }
+
+        // γ (Esmeralda · Universal · Reutilizable ∞ con cualquier constante)
+        if (ast.op === 'FORALL') {
+          return {
+            kind: 'gamma', v: ast.v, neg: false,
+            name: 'Universal · ∀ (γ)',
+            instantiate: (c) => substitute(ast.body, ast.v, c),
+            tip: `Regla γ (∞): instancia ${ast.v} con cualquier constante y sigue disponible.`
+          };
+        }
+        if (ast.op === 'NOT' && ast.arg.op === 'EXISTS') {
+          return {
+            kind: 'gamma', v: ast.arg.v, neg: true,
+            name: 'Existencial Negado · ¬∃ (γ)',
+            instantiate: (c) => not(substitute(ast.arg.body, ast.arg.v, c)),
+            tip: `Espejo ¬∃${ast.arg.v} ≡ ∀${ast.arg.v}¬ (γ ∞): niega el cuerpo e instancia con cualquier constante.`
+          };
+        }
+
+        throw new Error('No se pudo clasificar la fórmula: ' + format(ast, true));
+      }
+
+      // Generador de 3 opciones táctiles (1 correcta + 2 trampas típicas) para reglas α y β
+      function buildPropChoices(ast) {
+        const info = classify(ast);
+        const correct = { id: 'ok', ok: true, kind: info.kind, branches: info.branches, exp: info.tip };
+        const traps = [];
+
+        if (ast.op === 'NOT' && ast.arg.op === 'NOT') {
+          const A = ast.arg.arg;
+          traps.push({ kind: 'alpha', branches: [[not(A)]], exp: 'Dos negaciones seguidas (¬¬) se anulan: el resultado es positivo.' });
+          traps.push({ kind: 'beta', branches: [[A], [not(A)]], exp: '¬¬A es una regla α lineal, nunca bifurca.' });
+        } else if (ast.op === 'AND') {
+          traps.push({ kind: 'beta', branches: [[ast.left], [ast.right]], exp: 'A ∧ B exige que ambos se cumplan a la vez: es regla α (apila), no β.' });
+          traps.push({ kind: 'alpha', branches: [[not(ast.left), not(ast.right)]], exp: 'No hay ninguna ¬ delante de la conjunción.' });
+        } else if (ast.op === 'NOT' && ast.arg.op === 'OR') {
+          const { left: L, right: R } = ast.arg;
+          traps.push({ kind: 'beta', branches: [[not(L)], [not(R)]], exp: '¡Trampa De Morgan! ¬(A ∨ B) ≡ ¬A ∧ ¬B es regla α y apila en vertical.' });
+          traps.push({ kind: 'alpha', branches: [[L, not(R)]], exp: 'De Morgan niega AMBOS componentes: ¬A y ¬B.' });
+        } else if (ast.op === 'NOT' && ast.arg.op === 'IMP') {
+          const { left: L, right: R } = ast.arg;
+          traps.push({ kind: 'beta', branches: [[not(L)], [R]], exp: 'Esa es la regla de A → B sin negar. Aquí tenemos ¬(A → B), que es α: apila A y ¬B.' });
+          traps.push({ kind: 'alpha', branches: [[not(L), R]], exp: '¡Signos al revés! ¬(A → B) es verdadera cuando A es V y B es F (A y ¬B).' });
+        } else if (ast.op === 'OR') {
+          traps.push({ kind: 'alpha', branches: [[ast.left, ast.right]], exp: 'A ∨ B es regla β: basta con uno de los dos, así que bifurca.' });
+          traps.push({ kind: 'beta', branches: [[not(ast.left)], [ast.right]], exp: 'No niegues el primero: eso se hace en →, no en ∨.' });
+        } else if (ast.op === 'IMP') {
+          traps.push({ kind: 'beta', branches: [[ast.left], [ast.right]], exp: '¡Trampa de examen! A → B ≡ ¬A ∨ B: el antecedente va NEGADO (¬A | B).' });
+          traps.push({ kind: 'alpha', branches: [[not(ast.left), ast.right]], exp: 'El condicional A → B es una regla β (bifurca), no apila en vertical.' });
+        } else if (ast.op === 'NOT' && ast.arg.op === 'AND') {
+          const { left: L, right: R } = ast.arg;
+          traps.push({ kind: 'alpha', branches: [[not(L), not(R)]], exp: '¡Trampa De Morgan! ¬(A ∧ B) ≡ ¬A ∨ ¬B es regla β y DEBE bifurcar.' });
+          traps.push({ kind: 'beta', branches: [[L], [not(R)]], exp: 'De Morgan niega ambos lados: ¬A | ¬B.' });
+        } else if (ast.op === 'IFF') {
+          traps.push({ kind: 'beta', branches: [[ast.left, not(ast.right)], [not(ast.left), ast.right]], exp: 'Esa corresponde a ¬(A ↔ B). Sin negar, ambos toman el mismo valor.' });
+          traps.push({ kind: 'alpha', branches: [[ast.left, ast.right]], exp: 'Falta la rama donde ambos son falsos ([¬A, ¬B]).' });
+        } else if (ast.op === 'NOT' && ast.arg.op === 'IFF') {
+          const { left: L, right: R } = ast.arg;
+          traps.push({ kind: 'beta', branches: [[L, R], [not(L), not(R)]], exp: 'Al estar negado, los valores son opuestos: [A, ¬B] | [¬A, B].' });
+          traps.push({ kind: 'alpha', branches: [[L, not(R)]], exp: '¬(A ↔ B) tiene 2 casos posibles y debe bifurcar (β).' });
+        }
+
+        const out = [correct, ...traps.slice(0, 2).map((t, i) => ({ ...t, id: 't' + i, ok: false }))];
+        for (let i = out.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [out[i], out[j]] = [out[j], out[i]];
+        }
+        return out;
+      }
+
+      return { CONSTS, parse, format, substitute, getConstants, literalInfo, areComplementary, samePredDiffArgs, classify, buildPropChoices };
+    })();
+
+    /* =========================================================================
+       3. DATOS: ACADEMIA (5 LECCIONES), CAMPAÑA (5 NIVELES), FORJA & MINI-MUNDOS (8)
+       ========================================================================= */
+    const ACADEMY_LESSONS = [
+      {
+        id: 'ac1', num: 1,
+        title: '∀ y ∃ (La pareja prohibida)',
+        sub: 'Predicados P(x), constantes y la regla ∀→ / ∃∧',
+        badge: 'Lección 1 · Bases', bCls: 'b-gamma',
+        type: 'quiz',
+        introTitle: 'Los bloques de la Lógica de Predicados',
+        points: [
+          'En lugar de letras sueltas (<span class="mono">p, q</span>), ahora miramos dentro de los enunciados usando <strong>predicados</strong> como <span class="mono">H(x)</span> ("x es humano") e individuos o <strong>constantes</strong> (<span class="mono">a, b, c</span>).',
+          '<strong><span style="color:#6ee7b7">∀x</span> ("Para todo x")</strong> casi siempre viaja en pareja con el <strong>condicional (→)</strong>: "Todos los A son B" = <span class="mono">∀x(A(x) → B(x))</span>.',
+          '<strong><span style="color:#fcd34d">∃x</span> ("Existe algún x")</strong> casi siempre viaja en pareja con la <strong>conjunción (∧)</strong>: "Algún A es B" = <span class="mono">∃x(A(x) ∧ B(x))</span>. ¡Nunca mezcles las parejas!'
+        ],
+        pills: [
+          { f: 'Todos los A son B', r: '∀x (A(x) → B(x))', c: 'gamma' },
+          { f: 'Algún A es B', r: '∃x (A(x) ∧ B(x))', c: 'delta' }
+        ],
+        steps: [
+          {
+            prompt: 'Mini-reto 1/2 · Pulsa la formalización correcta:',
+            expr: '"Todos los humanos (H) son mortales (M)"',
+            options: [
+              { id: 'o1', ok: true, text: '∀x (H(x) → M(x))', fb: '¡Perfecto! Si x es humano, entonces x es mortal. Con ∀ usamos →.' },
+              { id: 'o2', ok: false, text: '∀x (H(x) ∧ M(x))', fb: '¡Pareja prohibida! Eso diría que TODAS las cosas del universo (mesas, rocas...) son humanos y mortales. Usa → con ∀.' },
+              { id: 'o3', ok: false, text: '∃x (H(x) → M(x))', fb: '"Todos" exige el cuantificador universal ∀x, no ∃x.' }
+            ]
+          },
+          {
+            prompt: 'Mini-reto 2/2 · Pulsa la formalización correcta:',
+            expr: '"Algún estudiante (E) aprueba lógica (A)"',
+            options: [
+              { id: 'o1', ok: false, text: '∃x (E(x) → A(x))', fb: '¡Trampa clásica de examen! Con → bastaría un objeto que no sea estudiante para hacerla verdadera. Con ∃ usa siempre ∧.' },
+              { id: 'o2', ok: true, text: '∃x (E(x) ∧ A(x))', fb: '¡Clavado! Existe al menos un individuo que es estudiante Y aprueba lógica.' },
+              { id: 'o3', ok: false, text: '∀x (E(x) ∧ A(x))', fb: 'La frase dice "Algún" (existencial ∃x), no "Todos".' }
+            ]
+          }
+        ],
+        doneNote: '¡Base dominada! Grábate a fuego la regla de examen: Todos = ∀...→  |  Algún = ∃...∧.'
+      },
+      {
+        id: 'ac2', num: 2,
+        title: 'Negar Cuantificadores',
+        sub: 'Empujar ¬ hacia dentro: ¬∀ ≡ ∃¬ y ¬∃ ≡ ∀¬',
+        badge: 'Lección 2 · Espejo', bCls: 'b-beta',
+        type: 'quiz',
+        introTitle: 'El espejo al empujar la negación ¬',
+        points: [
+          'Cuando una negación <span class="mono">¬</span> atraviesa un cuantificador, <strong>lo cambia por el contrario</strong> y sigue hacia dentro:',
+          '<span class="mono" style="color:#fcd34d">¬∀x P(x) ≡ ∃x ¬P(x)</span> — "No todos son P" equivale a "Existe alguno que NO es P". Por eso <span class="mono">¬∀</span> es una regla existencial <strong>δ</strong>.',
+          '<span class="mono" style="color:#6ee7b7">¬∃x P(x) ≡ ∀x ¬P(x)</span> — "No existe ningún P" equivale a "Todos son NO-P". Por eso <span class="mono">¬∃</span> es una regla universal <strong>γ</strong>.'
+        ],
+        pills: [
+          { f: '¬∀x P(x)', r: '∃x ¬P(x) (δ)', c: 'delta' },
+          { f: '¬∃x P(x)', r: '∀x ¬P(x) (γ)', c: 'gamma' }
+        ],
+        steps: [
+          {
+            prompt: 'Ejercicio 1/2 · Empuja ¬ hacia dentro:',
+            expr: '¬∀x P(x)',
+            options: [
+              { id: 'o1', ok: true, text: '∃x ¬P(x)', fb: '¡Exacto! ¬∀ gira a ∃ y niega el predicado interior. En tableaux será regla δ.' },
+              { id: 'o2', ok: false, text: '∀x ¬P(x)', fb: '∀x ¬P(x) dice "Ninguno es P", mucho más fuerte que "No todos son P". Debes girar ∀ en ∃.' },
+              { id: 'o3', ok: false, text: '∃x P(x)', fb: 'No pierdas la negación ¬ al cruzar el cuantificador.' }
+            ]
+          },
+          {
+            prompt: 'Ejercicio 2/2 · Empuja ¬ hacia dentro:',
+            expr: '¬∃x Q(x)',
+            options: [
+              { id: 'o1', ok: false, text: '∃x ¬Q(x)', fb: 'Eso solo dice "Alguno no es Q". Si NO EXISTE ningún Q, significa que TODOS son ¬Q.' },
+              { id: 'o2', ok: true, text: '∀x ¬Q(x)', fb: '¡Genial! ¬∃ gira a ∀ y niega el cuerpo. En tableaux funcionará como regla γ.' },
+              { id: 'o3', ok: false, text: '∀x Q(x)', fb: 'Olvidaste mantener la negación sobre Q(x).' }
+            ]
+          }
+        ],
+        doneNote: '¡Espejo dominado! Ya sabes exactamente por qué ¬∀ actúa como δ y ¬∃ actúa como γ en los tableaux.'
+      },
+      {
+        id: 'ac3', num: 3,
+        title: 'Regla δ (El Invitado Nuevo)',
+        sub: 'Por qué ∃x y ¬∀x prohíben reutilizar constantes',
+        badge: 'Lección 3 · Regla δ', bCls: 'b-delta',
+        type: 'tableau',
+        mode: 'delta-lesson',
+        introTitle: 'Regla δ (Ámbar): siempre un nombre NUEVO',
+        points: [
+          'Las <strong style="color:#fcd34d">reglas δ</strong> (<span class="mono">∃x φ</span> y <span class="mono">¬∀x φ</span>) nos dicen que existe <em>un invitado</em> que cumple la propiedad.',
+          'Si ya bautizamos al primero como <span class="mono">a</span> (con <span class="mono">P(a)</span>), al llegar un segundo existencial (<span class="mono">¬∀x Q(x)</span>) <strong>NO podemos asumir que sea el mismo individuo <span class="mono">a</span></strong>.',
+          'En el tablero: expande primero <span class="mono">∃x P(x)</span> con <span class="mono">a</span>. Luego toca <span class="mono">¬∀x Q(x)</span>: prueba qué ocurre si intentas reutilizar <span class="mono">a</span> y después elige <span class="mono">b</span>.'
+        ],
+        pills: [
+          { f: '∃x φ(x)', r: 'φ(c NUEVA)', c: 'delta' },
+          { f: '¬∀x φ(x)', r: '¬φ(c NUEVA)', c: 'delta' }
+        ],
+        roots: ['∃x P(x)', '¬∀x Q(x)'],
+        coach0: 'Toca ∃x P(x) (regla δ) y elige la constante "a" para introducir al primer individuo.',
+        doneNote: '¡Impecable! Viste en directo por qué cada regla δ exige una constante nueva en la rama (a y luego b).'
+      },
+      {
+        id: 'ac4', num: 4,
+        title: 'Regla γ y la Regla de Oro (δ antes que γ)',
+        sub: 'Reutilización ∞ y por qué δ va siempre antes',
+        badge: 'Lección 4 · Regla γ', bCls: 'b-gamma',
+        type: 'tableau',
+        mode: 'gamma-gold',
+        introTitle: 'Regla γ (Esmeralda ∞) y el orden ganador',
+        points: [
+          'Las <strong style="color:#6ee7b7">reglas γ</strong> (<span class="mono">∀x φ</span> y <span class="mono">¬∃x φ</span>) valen para <strong>TODOS</strong>: puedes instanciarlas con constantes que ya estén en la rama y <strong>reutilizarlas varias veces</strong>.',
+          '<strong>Regla de Oro:</strong> aplica SIEMPRE <strong>δ antes que γ</strong>. Así δ crea la constante <span class="mono">a</span>, y después γ dispara directamente sobre esa misma <span class="mono">a</span> para provocar el cierre.',
+          'Si intentas tocar <span class="mono">∀x ¬P(x)</span> antes que <span class="mono">∃x P(x)</span>, tu Coach te avisará para que veas la diferencia.'
+        ],
+        pills: [
+          { f: '1º δ (∃ / ¬∀)', r: 'Crea "a"', c: 'delta' },
+          { f: '2º γ (∀ / ¬∃)', r: 'Usa "a" → ×', c: 'gamma' }
+        ],
+        roots: ['∀x ¬P(x)', '∃x P(x)'],
+        coach0: 'Tienes una γ (∀x ¬P(x)) y una δ (∃x P(x)). Siguiendo la Regla de Oro, toca primero la regla δ.',
+        doneNote: '¡Estrategia dominada! Abriendo δ primero cerraste la rama en solo 2 pasos, y viste que la γ conservó su etiqueta [a] lista por si hiciera falta otra constante.'
+      },
+      {
+        id: 'ac5', num: 5,
+        title: 'Tu Primer Tableau de Predicados',
+        sub: 'Resuelve completo {∀x(H(x)→M(x)), H(a)} ⊨ M(a)',
+        badge: 'Lección 5 · Completo', bCls: 'b-alpha',
+        type: 'tableau',
+        mode: 'first-full',
+        introTitle: 'El Silogismo de Sócrates paso a paso',
+        points: [
+          'Vamos a resolver un ejercicio completo de examen: demostrar <span class="mono">{∀x(H(x) → M(x)), H(a)} ⊨ M(a)</span>.',
+          '<strong>Fase 0:</strong> para comprobar consecuencia lógica, siempre colocamos las premisas tal cual y la <strong>conclusión NEGADA</strong> (<span class="mono">¬M(a)</span>).',
+          'Después instanciaremos <span class="mono">∀x(H(x) → M(x))</span> con la constante <span class="mono">a</span> ya presente, bifurcamos el condicional (<span class="mono">β</span>) y cerramos ambas ramas.'
+        ],
+        pills: [
+          { f: 'Fase 0: Γ ⊨ φ', r: 'Raíz { Γ, ¬φ }', c: 'alpha' },
+          { f: 'Todas cerradas ×', r: 'SÍ es válida', c: 'close' }
+        ],
+        phase0: {
+          prompt: 'Demuestra mediante tableau la consecuencia lógica:',
+          expr: '{ ∀x(H(x) → M(x)), H(a) }  ⊨  M(a)',
+          ask: '¿Qué conjunto debes colocar en la raíz del árbol?',
+          options: [
+            { id: 'a', ok: true, f: '{ ∀x(H(x) → M(x)), H(a), ¬M(a) }', cap: 'Premisas tal cual + conclusión negada', fb: '¡Exacto! Buscamos si puede haber premisas verdaderas y conclusión falsa.' },
+            { id: 'b', ok: false, f: '{ ∀x(H(x) → M(x)), H(a), M(a) }', cap: 'Premisas + conclusión sin negar', fb: 'Para demostrar consecuencia lógica SIEMPRE debes negar la conclusión.' },
+            { id: 'c', ok: false, f: '{ ¬∀x(H(x) → M(x)), H(a), ¬M(a) }', cap: 'Negando también la primera premisa', fb: 'Las premisas nunca se niegan en Fase 0, solo la conclusión.' }
+          ]
+        },
+        roots: ['∀x(H(x) → M(x))', 'H(a)', '¬M(a)'],
+        coach0: 'La constante "a" ya está en la rama. Toca ∀x(H(x) → M(x)) (γ) e instánciala con "a".',
+        doneNote: '¡Enhorabuena! Has completado toda la Academia de Predicados. Ya estás preparado para conquistar los 5 niveles de la Campaña.'
+      }
+    ];
+
+    const CAMPAIGN_LEVELS = [
+      {
+        id: 's2_n1', num: 1, title: 'El Silogismo de Sócrates',
+        sub: '{∀x(H(x) → M(x)), H(a)} ⊨ M(a)',
+        badge: 'Nivel 1 · Grimorio Gratis', bCls: 'b-gamma',
+        goal: 'Monta la raíz en Fase 0, instancia γ con "a", bifurca el condicional β y cierra las 2 ramas.',
+        roots: ['∀x(H(x) → M(x))', 'H(a)', '¬M(a)'],
+        par: 2, grimCost: 0,
+        phase0: {
+          prompt: 'Demuestra mediante tableau de primer orden:',
+          expr: '{ ∀x(H(x) → M(x)), H(a) }  ⊨  M(a)',
+          ask: 'Elige la raíz correcta (Fase 0):',
+          options: [
+            { id: 'a', ok: true, f: '{ ∀x(H(x) → M(x)), H(a), ¬M(a) }', cap: 'Premisas + conclusión negada (¬M(a))', fb: '¡Perfecto! Ahora instancia el universal con "a".' },
+            { id: 'b', ok: false, f: '{ ∀x(H(x) → M(x)), H(a), M(a) }', cap: 'Sin negar la conclusión', fb: 'Debes negar la conclusión para buscar contradicción.' },
+            { id: 'c', ok: false, f: '{ ∀x(H(x) → M(x)), ¬H(a), ¬M(a) }', cap: 'Negando H(a) y M(a)', fb: 'H(a) es premisa: nunca se niega.' }
+          ]
+        },
+        finalPhase: {
+          type: 'verdict',
+          title: 'Veredicto de Examen · Nivel 1',
+          prompt: 'Todas las ramas se cerraron (×). ¿Qué queda demostrado sobre {∀x(H(x) → M(x)), H(a)} ⊨ M(a)?',
+          options: [
+            { id: 'v1', ok: true, text: 'SÍ es consecuencia lógica válida (no existe contramodelo).', fb: '¡Exacto! El cierre total demuestra que M(a) se sigue necesariamente.' },
+            { id: 'v2', ok: false, text: 'NO es consecuencia lógica porque el árbol cerró.', fb: '¡Al revés! Al haber negado M(a), el cierre total prueba que SÍ es válida.' },
+            { id: 'v3', ok: false, text: 'Solo es válida si el universo tiene un único elemento.', fb: 'No hace falta restringir el universo: el cierre vale para cualquier dominio.' }
+          ]
+        }
+      },
+      {
+        id: 's2_n2', num: 2, title: 'Estrategia Maestra: δ antes que γ',
+        sub: '{∀x(P(x) → Q(x)), ∃x P(x)} ⊨ ∃x Q(x)',
+        badge: 'Nivel 2 · Estrategia δ→γ', bCls: 'b-delta',
+        goal: 'Aplica δ antes que las dos γ para aprovechar la misma constante "a" y cerrar en 4 pasos.',
+        roots: ['∀x(P(x) → Q(x))', '∃x P(x)', '¬∃x Q(x)'],
+        par: 4, grimCost: 15,
+        phase0: {
+          prompt: 'Demuestra mediante tableau la consecuencia lógica:',
+          expr: '{ ∀x(P(x) → Q(x)), ∃x P(x) }  ⊨  ∃x Q(x)',
+          ask: 'Selecciona el conjunto raíz para Fase 0:',
+          options: [
+            { id: 'a', ok: true, f: '{ ∀x(P(x) → Q(x)), ∃x P(x), ¬∃x Q(x) }', cap: 'Premisas + negación externa ¬∃x Q(x)', fb: '¡Clavado! Recuerda: aplica primero δ sobre ∃x P(x).' },
+            { id: 'b', ok: false, f: '{ ∀x(P(x) → Q(x)), ∃x P(x), ∃x ¬Q(x) }', cap: 'Metiendo ¬ dentro sin girar ∃', fb: '¡Error de espejo! Negar ∃x Q(x) es ¬∃x Q(x) (≡ ∀x ¬Q(x)), nunca ∃x ¬Q(x).' },
+            { id: 'c', ok: false, f: '{ ∀x(P(x) → Q(x)), ∃x P(x), ∃x Q(x) }', cap: 'Sin negar la conclusión', fb: 'En Fase 0 siempre negamos la conclusión.' }
+          ]
+        },
+        finalPhase: {
+          type: 'verdict',
+          title: 'Veredicto de Examen · Nivel 2',
+          prompt: 'Todas las ramas cerraron (×). ¿Cuál es la conclusión oficial?',
+          options: [
+            { id: 'v1', ok: true, text: 'SÍ es consecuencia lógica válida.', fb: '¡Genial! Dominar el orden δ → γ evita sacar constantes inútiles.' },
+            { id: 'v2', ok: false, text: 'NO es consecuencia lógica.', fb: 'Como {Premisas, ¬Conclusión} es insatisfacible, la consecuencia SÍ es válida.' },
+            { id: 'v3', ok: false, text: 'Las premisas son contradictorias entre sí.', fb: 'Las premisas por sí solas son satisfacibles; la contradicción surge al añadir ¬∃x Q(x).' }
+          ]
+        }
+      },
+      {
+        id: 's2_n3', num: 3, title: 'Modus Tollens Cuantificado',
+        sub: '{∀x(P(x) → Q(x)), ∃x ¬Q(x)} ⊨ ∃x ¬P(x)',
+        badge: 'Nivel 3 · δ + γ + α + β', bCls: 'b-beta',
+        goal: 'Aplica δ, usa γ para obtener ¬¬P(a), elimina la doble negación (α), instancia el condicional y cierra.',
+        roots: ['∀x(P(x) → Q(x))', '∃x ¬Q(x)', '¬∃x ¬P(x)'],
+        par: 5, grimCost: 15,
+        phase0: {
+          prompt: 'Demuestra la versión en predicados del Modus Tollens:',
+          expr: '{ ∀x(P(x) → Q(x)), ∃x ¬Q(x) }  ⊨  ∃x ¬P(x)',
+          ask: '¿Qué fórmulas debes colocar en la raíz?',
+          options: [
+            { id: 'a', ok: true, f: '{ ∀x(P(x) → Q(x)), ∃x ¬Q(x), ¬∃x ¬P(x) }', cap: 'Premisas + conclusión negada ¬∃x ¬P(x)', fb: '¡Exacto! Fíjate que ¬∃x ¬P(x) es una regla γ que producirá ¬¬P(a).' },
+            { id: 'b', ok: false, f: '{ ∀x(P(x) → Q(x)), ∃x ¬Q(x), ∃x P(x) }', cap: 'Quitando el ¬ de dentro de ∃x ¬P(x)', fb: 'Negar ∃x ¬P(x) da ¬∃x ¬P(x) (que equivale a ∀x ¬¬P(x)), no ∃x P(x).' },
+            { id: 'c', ok: false, f: '{ ∀x(P(x) → Q(x)), ∃x ¬Q(x), ∃x ¬P(x) }', cap: 'Sin negar la conclusión', fb: 'Falta anteponer ¬ a la conclusión.' }
+          ]
+        },
+        finalPhase: {
+          type: 'verdict',
+          title: 'Veredicto de Examen · Nivel 3',
+          prompt: 'El árbol cerró por completo. ¿Es válida la inferencia?',
+          options: [
+            { id: 'v1', ok: true, text: 'SÍ es consecuencia lógica válida (Modus Tollens cuantificado).', fb: '¡Magistral! Combinaste δ, γ, α y β en el orden óptimo.' },
+            { id: 'v2', ok: false, text: 'NO es válida por la doble negación ¬¬P(a).', fb: '¬¬P(a) equivale a P(a) y cerró válidamente contra ¬P(a).' },
+            { id: 'v3', ok: false, text: 'Es indeterminada.', fb: 'Todo tableau cerrado decide de forma definitiva la validez.' }
+          ]
+        }
+      },
+      {
+        id: 's2_n4', num: 4, title: 'La Trampa del Contramodelo',
+        sub: '¿Es válido {∃x P(x), ∃x Q(x)} ⊨ ∃x(P(x) ∧ Q(x))?',
+        badge: 'Nivel 4 · Contramodelo', bCls: 'b-coral',
+        goal: 'Respeta la regla δ (crea "a" y "b"), instancia γ con ambas constantes, satura una rama abierta y construye el contramodelo.',
+        roots: ['∃x P(x)', '∃x Q(x)', '¬∃x(P(x) ∧ Q(x))'],
+        par: 6, grimCost: 15,
+        phase0: {
+          prompt: 'Comprueba si es válida esta clásica trampa de examen:',
+          expr: '{ ∃x P(x), ∃x Q(x) }  ⊨  ∃x(P(x) ∧ Q(x))',
+          ask: 'Monta la raíz correcta (Fase 0):',
+          options: [
+            { id: 'a', ok: true, f: '{ ∃x P(x), ∃x Q(x), ¬∃x(P(x) ∧ Q(x)) }', cap: 'Premisas + conclusión negada', fb: '¡Bien! Ahora aplica las dos δ (¡constantes distintas!) y luego γ con ambas.' },
+            { id: 'b', ok: false, f: '{ ∃x P(x), ∃x Q(x), ∃x ¬(P(x) ∧ Q(x)) }', cap: 'Negando solo el paréntesis interno', fb: '¡Cuidado! ¬∃x(...) no es ∃x ¬(...); la negación va delante del cuantificador.' },
+            { id: 'c', ok: false, f: '{ ∃x P(x), ∃x Q(x), ∃x(P(x) ∧ Q(x)) }', cap: 'Sin negar la conclusión', fb: 'Siempre negamos la conclusión en Fase 0.' }
+          ]
+        },
+        finalPhase: {
+          type: 'countermodel',
+          title: 'Construye el Contramodelo Finito',
+          verdictPrompt: 'Al quedar una rama abierta y saturada, ¿es válida {∃x P(x), ∃x Q(x)} ⊨ ∃x(P(x) ∧ Q(x))?',
+          verdictOptions: [
+            { id: 'cm1', ok: true, text: 'NO es consecuencia lógica (en D={a, b} las premisas son V y la conclusión es F).' },
+            { id: 'cm2', ok: false, text: 'SÍ es consecuencia lógica.' },
+            { id: 'cm3', ok: false, text: 'El conjunto de premisas es insatisfacible.' }
+          ]
+        }
+      },
+      {
+        id: 's2_n5', num: 5, title: 'El Baile de Relaciones R(x,y)',
+        sub: '{∃x ∀y R(x,y)} ⊨ ∀y ∃x R(x,y)',
+        badge: 'Nivel 5 · Jefe de Temporada', bCls: 'b-alpha',
+        goal: 'Aplica las dos δ (constantes nuevas a y b) y luego las dos γ cruzadas para cerrar en 4 pasos sin bifurcar.',
+        roots: ['∃x ∀y R(x,y)', '¬∀y ∃x R(x,y)'],
+        par: 4, grimCost: 15,
+        phase0: {
+          prompt: 'Reto Jefe de Temporada · Demuestra con predicado binario R(x,y):',
+          expr: '{ ∃x ∀y R(x,y) }  ⊨  ∀y ∃x R(x,y)',
+          ask: 'Elige la raíz correcta para Fase 0:',
+          options: [
+            { id: 'a', ok: true, f: '{ ∃x ∀y R(x,y), ¬∀y ∃x R(x,y) }', cap: 'Premisa + conclusión negada', fb: '¡Exacto! Ambas son reglas δ: abre las dos primero para crear "a" y "b".' },
+            { id: 'b', ok: false, f: '{ ∃x ∀y R(x,y), ∀y ∃x ¬R(x,y) }', cap: 'Negando solo R(x,y) al final', fb: 'La negación debe ir fuera: ¬∀y ∃x R(x,y) (al empujarla cambiarían ambos cuantificadores).' },
+            { id: 'c', ok: false, f: '{ ¬∃x ∀y R(x,y), ∀y ∃x R(x,y) }', cap: 'Negando la premisa en vez de la conclusión', fb: 'Se niega la conclusión, nunca la premisa.' }
+          ]
+        },
+        finalPhase: {
+          type: 'verdict',
+          title: '¡Jefe de Temporada 2 Derrotado!',
+          prompt: 'La rama cerró directamente con R(a,b) y ¬R(a,b). ¿Qué queda demostrado?',
+          options: [
+            { id: 'v1', ok: true, text: 'SÍ es válida: ∃x ∀y R(x,y) ⊨ ∀y ∃x R(x,y) en todo universo no vacío.', fb: '¡Sobresaliente! Recuerda el truco de examen: el ∃ puede viajar a la derecha (∃∀ ⊨ ∀∃), pero NO al revés.' },
+            { id: 'v2', ok: false, text: 'NO es válida porque usamos dos constantes distintas.', fb: 'Usar a y b en las δ fue obligatorio y aun así las γ cruzadas lograron cerrar.' },
+            { id: 'v3', ok: false, text: 'También es válida la inversa ∀y ∃x R(x,y) ⊨ ∃x ∀y R(x,y).', fb: '¡Cuidado! La inversa es FALSA (puedes probarlo en Forja & Mini-Mundos).' }
+          ]
+        }
+      }
+    ];
+
+    // MÓDULO 3: FORJA & MINI-MUNDOS (8 retos variados: 4 SVG Mini-Mundos + 4 Formalización/Variables)
+    const FORGE_CHALLENGES = [
+      {
+        id: 'f1', kind: 'world', tag: 'Mini-Mundo 1/8 · Relaciones',
+        prompt: 'Observa el universo D = {a, b, c} con las flechas de la relación R(x,y). ¿Es VERDADERA o FALSA esta fórmula?',
+        formula: '∀x ∃y R(x,y)',
+        legend: 'Flecha x → y significa que R(x,y) es verdadera.',
+        world: {
+          nodes: [
+            { id: 'a', x: 150, y: 42, shape: 'circle', color: '#22d3ee' },
+            { id: 'b', x: 245, y: 150, shape: 'circle', color: '#22d3ee' },
+            { id: 'c', x: 55, y: 150, shape: 'circle', color: '#22d3ee' }
+          ],
+          edges: [['a', 'b'], ['b', 'c'], ['c', 'a']]
+        },
+        options: [
+          { id: 'T', ok: true, text: 'VERDADERA (V)' },
+          { id: 'F', ok: false, text: 'FALSA (F)' }
+        ],
+        exp: 'VERDADERA: ∀x ∃y R(x,y) exige que de CADA nodo salga al menos una flecha. De a sale a→b, de b sale b→c y de c sale c→a.'
+      },
+      {
+        id: 'f2', kind: 'formal', tag: 'Formalización 2/8 · Trampa ∀',
+        prompt: 'Con I(x): "x es informático" y P(x): "x programa", elige la traducción exacta de:',
+        formula: '"Todos los informáticos programan"',
+        options: [
+          { id: 'a', ok: true, text: '∀x (I(x) → P(x))' },
+          { id: 'b', ok: false, text: '∀x (I(x) ∧ P(x))' },
+          { id: 'c', ok: false, text: '∃x (I(x) → P(x))' }
+        ],
+        exp: 'Con "Todos" usamos ∀x junto al condicional →. La opción ∀x(I(x) ∧ P(x)) afirmaría que absolutamente todo lo que existe en el universo es informático.'
+      },
+      {
+        id: 'f3', kind: 'world', tag: 'Mini-Mundo 3/8 · La Inversa Falsa',
+        prompt: 'En este mismo universo de ciclo sin bucles (a→b, b→c, c→a), evalúa la fórmula con los cuantificadores invertidos:',
+        formula: '∃y ∀x R(x,y)',
+        legend: '¿Existe un nodo "y" al que le lleguen flechas desde TODOS (a, b y c, incluido él mismo)?',
+        world: {
+          nodes: [
+            { id: 'a', x: 150, y: 42, shape: 'circle', color: '#a78bfa' },
+            { id: 'b', x: 245, y: 150, shape: 'circle', color: '#a78bfa' },
+            { id: 'c', x: 55, y: 150, shape: 'circle', color: '#a78bfa' }
+          ],
+          edges: [['a', 'b'], ['b', 'c'], ['c', 'a']]
+        },
+        options: [
+          { id: 'T', ok: false, text: 'VERDADERA (V)' },
+          { id: 'F', ok: true, text: 'FALSA (F)' }
+        ],
+        exp: 'FALSA: ningún nodo recibe flechas de los 3 (ni siquiera tienen bucle sobre sí mismos). Este es el contramodelo estrella para probar que ∀x∃y R(x,y) ⊭ ∃y∀x R(x,y).'
+      },
+      {
+        id: 'f4', kind: 'formal', tag: 'Formalización 4/8 · Trampa ∃',
+        prompt: 'Con E(x): "x es estudiante" y M(x): "x madruga", formaliza:',
+        formula: '"Algún estudiante no madruga"',
+        options: [
+          { id: 'a', ok: false, text: '∃x (E(x) → ¬M(x))' },
+          { id: 'b', ok: true, text: '∃x (E(x) ∧ ¬M(x))' },
+          { id: 'c', ok: false, text: '¬∃x (E(x) ∧ M(x))' }
+        ],
+        exp: 'Con "Algún" usamos SIEMPRE ∃x con ∧. La opción C significa "Ningún estudiante madruga", y la A cae en la trampa de usar → con ∃.'
+      },
+      {
+        id: 'f5', kind: 'world', tag: 'Mini-Mundo 5/8 · Propiedades',
+        prompt: 'P(x) = "x es CIAN", Q(x) = "x es CUADRADO". Evalúa en este universo D = {a, b, c}:',
+        formula: '∀x (P(x) → Q(x))',
+        legend: 'Cian = cumple P(x) · Ámbar = NO cumple P(x) · Cuadrado = cumple Q(x) · Círculo = NO cumple Q(x).',
+        world: {
+          nodes: [
+            { id: 'a', x: 65, y: 98, shape: 'square', color: '#22d3ee' },
+            { id: 'b', x: 150, y: 98, shape: 'circle', color: '#22d3ee' },
+            { id: 'c', x: 235, y: 98, shape: 'square', color: '#f59e0b' }
+          ],
+          edges: []
+        },
+        options: [
+          { id: 'T', ok: false, text: 'VERDADERA (V)' },
+          { id: 'F', ok: true, text: 'FALSA (F)' }
+        ],
+        exp: 'FALSA: el individuo "b" es un contraejemplo inmediato porque es CIAN (P(b)=V) pero es CÍRCULO (Q(b)=F), haciendo V → F = F.'
+      },
+      {
+        id: 'f6', kind: 'formal', tag: 'Variables Libres 6/8 · Alcance',
+        prompt: 'Observa con cuidado los paréntesis de esta fórmula de examen:',
+        formula: '∀x (P(x) → Q(x,y)) ∧ R(x)',
+        options: [
+          { id: 'a', ok: false, text: 'x está solo ligada e y está libre' },
+          { id: 'b', ok: true, text: 'y está libre, y x aparece tanto ligada como libre' },
+          { id: 'c', ok: false, text: 'Es una sentencia cerrada (sin variables libres)' }
+        ],
+        exp: 'El alcance de ∀x acaba al cerrar el paréntesis antes del ∧. Así, la x dentro de P(x) y Q(x,y) está ligada, pero la x de R(x) queda LIBRE (igual que la y).'
+      },
+      {
+        id: 'f7', kind: 'world', tag: 'Mini-Mundo 7/8 · Nodo Universal',
+        prompt: 'Observa las flechas dirigidas hacia el nodo "c" (incluido su propio bucle c→c). Evalúa:',
+        formula: '∃y ∀x R(x,y)',
+        legend: '¿Existe un destino "y" tal que todo x ∈ {a, b, c} apunte hacia "y"?',
+        world: {
+          nodes: [
+            { id: 'a', x: 60, y: 55, shape: 'circle', color: '#10b981' },
+            { id: 'b', x: 60, y: 155, shape: 'circle', color: '#10b981' },
+            { id: 'c', x: 225, y: 105, shape: 'square', color: '#f59e0b' }
+          ],
+          edges: [['a', 'c'], ['b', 'c'], ['c', 'c']]
+        },
+        options: [
+          { id: 'T', ok: true, text: 'VERDADERA (V)' },
+          { id: 'F', ok: false, text: 'FALSA (F)' }
+        ],
+        exp: 'VERDADERA: elige y = c. Comprobamos todos los x: R(a,c)=V, R(b,c)=V y R(c,c)=V (el bucle). ¡Todos apuntan a c!'
+      },
+      {
+        id: 'f8', kind: 'formal', tag: 'Orden 8/8 · Cuantificadores',
+        prompt: 'Si S(x,y) significa "x sigue a y en redes", ¿qué expresa exactamente la sentencia:',
+        formula: '∃y ∀x S(x,y)',
+        options: [
+          { id: 'a', ok: false, text: 'Todo el mundo sigue al menos a alguien (puede ser distinto)' },
+          { id: 'b', ok: true, text: 'Existe alguien famoso a quien todo el mundo sigue' },
+          { id: 'c', ok: false, text: 'Existe alguien que sigue a todo el mundo' }
+        ],
+        exp: '∃y fija primero una única persona "y" en la segunda posición (la seguida), y ∀x exige que todo "x" la siga. La A sería ∀x ∃y S(x,y), y la C sería ∃x ∀y S(x,y).'
+      }
+    ];
+
+    /* =========================================================================
+       4. PERSISTENCIA EN LOCALSTORAGE Y ESTADO GLOBAL
+       ========================================================================= */
+    const STORAGE_KEY = 'tableau_quest_s2_v1';
+
+    function loadSave() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const d = JSON.parse(raw);
+          return {
+            lessonsDone: Array.isArray(d.lessonsDone) ? d.lessonsDone : [],
+            stars: d.stars || {},
+            bestScores: d.bestScores || {},
+            forgeBest: Number(d.forgeBest) || 0,
+            forgeBestStreak: Number(d.forgeBestStreak) || 0
+          };
+        }
+      } catch (_) {}
+      return { lessonsDone: [], stars: {}, bestScores: {}, forgeBest: 0, forgeBestStreak: 0 };
+    }
+
+    function persistSave() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(State.save)); } catch (_) {}
+    }
+
+    const State = {
+      screen: 'home', // home | academy-quiz | play | forge
+      save: loadSave(),
+      toast: null,
+      toastTimer: null,
+      grim: { open: false, tab: 'gd', confirmPay: false },
+      game: null,
+      quiz: null,
+      forge: null
+    };
+
+    let uid = 1;
+    const mkId = (p = 'n') => `${p}_${uid++}`;
+
+    function notify(text, type = 'info', ms = 3000) {
+      if (State.toastTimer) clearTimeout(State.toastTimer);
+      State.toast = { text, type };
+      render();
+      State.toastTimer = setTimeout(() => { State.toast = null; render(); }, ms);
+    }
+
+    function go(scr) {
+      Sound.tap();
+      State.screen = scr;
+      if (scr === 'home') { State.game = null; State.quiz = null; State.forge = null; }
+      render();
+    }
+
+    /* =========================================================================
+       5. MOTOR DE ÁRBOL SEMÁNTICO (NODOS, RAMAS, INVENTARIO, SATURACIÓN, IA ÓPTIMA)
+       ========================================================================= */
+    function makeNode(ast, parentId, isRoot = false) {
+      const info = FOL.classify(ast);
+      return {
+        id: mkId('nd'),
+        parentId,
+        f: FOL.format(ast, true),
+        kind: info.kind, // alpha | beta | delta | gamma | literal
+        expanded: false,
+        usedConsts: [],
+        isRoot,
+        children: [],
+        closed: false,
+        reason: null,
+        justClosed: false,
+        collapsed: false
+      };
+    }
+
+    const astOf = (nd) => FOL.parse(nd.f);
+
+    function buildRootChain(formulaStrs) {
+      const nodes = {};
+      let rootId = null;
+      let prevId = null;
+      formulaStrs.forEach((raw) => {
+        const nd = makeNode(FOL.parse(raw), prevId, true);
+        nodes[nd.id] = nd;
+        if (!rootId) rootId = nd.id;
+        if (prevId) nodes[prevId].children.push(nd.id);
+        prevId = nd.id;
+      });
+      return { nodes, rootId };
+    }
+
+    function pathTo(nodes, id) {
+      const res = [];
+      let cur = nodes[id];
+      while (cur) { res.unshift(cur); cur = cur.parentId ? nodes[cur.parentId] : null; }
+      return res;
+    }
+
+    function leavesUnder(nodes, startId) {
+      const out = [];
+      (function dfs(id) {
+        const n = nodes[id];
+        if (!n) return;
+        if (n.children.length === 0) out.push(n);
+        else n.children.forEach(dfs);
+      })(startId);
+      return out;
+    }
+
+    function openLeaves(g) { return leavesUnder(g.nodes, g.rootId).filter((l) => !l.closed); }
+
+    function isAncestor(nodes, ancId, targetId) {
+      let cur = nodes[targetId];
+      while (cur) {
+        if (cur.id === ancId) return true;
+        cur = cur.parentId ? nodes[cur.parentId] : null;
+      }
+      return false;
+    }
+
+    // Constantes presentes en una rama (desde la raíz hasta leafId)
+    function constantsOnBranch(nodes, leafId) {
+      const set = new Set();
+      pathTo(nodes, leafId).forEach((n) => FOL.getConstants(astOf(n), set));
+      return [...set].sort();
+    }
+
+    // Constantes presentes en cualquier rama abierta que pase por nodeId
+    function constantsForNode(nodes, nodeId) {
+      const set = new Set();
+      leavesUnder(nodes, nodeId).filter((l) => !l.closed).forEach((l) => {
+        constantsOnBranch(nodes, l.id).forEach((c) => set.add(c));
+      });
+      return [...set].sort();
+    }
+
+    // Todas las constantes activas en ramas abiertas del árbol (para la barra de inventario)
+    function allOpenConstants(g) {
+      const set = new Set();
+      openLeaves(g).forEach((l) => constantsOnBranch(g.nodes, l.id).forEach((c) => set.add(c)));
+      return [...set].sort();
+    }
+
+    function findContradiction(nodes, leafId) {
+      const lits = pathTo(nodes, leafId).filter((n) => n.kind === 'literal');
+      for (let i = 0; i < lits.length; i++) {
+        for (let j = i + 1; j < lits.length; j++) {
+          if (FOL.areComplementary(astOf(lits[i]), astOf(lits[j]))) return [lits[i], lits[j]];
+        }
+      }
+      return null;
+    }
+
+    // Verificación matemática exacta de rama abierta saturada
+    function isBranchSaturated(nodes, leafId) {
+      const leaf = nodes[leafId];
+      if (!leaf || leaf.closed) return false;
+      if (findContradiction(nodes, leafId)) return false;
+
+      const branch = pathTo(nodes, leafId);
+      // 1. Todas las α, β, δ de la rama deben estar expandidas
+      if (branch.some((n) => (n.kind === 'alpha' || n.kind === 'beta' || n.kind === 'delta') && !n.expanded)) {
+        return false;
+      }
+      // 2. Toda γ de la rama debe estar instanciada para TODAS las constantes de la rama (o al menos 'a' si no hay)
+      const bConsts = constantsOnBranch(nodes, leafId);
+      const reqConsts = bConsts.length > 0 ? bConsts : ['a'];
+      const formulasInBranch = new Set(branch.map((n) => n.f));
+
+      for (const n of branch) {
+        if (n.kind === 'gamma') {
+          const info = FOL.classify(astOf(n));
+          for (const c of reqConsts) {
+            const instStr = FOL.format(info.instantiate(c), true);
+            if (!formulasInBranch.has(instStr)) return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    function subtreeClosed(nodes, id) {
+      const ls = leavesUnder(nodes, id);
+      return ls.length > 0 && ls.every((l) => l.closed);
+    }
+
+    function collapseAnchor(nodes, leafId) {
+      let cur = nodes[leafId];
+      let anchor = cur;
+      while (cur && cur.parentId) {
+        const par = nodes[cur.parentId];
+        if (!par) break;
+        if (par.children.length === 2 && subtreeClosed(nodes, cur.id)) anchor = cur;
+        cur = par;
+      }
+      return anchor;
+    }
+
+    function pushUndo(g) {
+      g.history.push(JSON.stringify({ nodes: g.nodes, steps: g.steps, score: g.score, streak: g.streak }));
+      if (g.history.length > 24) g.history.shift();
+    }
+
+    function undoStep() {
+      const g = State.game;
+      if (!g || g.phase !== 'tree' || g.history.length === 0) return;
+      Sound.tap();
+      const prev = JSON.parse(g.history.pop());
+      g.nodes = prev.nodes;
+      g.steps = prev.steps;
+      g.score = prev.score;
+      g.streak = prev.streak;
+      g.selLit = null;
+      g.sheet = null;
+      g.hl = [];
+      g.tip = null;
+      if (g.isAcademy) refreshCoach(g);
+      notify('Paso deshecho ↩', 'info', 1300);
+      render();
+    }
+
+    function appendStack(nodes, parentId, astList) {
+      let cur = parentId;
+      astList.forEach((a) => {
+        const nd = makeNode(a, cur);
+        nodes[nd.id] = nd;
+        nodes[cur].children.push(nd.id);
+        cur = nd.id;
+      });
+    }
+
+    function applyPropExpansion(g, nodeId) {
+      const nd = g.nodes[nodeId];
+      if (!nd || nd.expanded) return;
+      const leaves = leavesUnder(g.nodes, nodeId).filter((l) => !l.closed);
+      if (!leaves.length) return;
+      pushUndo(g);
+      const info = FOL.classify(astOf(nd));
+      leaves.forEach((leaf) => {
+        if (info.kind === 'alpha') {
+          appendStack(g.nodes, leaf.id, info.branches[0]);
+        } else {
+          info.branches.forEach((br) => {
+            const top = makeNode(br[0], leaf.id);
+            g.nodes[top.id] = top;
+            leaf.children.push(top.id);
+            if (br.length > 1) appendStack(g.nodes, top.id, br.slice(1));
+          });
+        }
+      });
+      nd.expanded = true;
+      g.steps += leaves.length;
+      g.hl = [];
+      g.tip = null;
+    }
+
+    function applyQuantExpansion(g, nodeId, c) {
+      const nd = g.nodes[nodeId];
+      if (!nd) return false;
+      const leaves = leavesUnder(g.nodes, nodeId).filter((l) => !l.closed);
+      if (!leaves.length) return false;
+
+      const info = FOL.classify(astOf(nd));
+      const instAst = info.instantiate(c);
+      const instStr = FOL.format(instAst, true);
+
+      if (info.kind === 'gamma') {
+        // Solo añadimos en ramas abiertas donde esa instancia aún no exista
+        const targetLeaves = leaves.filter((l) => !pathTo(g.nodes, l.id).some((x) => x.f === instStr));
+        if (!targetLeaves.length) {
+          Sound.error();
+          notify(`Ya instanciaste ${instStr} en esta rama. Elige otra constante si necesitas.`, 'warn', 2600);
+          return false;
+        }
+        pushUndo(g);
+        targetLeaves.forEach((l) => appendStack(g.nodes, l.id, [instAst]));
+        if (!nd.usedConsts.includes(c)) nd.usedConsts.push(c);
+        g.steps += targetLeaves.length;
+      } else {
+        pushUndo(g);
+        leaves.forEach((l) => appendStack(g.nodes, l.id, [instAst]));
+        nd.expanded = true;
+        g.steps += leaves.length;
+      }
+      g.hl = [];
+      g.tip = null;
+      return true;
+    }
+
+    /* Buscador inteligente del paso óptimo (Cierre > α > δ > γ inteligente > β > Saturada) */
+    function findOptimalMove(g) {
+      const leaves = openLeaves(g);
+      if (!leaves.length) return null;
+
+      // 1. Cierre inmediato disponible
+      for (const l of leaves) {
+        const pair = findContradiction(g.nodes, l.id);
+        if (pair) {
+          return {
+            act: 'close', a: pair[0], b: pair[1], hl: [pair[0].id, pair[1].id],
+            tip: `¡Cierre listo! Toca ${pair[0].f} y luego ${pair[1].f} en la misma rama para cerrar (×).`
+          };
+        }
+      }
+
+      // Recolectar candidatos en ramas abiertas
+      const alphas = [], deltas = [], gammaCands = [], betas = [];
+      const seenA = new Set(), seenD = new Set(), seenB = new Set();
+
+      leaves.forEach((leaf) => {
+        const branch = pathTo(g.nodes, leaf.id);
+        const bConsts = constantsOnBranch(g.nodes, leaf.id);
+        const reqConsts = bConsts.length > 0 ? bConsts : ['a'];
+        const formSet = new Set(branch.map((x) => x.f));
+        const lits = branch.filter((x) => x.kind === 'literal').map(astOf);
+        const branchGammas = branch.filter((x) => x.kind === 'gamma');
+
+        branch.forEach((n) => {
+          if (n.kind === 'alpha' && !n.expanded && !seenA.has(n.id)) {
+            seenA.add(n.id); alphas.push(n);
+          } else if (n.kind === 'delta' && !n.expanded && !seenD.has(n.id)) {
+            seenD.add(n.id);
+            const usedAll = constantsForNode(g.nodes, n.id);
+            const fresh = FOL.CONSTS.find((c) => !usedAll.includes(c)) || 'd';
+            deltas.push({ n, c: fresh });
+          } else if (n.kind === 'gamma') {
+            const info = FOL.classify(astOf(n));
+            reqConsts.forEach((c) => {
+              const instAst = info.instantiate(c);
+              const instStr = FOL.format(instAst, true);
+              if (formSet.has(instStr)) return;
+
+              // Puntuar qué constante + γ conviene más (cierre directo > pareja cruzada > literal/α > β)
+              let prio = 10;
+              if (lits.some((lt) => FOL.areComplementary(lt, instAst))) {
+                prio = 100;
+              } else {
+                // ¿Complementa a otra γ de esta misma rama? (clave para Nivel 5 R(a,b) / ¬R(a,b))
+                let crossMatch = false;
+                for (const og of branchGammas) {
+                  if (og.id === n.id) continue;
+                  const oInfo = FOL.classify(astOf(og));
+                  if (reqConsts.some((c2) => FOL.areComplementary(instAst, oInfo.instantiate(c2)))) {
+                    crossMatch = true; break;
+                  }
+                }
+                if (crossMatch) prio = 70;
+                else {
+                  const resKind = FOL.classify(instAst).kind;
+                  if (resKind === 'literal' || resKind === 'alpha') prio = 40;
+                  else if (resKind === 'delta') prio = 35;
+                }
+              }
+              gammaCands.push({ n, c, prio, res: instStr });
+            });
+          } else if (n.kind === 'beta' && !n.expanded && !seenB.has(n.id)) {
+            seenB.add(n.id); betas.push(n);
+          }
+        });
+      });
+
+      if (alphas.length) {
+        return { act: 'alpha', id: alphas[0].id, hl: [alphas[0].id], tip: `Prioridad α: expande primero ${alphas[0].f} en vertical.` };
+      }
+      if (deltas.length) {
+        const d = deltas[0];
+        return { act: 'delta', id: d.n.id, c: d.c, hl: [d.n.id], tip: `Prioridad δ (antes que γ): expande ${d.n.f} con la constante NUEVA "${d.c}".` };
+      }
+      if (gammaCands.length) {
+        gammaCands.sort((x, y) => y.prio - x.prio);
+        const best = gammaCands[0];
+        return {
+          act: 'gamma', id: best.n.id, c: best.c, hl: [best.n.id],
+          tip: `Prioridad γ: instancia ${best.n.f} eligiendo la constante "${best.c}" para acercarte al cierre.`
+        };
+      }
+      if (betas.length) {
+        return { act: 'beta', id: betas[0].id, hl: [betas[0].id], tip: `Prioridad β: bifurca ahora ${betas[0].f}.` };
+      }
+
+      const sat = leaves.find((l) => isBranchSaturated(g.nodes, l.id));
+      if (sat) {
+        return {
+          act: 'sat', lid: sat.id, hl: ['sat_' + sat.id],
+          tip: 'Esta rama está abierta y completamente saturada. Pulsa "Declarar Rama Saturada".'
+        };
+      }
+      return null;
+    }
+
+    /* =========================================================================
+       6. ARRANQUE DE LECCIONES, CAMPAÑA Y FORJA
+       ========================================================================= */
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function startLesson(id) {
+      const les = ACADEMY_LESSONS.find((x) => x.id === id);
+      if (!les) return;
+      Sound.tap();
+
+      if (les.type === 'quiz') {
+        State.quiz = { les, stage: 'intro', idx: 0, ok: false, wrongId: null, fb: '' };
+        State.screen = 'academy-quiz';
+        render();
+        return;
+      }
+
+      const { nodes, rootId } = buildRootChain(les.roots);
+      State.game = {
+        isAcademy: true, les,
+        lv: { id: les.id, num: les.num, title: les.title, goal: les.coach0, par: 99, grimCost: 0 },
+        phase: 'intro',
+        p0: les.phase0 ? { ...les.phase0, options: shuffle(les.phase0.options) } : null,
+        p0Fb: null, nodes, rootId, history: [], zoom: 1,
+        score: 0, streak: 0, steps: 0, mistakes: 0, hintsUsed: 0, grimUnlocked: true,
+        selLit: null, sheet: null, hl: [], tip: null, coach: les.coach0
+      };
+      State.screen = 'play';
+      refreshCoach(State.game);
+      render();
+    }
+
+    function startLevel(id) {
+      const lv = CAMPAIGN_LEVELS.find((x) => x.id === id);
+      if (!lv) return;
+      Sound.tap();
+      const { nodes, rootId } = buildRootChain(lv.roots);
+      State.game = {
+        isAcademy: false, lv,
+        phase: lv.phase0 ? 'phase0' : 'tree',
+        p0: lv.phase0 ? { ...lv.phase0, options: shuffle(lv.phase0.options) } : null,
+        p0Fb: null, nodes, rootId, history: [], zoom: 1,
+        score: 300, streak: 0, steps: 0, mistakes: 0, hintsUsed: 0,
+        grimUnlocked: lv.grimCost === 0,
+        selLit: null, sheet: null, hl: [], tip: null,
+        satLeaf: null, cm: {}, cmAtoms: [], cmVerdict: null, finalFb: null, win: null
+      };
+      State.screen = 'play';
+      render();
+    }
+
+    function startForge() {
+      Sound.tap();
+      State.forge = {
+        idx: 0, score: 0, hits: 0, streak: 0, bestStreak: 0,
+        answered: false, pickedId: null, isRight: false
+      };
+      State.screen = 'forge';
+      render();
+    }
+
+    function markLessonDone(id) {
+      if (!State.save.lessonsDone.includes(id)) {
+        State.save.lessonsDone.push(id);
+        persistSave();
+      }
+      Sound.win();
+    }
+
+    function refreshCoach(g) {
+      if (!g || !g.isAcademy) return;
+      const m = g.les.mode;
+      const mv = findOptimalMove(g);
+      if (!mv) return;
+
+      if (m === 'delta-lesson') {
+        const unexpDeltas = openLeaves(g)[0]
+          ? pathTo(g.nodes, openLeaves(g)[0].id).filter((n) => n.kind === 'delta' && !n.expanded)
+          : [];
+        if (unexpDeltas.length === 0) {
+          markLessonDone(g.les.id);
+          g.hl = [];
+          g.phase = 'ac-done';
+          return;
+        }
+        g.hl = [unexpDeltas[0].id];
+        if (unexpDeltas.length === 2) {
+          g.coach = 'Paso 1: toca ∃x P(x) (δ) y elige la constante "a" para crear al primer individuo.';
+        } else {
+          g.coach = 'Paso 2: toca ¬∀x Q(x) (δ). Prueba a pulsar "a" para ver la alerta roja y luego elige la constante NUEVA "b".';
+        }
+      } else if (m === 'gamma-gold') {
+        g.hl = mv.hl;
+        if (mv.act === 'delta') g.coach = 'Regla de Oro: tienes una δ (∃x P(x)) y una γ (∀x ¬P(x)). Toca PRIMERO la δ para crear "a".';
+        else if (mv.act === 'gamma') g.coach = '¡Perfecto! Ahora toca ∀x ¬P(x) (γ) y reutiliza esa misma constante "a".';
+        else g.coach = '¡Cierre en 2 pasos! Toca P(a) y después ¬P(a) para cerrar la rama (×).';
+      } else if (m === 'first-full') {
+        g.hl = mv.hl;
+        if (mv.act === 'gamma') g.coach = 'Paso 1: la constante "a" ya existe en la rama. Toca ∀x(H(x) → M(x)) (γ) e instánciala con "a".';
+        else if (mv.act === 'beta') g.coach = 'Paso 2: toca H(a) → M(a) (β) para bifurcar en ¬H(a) | M(a).';
+        else if (mv.act === 'close') g.coach = `¡A cerrar! Toca ${mv.a.f} y su contrario ${mv.b.f} en la misma rama.`;
+      }
+    }
+
+    /* =========================================================================
+       7. INTERACCIONES EN PARTIDA (NODOS, CONSTANTES, CIERRES, PISTAS)
+       ========================================================================= */
+    function tapNode(nodeId) {
+      const g = State.game;
+      if (!g || g.phase !== 'tree') return;
+      const nd = g.nodes[nodeId];
+      if (!nd) return;
+
+      // CASO A: LITERAL ATÓMICO -> Cierre por contradicción
+      if (nd.kind === 'literal') {
+        const openUnder = leavesUnder(g.nodes, nodeId).filter((l) => !l.closed);
+        if (!openUnder.length) {
+          notify('Esta rama ya está cerrada (×).', 'info', 1400);
+          return;
+        }
+        if (!g.selLit) {
+          Sound.tap();
+          g.selLit = nodeId;
+          render();
+          return;
+        }
+        if (g.selLit === nodeId) {
+          Sound.tap();
+          g.selLit = null;
+          render();
+          return;
+        }
+
+        const a = g.nodes[g.selLit];
+        const b = nd;
+        const astA = astOf(a), astB = astOf(b);
+
+        if (FOL.samePredDiffArgs(astA, astB)) {
+          Sound.error();
+          if (!g.isAcademy) { g.score = Math.max(0, g.score - 20); g.mistakes++; g.streak = 0; }
+          g.selLit = null;
+          notify(`¡Constantes distintas! ${a.f} y ${b.f} hablan de individuos o posiciones diferentes y NO se contradicen.`, 'err', 3800);
+          render();
+          return;
+        }
+
+        if (!FOL.areComplementary(astA, astB)) {
+          Sound.error();
+          if (!g.isAcademy) { g.score = Math.max(0, g.score - 15); g.mistakes++; g.streak = 0; }
+          g.selLit = null;
+          notify(`No se contradicen (${a.f} y ${b.f}). Deben ser exactamente el mismo átomo uno positivo y otro negado.`, 'err', 3000);
+          render();
+          return;
+        }
+
+        if (!isAncestor(g.nodes, a.id, b.id) && !isAncestor(g.nodes, b.id, a.id)) {
+          Sound.error();
+          if (!g.isAcademy) { g.score = Math.max(0, g.score - 25); g.mistakes++; g.streak = 0; }
+          g.selLit = null;
+          notify('¡Cierre ilegal! Están en ramas hermanas distintas. Solo puedes emparejar literales en la misma línea vertical.', 'err', 3800);
+          render();
+          return;
+        }
+
+        closeContradiction(g, a, b);
+        return;
+      }
+
+      // CASO B: FÓRMULA COMPUESTA O CUANTIFICADOR
+      g.selLit = null;
+      const openUnder = leavesUnder(g.nodes, nodeId).filter((l) => !l.closed);
+      if (!openUnder.length) {
+        notify('Todas las ramas bajo esta fórmula ya están cerradas.', 'info', 1400);
+        return;
+      }
+      if (nd.expanded && nd.kind !== 'gamma') {
+        notify('Esta fórmula ya fue expandida (✓).', 'info', 1300);
+        return;
+      }
+
+      // Aviso amistoso del Coach en Lección 4 si tocas γ antes que δ
+      if (g.isAcademy && g.les.mode === 'gamma-gold' && nd.kind === 'gamma') {
+        const hasPendingDelta = openLeaves(g).some((l) => pathTo(g.nodes, l.id).some((x) => x.kind === 'delta' && !x.expanded));
+        if (hasPendingDelta) {
+          Sound.error();
+          g.coach = '¡Espera un segundo! Si aplicas γ (∀x ¬P(x)) con "a" antes que δ, luego ∃x P(x) te obligará a sacar otra constante "b". ¡Toca primero la δ!';
+          notify('Coach: ¡Regla de Oro! Abre primero δ (∃x P(x)) antes que γ.', 'warn', 3200);
+          render();
+          return;
+        }
+      }
+
+      Sound.tap();
+      if (nd.kind === 'alpha' || nd.kind === 'beta') {
+        g.sheet = { mode: 'prop', nodeId, choices: FOL.buildPropChoices(astOf(nd)), wrongId: null, fb: null };
+      } else {
+        const bc = constantsForNode(g.nodes, nodeId);
+        g.sheet = {
+          mode: nd.kind, // 'delta' | 'gamma'
+          nodeId,
+          bc,
+          deltaAlert: null
+        };
+      }
+      render();
+    }
+
+    // Selección táctil de constante en el selector δ / γ (1 toque = acción o alerta educativa)
+    function pickConstant(c) {
+      const g = State.game;
+      if (!g || !g.sheet) return;
+      const sh = g.sheet;
+      const nd = g.nodes[sh.nodeId];
+
+      if (sh.mode === 'delta') {
+        if (sh.bc.includes(c)) {
+          Sound.error();
+          if (!g.isAcademy) { g.score = Math.max(0, g.score - 20); g.mistakes++; g.streak = 0; }
+          sh.deltaAlert = `¡Ilegal en regla δ! El existencial exige una constante NUEVA que no haya aparecido en esta rama. "${c}" ya está en uso.`;
+          render();
+          return;
+        }
+        const ok = applyQuantExpansion(g, sh.nodeId, c);
+        if (!ok) return;
+        g.sheet = null;
+        Sound.delta();
+        const res = FOL.format(FOL.classify(astOf(nd)).instantiate(c), true);
+        if (!g.isAcademy) {
+          const bonus = Math.min(g.streak * 15, 45);
+          g.score += 60 + bonus; g.streak++;
+          notify(`Regla δ → ${res} (+${60 + bonus} pts)`, 'ok', 1700);
+        } else {
+          notify(`¡Bien! Regla δ creó ${res} con constante nueva "${c}".`, 'ok', 2200);
+          refreshCoach(g);
+        }
+        render();
+      } else {
+        // Regla γ: permite cualquier constante y se mantiene reutilizable
+        const ok = applyQuantExpansion(g, sh.nodeId, c);
+        if (!ok) { render(); return; }
+        g.sheet = null;
+        Sound.gamma();
+        const res = FOL.format(FOL.classify(astOf(nd)).instantiate(c), true);
+        if (!g.isAcademy) {
+          const bonus = Math.min(g.streak * 15, 45);
+          g.score += 60 + bonus; g.streak++;
+          notify(`Regla γ [${c}] → ${res} (+${60 + bonus} pts)`, 'ok', 1700);
+        } else {
+          notify(`¡Exacto! Regla γ instanciada con "${c}" → ${res}.`, 'ok', 2200);
+          refreshCoach(g);
+        }
+        render();
+      }
+    }
+
+    function pickPropChoice(cid) {
+      const g = State.game;
+      if (!g || !g.sheet) return;
+      const sh = g.sheet;
+      const ch = sh.choices.find((x) => x.id === cid);
+      if (!ch) return;
+
+      if (ch.ok) {
+        const nid = sh.nodeId;
+        g.sheet = null;
+        ch.kind === 'alpha' ? Sound.alpha() : Sound.beta();
+        applyPropExpansion(g, nid);
+        if (!g.isAcademy) {
+          const bonus = Math.min(g.streak * 15, 45);
+          g.score += 60 + bonus; g.streak++;
+          notify(bonus > 0 ? `¡Expansión correcta! +${60 + bonus} pts (racha ×${g.streak})` : '¡Expansión correcta! +60 pts', 'ok', 1500);
+        } else {
+          notify(ch.exp, 'ok', 2200);
+          refreshCoach(g);
+        }
+        render();
+      } else {
+        Sound.error();
+        if (!g.isAcademy) { g.score = Math.max(0, g.score - 25); g.mistakes++; g.streak = 0; }
+        sh.wrongId = cid;
+        sh.fb = ch.exp;
+        render();
+        setTimeout(() => { if (State.game && State.game.sheet) State.game.sheet.wrongId = null; }, 380);
+      }
+    }
+
+    function closeContradiction(g, a, b) {
+      const deep = isAncestor(g.nodes, a.id, b.id) ? b.id : a.id;
+      const targets = leavesUnder(g.nodes, deep).filter((l) => !l.closed);
+      if (!targets.length) return;
+
+      pushUndo(g);
+      targets.forEach((leaf) => {
+        leaf.closed = true;
+        leaf.reason = `${a.f} / ${b.f}`;
+        leaf.justClosed = true;
+        const lid = leaf.id;
+        setTimeout(() => {
+          if (!State.game || !State.game.nodes[lid]) return;
+          State.game.nodes[lid].justClosed = false;
+          const anc = collapseAnchor(State.game.nodes, lid);
+          if (anc && anc.parentId !== null) anc.collapsed = true;
+          render();
+        }, 820);
+      });
+
+      Sound.close();
+      g.selLit = null; g.hl = []; g.tip = null;
+      if (!g.isAcademy) { g.score += 80 * targets.length; g.streak++; }
+
+      const rem = openLeaves(g);
+      if (g.isAcademy) {
+        if (rem.length === 0) {
+          notify(`¡Rama cerrada (${a.f} / ${b.f})!`, 'ok', 1600);
+          setTimeout(() => {
+            if (State.game && State.game.isAcademy) {
+              markLessonDone(State.game.les.id);
+              State.game.hl = [];
+              State.game.phase = 'ac-done';
+              render();
+            }
+          }, 700);
+        } else {
+          notify(`¡Rama cerrada (${a.f} / ${b.f})! Falta la otra rama.`, 'ok', 1700);
+          refreshCoach(g);
+        }
+        render();
+        return;
+      }
+
+      if (rem.length === 0) {
+        notify('¡Árbol cerrado por completo! (×)', 'ok', 1600);
+        setTimeout(() => {
+          if (!State.game) return;
+          if (State.game.lv.finalPhase && State.game.lv.finalPhase.type === 'verdict') {
+            State.game.phase = 'final';
+            render();
+          } else {
+            finishLevelWin(State.game);
+          }
+        }, 720);
+      } else {
+        notify(`¡Rama cerrada (${a.f} / ${b.f})! +${80 * targets.length} pts`, 'ok', 1800);
+      }
+      render();
+    }
+
+    // Pista 1: Brújula Estratégica (-20 pts)
+    function useCompass() {
+      const g = State.game;
+      if (!g || g.phase !== 'tree') return;
+      const mv = findOptimalMove(g);
+      if (!mv) return;
+      Sound.hint();
+      if (!g.isAcademy) { g.score = Math.max(0, g.score - 20); g.hintsUsed++; }
+      g.hl = mv.hl;
+      g.tip = mv.tip;
+      render();
+    }
+
+    // Pista 2: Resolver Paso (-40 pts)
+    function useAutoStep() {
+      const g = State.game;
+      if (!g || g.phase !== 'tree') return;
+      const mv = findOptimalMove(g);
+      if (!mv) return;
+
+      if (!g.isAcademy) { g.score = Math.max(0, g.score - 40); g.hintsUsed++; }
+
+      if (mv.act === 'close') {
+        closeContradiction(g, mv.a, mv.b);
+        return;
+      }
+      if (mv.act === 'alpha' || mv.act === 'beta') {
+        const f = g.nodes[mv.id].f;
+        mv.act === 'alpha' ? Sound.alpha() : Sound.beta();
+        applyPropExpansion(g, mv.id);
+        notify(`Paso resuelto: expandida ${f} (${mv.act === 'alpha' ? 'α' : 'β'}).`, 'info', 2500);
+        if (g.isAcademy) refreshCoach(g);
+        render();
+        return;
+      }
+      if (mv.act === 'delta' || mv.act === 'gamma') {
+        const f = g.nodes[mv.id].f;
+        applyQuantExpansion(g, mv.id, mv.c);
+        mv.act === 'delta' ? Sound.delta() : Sound.gamma();
+        notify(`Paso resuelto: ${f} instanciada con "${mv.c}" (${mv.act === 'delta' ? 'δ nueva' : 'γ'}).`, 'info', 2600);
+        if (g.isAcademy) refreshCoach(g);
+        render();
+        return;
+      }
+      if (mv.act === 'sat') {
+        declareSaturated(mv.lid);
+      }
+    }
+
+    function zoomTree(delta) {
+      if (!State.game) return;
+      Sound.tap();
+      State.game.zoom = delta === 0 ? 1 : Math.min(1.25, Math.max(0.6, +(State.game.zoom + delta).toFixed(2)));
+      render();
+    }
+
+    function pickPhase0(oid) {
+      const g = State.game;
+      if (!g || !g.p0) return;
+      const opt = g.p0.options.find((o) => o.id === oid);
+      if (!opt) return;
+      if (opt.ok) {
+        Sound.close();
+        if (!g.isAcademy) g.score += 75;
+        g.p0Fb = { ok: true, text: opt.fb };
+        render();
+        setTimeout(() => {
+          if (State.game) {
+            State.game.phase = 'tree';
+            State.game.p0Fb = null;
+            if (State.game.isAcademy) refreshCoach(State.game);
+            render();
+          }
+        }, 900);
+      } else {
+        Sound.error();
+        if (!g.isAcademy) { g.score = Math.max(0, g.score - 30); g.mistakes++; }
+        g.p0Fb = { ok: false, text: opt.fb, wid: oid };
+        render();
+      }
+    }
+
+    function declareSaturated(leafId) {
+      const g = State.game;
+      if (!g) return;
+      Sound.alpha();
+      g.satLeaf = leafId;
+      g.finalFb = null;
+
+      // Preparar interruptores dinámicos de contramodelo finito D = {constantes de la rama}
+      if (g.lv.finalPhase && g.lv.finalPhase.type === 'countermodel') {
+        const consts = constantsOnBranch(g.nodes, leafId);
+        const dom = consts.length >= 2 ? consts.slice(0, 2) : ['a', 'b'];
+        const atoms = [];
+        dom.forEach((c) => { atoms.push(`P(${c})`); atoms.push(`Q(${c})`); });
+        g.cmDom = dom;
+        g.cmAtoms = atoms;
+        g.cm = {};
+        atoms.forEach((at) => { g.cm[at] = null; });
+        g.cmVerdict = null;
+      }
+
+      g.phase = 'final';
+      render();
+    }
+
+    function pickVerdict(oid) {
+      const g = State.game;
+      const opt = g.lv.finalPhase.options.find((o) => o.id === oid);
+      if (!opt) return;
+      if (opt.ok) {
+        Sound.close();
+        g.score += 100;
+        g.finalFb = { ok: true, text: opt.fb };
+        render();
+        setTimeout(() => { if (State.game) finishLevelWin(State.game); }, 800);
+      } else {
+        Sound.error();
+        g.score = Math.max(0, g.score - 30);
+        g.mistakes++;
+        g.finalFb = { ok: false, text: opt.fb };
+        render();
+      }
+    }
+
+    function submitCountermodel() {
+      const g = State.game;
+      const fp = g.lv.finalPhase;
+      if (g.cmAtoms.some((at) => g.cm[at] === null) || !g.cmVerdict) {
+        Sound.error();
+        g.finalFb = { ok: false, text: 'Marca V (1) o F (0) en los 4 átomos del universo y selecciona el veredicto de examen.' };
+        render();
+        return;
+      }
+
+      // Validar que cada literal de la rama abierta coincida exactamente con el contramodelo marcado
+      const lits = pathTo(g.nodes, g.satLeaf).filter((n) => n.kind === 'literal');
+      let mismatch = null;
+      for (const n of lits) {
+        const inf = FOL.literalInfo(astOf(n));
+        if (inf.key in g.cm) {
+          const expected = inf.neg ? 0 : 1;
+          if (g.cm[inf.key] !== expected) {
+            mismatch = { lit: n.f, key: inf.key, expected };
+            break;
+          }
+        }
+      }
+
+      if (mismatch) {
+        Sound.error();
+        g.score = Math.max(0, g.score - 25);
+        g.mistakes++;
+        g.finalFb = {
+          ok: false,
+          text: `Revisa tu rama abierta: aparece "${mismatch.lit}", así que ${mismatch.key} debe ser ${mismatch.expected === 1 ? 'V (1)' : 'F (0)'}.`
+        };
+        render();
+        return;
+      }
+
+      const chosen = fp.verdictOptions.find((x) => x.id === g.cmVerdict);
+      if (!chosen || !chosen.ok) {
+        Sound.error();
+        g.score = Math.max(0, g.score - 25);
+        g.mistakes++;
+        g.finalFb = { ok: false, text: 'Como existe un contramodelo finito válido, la fórmula NO es consecuencia lógica.' };
+        render();
+        return;
+      }
+
+      Sound.close();
+      g.score += 130;
+      finishLevelWin(g);
+    }
+
+    function finishLevelWin(g) {
+      const { lv, steps, mistakes, hintsUsed } = g;
+      // 1★ resolver | 2★ sin pistas de pago | 3★ cumplir el Par óptimo y sin pistas de pago
+      let stars = 1;
+      if (hintsUsed === 0) stars = 2;
+      if (hintsUsed === 0 && steps <= lv.par) stars = 3;
+
+      const parBonus = steps <= lv.par ? 100 : 0;
+      const total = Math.max(0, g.score + parBonus);
+      g.score = total;
+
+      State.save.stars[lv.id] = Math.max(State.save.stars[lv.id] || 0, stars);
+      State.save.bestScores[lv.id] = Math.max(State.save.bestScores[lv.id] || 0, total);
+      persistSave();
+
+      g.win = { stars, total, parBonus, steps, par: lv.par, mistakes, hintsUsed };
+      g.phase = 'victory';
+      Sound.win();
+      render();
+    }
+
+    /* =========================================================================
+       8. GRIMORIO CON COSTE PROGRESIVO (GRATIS EN INICIO, ACADEMIA, FORJA Y N1)
+       ========================================================================= */
+    function openGrimorio(tab = null) {
+      Sound.tap();
+      if (tab) State.grim.tab = tab;
+      const g = State.game;
+      const needsPay = State.screen === 'play' && g && !g.isAcademy && g.phase === 'tree' && g.lv.grimCost > 0 && !g.grimUnlocked;
+      if (needsPay) {
+        State.grim.confirmPay = true;
+        State.grim.open = false;
+      } else {
+        State.grim.open = true;
+        State.grim.confirmPay = false;
+      }
+      render();
+    }
+
+    function confirmGrimPay() {
+      const g = State.game;
+      if (g) {
+        g.score = Math.max(0, g.score - g.lv.grimCost);
+        g.grimUnlocked = true;
+        g.hintsUsed++;
+      }
+      Sound.hint();
+      State.grim.confirmPay = false;
+      State.grim.open = true;
+      render();
+    }
+
+    /* =========================================================================
+       9. LÓGICA DE ACADEMIA QUIZ (L1 Y L2) Y FORJA & MINI-MUNDOS
+       ========================================================================= */
+    function pickAcademyQuiz(oid) {
+      const q = State.quiz;
+      if (!q || q.ok) return;
+      const st = q.les.steps[q.idx];
+      const opt = st.options.find((x) => x.id === oid);
+      if (!opt) return;
+      if (opt.ok) {
+        Sound.close();
+        q.ok = true; q.wrongId = null; q.fb = opt.fb;
+      } else {
+        Sound.error();
+        q.wrongId = oid; q.fb = opt.fb;
+      }
+      render();
+    }
+
+    function nextAcademyQuiz() {
+      const q = State.quiz;
+      Sound.tap();
+      if (q.idx + 1 < q.les.steps.length) {
+        q.idx++; q.ok = false; q.wrongId = null; q.fb = '';
+        render();
+      } else {
+        markLessonDone(q.les.id);
+        q.stage = 'done';
+        render();
+      }
+    }
+
+    function pickForgeOption(oid) {
+      const f = State.forge;
+      if (!f || f.answered) return;
+      const ch = FORGE_CHALLENGES[f.idx];
+      const opt = ch.options.find((x) => x.id === oid);
+      if (!opt) return;
+
+      f.answered = true;
+      f.pickedId = oid;
+      f.isRight = opt.ok;
+
+      if (opt.ok) {
+        Sound.close();
+        f.hits++;
+        f.streak++;
+        if (f.streak > f.bestStreak) f.bestStreak = f.streak;
+        f.score += 100 + Math.min((f.streak - 1) * 20, 60);
+      } else {
+        Sound.error();
+        f.streak = 0;
+      }
+      render();
+    }
+
+    function nextForge() {
+      const f = State.forge;
+      Sound.tap();
+      if (f.idx + 1 < FORGE_CHALLENGES.length) {
+        f.idx++; f.answered = false; f.pickedId = null; f.isRight = false;
+        render();
+      } else {
+        if (f.score > State.save.forgeBest) State.save.forgeBest = f.score;
+        if (f.bestStreak > State.save.forgeBestStreak) State.save.forgeBestStreak = f.bestStreak;
+        persistSave();
+        f.done = true;
+        Sound.win();
+        render();
+      }
+    }
+
+    /* =========================================================================
+       10. RENDERIZADO DE COMPONENTES Y PANTALLAS
+       ========================================================================= */
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const starsHtml = (n) => [1, 2, 3].map((i) => `<span style="color:${i <= n ? '#fbbf24' : '#334155'}">★</span>`).join('');
+
+    function totalStars() {
+      return CAMPAIGN_LEVELS.reduce((s, lv) => s + (State.save.stars[lv.id] || 0), 0);
+    }
+
+    function renderHeader() {
+      let title = 'Tableau Quest · T2';
+      let sub = 'Lógica de Predicados (Primer Orden)';
+      let back = null;
+
+      if (State.screen === 'academy-quiz' && State.quiz) {
+        title = `Academia · L${State.quiz.les.num}`;
+        sub = State.quiz.les.title;
+        back = "go('home')";
+      } else if (State.screen === 'play' && State.game) {
+        const g = State.game;
+        title = g.isAcademy ? `Academia · L${g.les.num}` : `Nivel ${g.lv.num}/5`;
+        sub = g.lv.title;
+        back = "go('home')";
+      } else if (State.screen === 'forge') {
+        title = 'Forja & Mini-Mundos';
+        sub = 'Entrenamiento Preguntas 6–10';
+        back = "go('home')";
+      }
+
+      const grimCostTag = (State.screen === 'play' && State.game && !State.game.isAcademy && State.game.phase === 'tree' && State.game.lv.grimCost > 0 && !State.game.grimUnlocked)
+        ? `<span style="font-size:9.5px;color:#fcd34d">-${State.game.lv.grimCost}</span>` : '';
+
+      return `
+        <header class="topbar">
+          <div class="flex aic g8 min0 f1">
+            ${back
+              ? `<button class="icon-btn btn" onclick="${back}" aria-label="Volver">←</button>`
+              : `<div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#10b981,#22d3ee,#f59e0b);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#05101a;flex-shrink:0">∀</div>`}
+            <div class="min0">
+              <div class="trunc" style="font-weight:900;font-size:14px">${esc(title)}</div>
+              <div class="trunc xs">${esc(sub)}</div>
+            </div>
+          </div>
+          <div class="flex aic g6">
+            <button class="icon-btn grim btn" onclick="openGrimorio()">📖 Grimorio ${grimCostTag}</button>
+            <button class="icon-btn btn" onclick="Sound.toggle();render()" aria-label="Sonido">${Sound.isMuted() ? '🔇' : '🔊'}</button>
+          </div>
+        </header>`;
+    }
+
+    function renderHome() {
+      const doneAc = ACADEMY_LESSONS.filter((l) => State.save.lessonsDone.includes(l.id)).length;
+      const stars = totalStars();
+
+      return `
+        <main class="pad scroll-y">
+          <!-- Enlace discreto a Temporada 1 (GitHub Pages) -->
+          <div class="flex aic jcb">
+            <a class="s1-link btn" href="./index.html">← Temporada 1 (Proposicional)</a>
+            <span class="badge b-gamma">Primer Orden</span>
+          </div>
+
+          <!-- Cabecera de progreso -->
+          <div class="card" style="background:linear-gradient(140deg,rgba(16,185,129,0.14),rgba(15,23,42,0.92),rgba(245,158,11,0.10));border-color:rgba(16,185,129,0.32)">
+            <div class="flex aic jcb g8">
+              <div>
+                <div class="xs" style="color:#6ee7b7;font-weight:800;letter-spacing:0.05em">TEMPORADA 2 · PREGUNTAS 6–10</div>
+                <h1 style="margin:3px 0 3px;font-size:20px;font-weight:900;letter-spacing:-0.02em">Lógica de Predicados</h1>
+                <div class="small">Domina <span class="mono">∀, ∃, δ, γ</span> y relaciones <span class="mono">R(x,y)</span> jugando.</div>
+              </div>
+              <div class="tc" style="background:rgba(6,9,19,0.68);border:1px solid var(--border-hi);border-radius:15px;padding:8px 11px;flex-shrink:0">
+                <div class="mono" style="font-size:16px;font-weight:900;color:#fbbf24">★ ${stars}/15</div>
+                <div class="xs">Estrellas</div>
+              </div>
+            </div>
+            <div class="grid3" style="margin-top:11px">
+              <div style="background:rgba(6,9,19,0.52);border-radius:11px;padding:7px;text-align:center;border:1px solid var(--border)">
+                <div class="mono" style="font-size:13px;font-weight:900;color:#6ee7b7">${doneAc}/5</div>
+                <div class="xs">Academia</div>
+              </div>
+              <div style="background:rgba(6,9,19,0.52);border-radius:11px;padding:7px;text-align:center;border:1px solid var(--border)">
+                <div class="mono" style="font-size:13px;font-weight:900;color:#fcd34d">${State.save.forgeBestStreak}</div>
+                <div class="xs">Racha Forja</div>
+              </div>
+              <div style="background:rgba(6,9,19,0.52);border-radius:11px;padding:7px;text-align:center;border:1px solid var(--border)">
+                <div class="mono" style="font-size:13px;font-weight:900;color:#67e8f9">${State.save.forgeBest}</div>
+                <div class="xs">Récord Forja</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MÓDULO 1: ACADEMIA DE PREDICADOS DESDE CERO -->
+          <section class="sec-card ac">
+            <div class="flex aic jcb g8">
+              <div>
+                <span class="badge b-gamma">Módulo 1 · Tutorial Guiado · Gratis</span>
+                <div style="font-weight:900;font-size:16px;margin-top:4px">🎓 Academia: Predicados desde Cero</div>
+              </div>
+              <span class="mono" style="font-size:12.5px;font-weight:900;color:#6ee7b7">${doneAc}/5</span>
+            </div>
+            <div class="small">Aprende paso a paso con Coach sin penalizaciones: parejas ∀→ / ∃∧, espejo de negaciones, regla δ, regla γ y tu primer tableau.</div>
+            <div class="flex col g6">
+              ${ACADEMY_LESSONS.map((l) => {
+                const done = State.save.lessonsDone.includes(l.id);
+                return `
+                  <button class="row-btn btn" onclick="startLesson('${l.id}')">
+                    <div class="row-num" style="color:${done ? '#86efac' : '#6ee7b7'};border-color:${done ? 'var(--close-bd)' : 'var(--border-hi)'}">${done ? '✓' : 'L' + l.num}</div>
+                    <div class="min0 f1">
+                      <div class="trunc" style="font-weight:800;font-size:13px">${esc(l.title)}</div>
+                      <div class="trunc xs">${esc(l.sub)}</div>
+                    </div>
+                    <span class="badge ${done ? 'b-close' : l.bCls}">${done ? 'Hecha' : 'Abrir'}</span>
+                  </button>`;
+              }).join('')}
+            </div>
+          </section>
+
+          <!-- MÓDULO 2: CAMPAÑA TEMPORADA 2 -->
+          <section class="sec-card cmp">
+            <div class="flex aic jcb g8">
+              <div>
+                <span class="badge b-beta">Módulo 2 · Motor Real · 3★ Par Óptimo</span>
+                <div style="font-weight:900;font-size:16px;margin-top:4px">🧩 Campaña Temporada 2 (5 Niveles)</div>
+              </div>
+            </div>
+            <div class="small">Con Fase 0, Inventario de Constantes, Contramodelo finito en Nivel 4 y Relaciones binarias R(x,y) en el Jefe.</div>
+            <div class="flex col g6">
+              ${CAMPAIGN_LEVELS.map((lv) => {
+                const st = State.save.stars[lv.id] || 0;
+                return `
+                  <button class="row-btn btn" onclick="startLevel('${lv.id}')">
+                    <div class="row-num" style="color:#ddd6fe">N${lv.num}</div>
+                    <div class="min0 f1">
+                      <div class="trunc" style="font-weight:800;font-size:13px">${esc(lv.title)}</div>
+                      <div class="trunc xs mono">${esc(lv.sub)}</div>
+                    </div>
+                    <div class="tc" style="flex-shrink:0">
+                      <div style="font-size:13px;letter-spacing:1px">${starsHtml(st)}</div>
+                      <div class="xs">Par ${lv.par}</div>
+                    </div>
+                  </button>`;
+              }).join('')}
+            </div>
+          </section>
+
+          <!-- MÓDULO 3: FORJA & MINI-MUNDOS -->
+          <section class="sec-card forge">
+            <div class="flex aic jcb g8">
+              <div>
+                <span class="badge b-delta">Módulo 3 · Arcade Rápido · 8 Retos</span>
+                <div style="font-weight:900;font-size:16px;margin-top:4px">🌍 Forja & Mini-Mundos</div>
+              </div>
+              <span class="mono xs" style="color:#fcd34d">Mejor: ${State.save.forgeBest} pts</span>
+            </div>
+            <div class="small">Inspecciona universos visuales SVG con nodos y flechas R(x,y), evita trampas de formalización y detecta variables libres/ligadas.</div>
+            <button class="cta cta-delta btn" onclick="startForge()">Entrar a Forja & Mini-Mundos →</button>
+          </section>
+        </main>`;
+    }
+
+    /* =========================================================================
+       11. RENDERIZADO DE ACADEMIA QUIZ (LECCIONES 1 Y 2)
+       ========================================================================= */
+    function renderAcademyQuiz() {
+      const q = State.quiz;
+      if (!q) return '';
+      const les = q.les;
+
+      if (q.stage === 'intro') {
+        return `
+          <main class="pad scroll-y">
+            <div class="sec-card ac">
+              <span class="badge ${les.bCls}">${esc(les.badge)}</span>
+              <h2 style="margin:2px 0 0;font-size:18px;font-weight:900">${esc(les.introTitle)}</h2>
+              <div class="flex col g8" style="margin-top:4px">
+                ${les.points.map((p) => `<div style="background:rgba(6,9,19,0.5);border:1px solid var(--border);border-radius:13px;padding:11px 12px;font-size:13px">${p}</div>`).join('')}
+              </div>
+              <div class="grid2" style="margin-top:4px">
+                ${les.pills.map((pl) => `
+                  <div style="background:var(--${pl.c}-bg);border:1px solid var(--${pl.c}-bd);border-radius:13px;padding:9px;text-align:center">
+                    <div class="xs" style="color:#f8fafc;font-weight:700">${esc(pl.f)}</div>
+                    <div class="mono" style="font-size:12px;font-weight:900;margin-top:3px">→ ${esc(pl.r)}</div>
+                  </div>`).join('')}
+              </div>
+              <button class="cta cta-gamma btn" style="margin-top:6px" onclick="State.quiz.stage='play';Sound.tap();render()">¡Practicar Mini-Retos! →</button>
+            </div>
+          </main>`;
+      }
+
+      if (q.stage === 'done') {
+        const idx = ACADEMY_LESSONS.findIndex((x) => x.id === les.id);
+        const nxt = ACADEMY_LESSONS[idx + 1];
+        return `
+          <main class="pad scroll-y jcc">
+            <div class="sec-card ac tc">
+              <div style="font-size:46px">🎓</div>
+              <span class="badge b-close" style="margin:0 auto">Lección Completada</span>
+              <h2 style="margin:4px 0 0;font-size:19px;font-weight:900">${esc(les.title)}</h2>
+              <div class="small" style="color:#e2e8f0">${esc(les.doneNote)}</div>
+              <div class="flex col g8" style="margin-top:10px">
+                ${nxt ? `<button class="cta cta-gamma btn" onclick="startLesson('${nxt.id}')">Siguiente: ${esc(nxt.title)} →</button>` : ''}
+                <button class="cta cta-ghost btn" onclick="go('home')">Volver al Inicio</button>
+              </div>
+            </div>
+          </main>`;
+      }
+
+      const st = les.steps[q.idx];
+      return `
+        <main class="pad scroll-y">
+          <div class="sec-card ac">
+            <div class="flex aic jcb">
+              <span class="badge ${les.bCls}">Práctica ${q.idx + 1}/${les.steps.length}</span>
+              <span class="xs" style="color:#6ee7b7">Sin penalización</span>
+            </div>
+            <div style="font-size:13px;font-weight:700">${esc(st.prompt)}</div>
+            <div class="mono tc" style="background:#060913;border:1px solid var(--gamma-bd);border-radius:15px;padding:14px 12px;font-size:15px;font-weight:900;color:#6ee7b7">${esc(st.expr)}</div>
+            <div class="flex col g8">
+              ${st.options.map((o) => {
+                const isBad = q.wrongId === o.id;
+                const isGood = q.ok && o.ok;
+                return `
+                  <button class="row-btn btn ${isBad ? 'anim-shake' : ''}"
+                    style="${isGood ? 'border-color:var(--close);background:var(--close-bg)' : isBad ? 'border-color:var(--coral);background:var(--coral-bg)' : ''}"
+                    onclick="pickAcademyQuiz('${o.id}')">
+                    <span class="mono" style="font-size:14px;font-weight:800">${esc(o.text)}</span>
+                  </button>`;
+              }).join('')}
+            </div>
+            ${q.fb ? `
+              <div class="card" style="padding:11px;font-size:12.5px;font-weight:700;background:${q.ok ? 'var(--close-bg)' : 'var(--coral-bg)'};border-color:${q.ok ? 'var(--close-bd)' : 'var(--coral-bd)'}">
+                ${q.ok ? '✅ ' : '⚠️ '}${esc(q.fb)}
+              </div>` : ''}
+            ${q.ok ? `<button class="cta cta-gamma btn" onclick="nextAcademyQuiz()">${q.idx + 1 < les.steps.length ? 'Siguiente Mini-Reto →' : 'Completar Lección ✓'}</button>` : ''}
+          </div>
+        </main>`;
+    }
+
+    /* =========================================================================
+       12. RENDERIZADO DE PARTIDA TABLEAU (ÁRBOL + SELECTORES + CONTRAMODELO)
+       ========================================================================= */
+    function renderTreeNode(g, id) {
+      const nd = g.nodes[id];
+      if (!nd) return '';
+
+      // Rama cerrada auto-plegada con botón para expandir/revisar
+      if (nd.collapsed && subtreeClosed(g.nodes, id)) {
+        const closedLeaf = leavesUnder(g.nodes, id)[0];
+        return `
+          <div class="t-col">
+            <button class="btn"
+              style="background:rgba(6,78,59,0.48);border:1px solid var(--close-bd);border-radius:13px;padding:7px 11px;color:#bbf7d0;font-size:11px;font-weight:800;box-shadow:0 4px 12px rgba(34,197,94,0.22)"
+              onclick="State.game.nodes['${id}'].collapsed=false;Sound.tap();render()">
+              🔒 Cerrada (×) <span class="mono" style="opacity:0.9;margin-left:4px">${esc(closedLeaf ? closedLeaf.reason : '')}</span>
+            </button>
+          </div>`;
+      }
+
+      const isSel = g.selLit === id;
+      const isHl = g.hl.includes(id);
+      const isLeaf = nd.children.length === 0;
+      const isSat = isLeaf && isBranchSaturated(g.nodes, id);
+      const satHl = g.hl.includes('sat_' + id);
+
+      let chip = '';
+      if (nd.kind === 'alpha') chip = `<span class="rchip alpha">${nd.expanded ? '✓' : 'α'}</span>`;
+      else if (nd.kind === 'beta') chip = `<span class="rchip beta">${nd.expanded ? '✓' : 'β'}</span>`;
+      else if (nd.kind === 'delta') chip = `<span class="rchip delta">${nd.expanded ? '✓' : 'δ'}</span>`;
+      else if (nd.kind === 'gamma') {
+        const tags = nd.usedConsts.map((c) => `<span class="g-tag">${c}</span>`).join('');
+        chip = `<span class="rchip gamma">γ ∞ ${tags}</span>`;
+      }
+
+      const cls = [
+        't-node', 'btn', `k-${nd.kind}`,
+        (nd.expanded && nd.kind !== 'gamma') ? 'done' : '',
+        isSel ? 'sel' : '',
+        isHl ? 'anim-hint' : '',
+        nd.closed ? 'closed-leaf' : '',
+        nd.justClosed ? 'anim-spark' : ''
+      ].join(' ');
+
+      let childHtml = '';
+      if (nd.children.length === 1) {
+        const nxt = g.nodes[nd.children[0]];
+        const line = (nd.isRoot && nxt && nxt.isRoot) ? '<div class="t-vline-sm"></div>' : '<div class="t-vline"></div>';
+        childHtml = `${line}${renderTreeNode(g, nd.children[0])}`;
+      } else if (nd.children.length === 2) {
+        childHtml = `
+          <div class="t-fork-stem"></div>
+          <div class="t-split">
+            <div class="t-branch">${renderTreeNode(g, nd.children[0])}</div>
+            <div class="t-branch">${renderTreeNode(g, nd.children[1])}</div>
+          </div>`;
+      }
+
+      let leafAction = '';
+      if (nd.closed) {
+        leafAction = `<div class="mono" style="margin-top:6px;padding:3px 10px;border-radius:99px;background:var(--close-bg);border:1px solid var(--close-bd);color:#86efac;font-size:10.5px;font-weight:900">🔒 × ${esc(nd.reason)}</div>`;
+      } else if (isSat && !g.isAcademy) {
+        leafAction = `<button class="btn ${satHl ? 'anim-hint' : ''}" style="margin-top:9px;padding:8px 12px;border-radius:13px;background:linear-gradient(90deg,rgba(167,139,250,0.28),rgba(34,211,238,0.24));border:1px solid var(--beta-bd);color:#f5f3ff;font-size:11.5px;font-weight:800" onclick="declareSaturated('${id}')">Declarar Rama Saturada ✓</button>`;
+      }
+
+      return `
+        <div class="t-col">
+          <button class="${cls}" onclick="tapNode('${id}')">
+            <span class="t-f">${esc(nd.f)}</span>
+            ${chip}
+          </button>
+          ${leafAction}
+          ${childHtml}
+        </div>`;
+    }
+
+    function renderPlay() {
+      const g = State.game;
+      if (!g) return '';
+
+      // 1) INTRO DE LECCIÓN TABLEAU
+      if (g.phase === 'intro') {
+        const les = g.les;
+        return `
+          <main class="pad scroll-y">
+            <div class="sec-card ac">
+              <span class="badge ${les.bCls}">${esc(les.badge)}</span>
+              <h2 style="margin:2px 0 0;font-size:18px;font-weight:900">${esc(les.introTitle)}</h2>
+              <div class="flex col g8" style="margin-top:4px">
+                ${les.points.map((p) => `<div style="background:rgba(6,9,19,0.5);border:1px solid var(--border);border-radius:13px;padding:11px 12px;font-size:13px">${p}</div>`).join('')}
+              </div>
+              <div class="grid2" style="margin-top:4px">
+                ${les.pills.map((pl) => `
+                  <div style="background:var(--${pl.c}-bg);border:1px solid var(--${pl.c}-bd);border-radius:13px;padding:9px;text-align:center">
+                    <div class="mono" style="font-size:12px;font-weight:900">${esc(pl.f)}</div>
+                    <div class="xs" style="color:#f8fafc;margin-top:2px">→ ${esc(pl.r)}</div>
+                  </div>`).join('')}
+              </div>
+              <button class="cta cta-gamma btn" style="margin-top:6px"
+                onclick="State.game.phase=State.game.p0?'phase0':'tree';Sound.tap();render()">¡Ir al Tablero Interactivo! →</button>
+            </div>
+          </main>`;
+      }
+
+      // 2) FASE 0 (MONTAR LA RAÍZ)
+      if (g.phase === 'phase0') {
+        const p0 = g.p0;
+        return `
+          <main class="pad scroll-y">
+            <div class="sec-card cmp">
+              <span class="badge b-delta">Fase 0 · Planteamiento de Examen</span>
+              <div class="small">${esc(p0.prompt)}</div>
+              <div class="mono tc" style="background:#060913;border:1px solid var(--delta-bd);border-radius:15px;padding:13px;font-size:14.5px;font-weight:900;color:#fcd34d">${esc(p0.expr)}</div>
+              <div style="font-size:13px;font-weight:800">${esc(p0.ask)}</div>
+              <div class="flex col g8">
+                ${p0.options.map((o) => {
+                  const bad = g.p0Fb && !g.p0Fb.ok && g.p0Fb.wid === o.id;
+                  return `
+                    <button class="row-btn btn ${bad ? 'anim-shake' : ''}" style="flex-direction:column;align-items:flex-start;gap:3px;${bad ? 'border-color:var(--coral);background:var(--coral-bg)' : ''}" onclick="pickPhase0('${o.id}')">
+                      <div class="mono" style="font-size:13px;font-weight:800;color:#f8fafc">${esc(o.f)}</div>
+                      <div class="xs">${esc(o.cap)}</div>
+                    </button>`;
+                }).join('')}
+              </div>
+              ${g.p0Fb ? `<div class="card" style="padding:10px 12px;font-size:12.2px;font-weight:700;background:${g.p0Fb.ok ? 'var(--close-bg)' : 'var(--coral-bg)'};border-color:${g.p0Fb.ok ? 'var(--close-bd)' : 'var(--coral-bd)'}">${esc(g.p0Fb.text)}</div>` : ''}
+            </div>
+          </main>`;
+      }
+
+      // 3) LECCIÓN DE ACADEMIA COMPLETADA
+      if (g.phase === 'ac-done') {
+        const idx = ACADEMY_LESSONS.findIndex((x) => x.id === g.les.id);
+        const nxt = ACADEMY_LESSONS[idx + 1];
+        return `
+          <main class="pad scroll-y jcc">
+            <div class="sec-card ac tc">
+              <div style="font-size:46px">🎓</div>
+              <span class="badge b-close" style="margin:0 auto">Lección Completada</span>
+              <h2 style="margin:4px 0 0;font-size:19px;font-weight:900">${esc(g.les.title)}</h2>
+              <div class="small" style="color:#e2e8f0">${esc(g.les.doneNote)}</div>
+              <div class="flex col g8" style="margin-top:10px">
+                ${nxt
+                  ? `<button class="cta cta-gamma btn" onclick="startLesson('${nxt.id}')">Siguiente: ${esc(nxt.title)} →</button>`
+                  : `<button class="cta cta-beta btn" onclick="startLevel('s2_n1')">¡Empezar Campaña Nivel 1! →</button>`}
+                <button class="cta cta-ghost btn" onclick="go('home')">Volver al Inicio</button>
+              </div>
+            </div>
+          </main>`;
+      }
+
+      // 4) FASE FINAL: CONTRAMODELO FINITO (NIVEL 4) O VEREDICTO DE EXAMEN
+      if (g.phase === 'final') {
+        const fp = g.lv.finalPhase;
+        if (fp.type === 'countermodel') {
+          const lits = pathTo(g.nodes, g.satLeaf).filter((n) => n.kind === 'literal').map((n) => n.f);
+          return `
+            <main class="pad scroll-y">
+              <div class="sec-card cmp">
+                <span class="badge b-alpha">Rama Abierta Saturada</span>
+                <h2 style="margin:0;font-size:17.5px;font-weight:900">${esc(fp.title)} D = { ${g.cmDom.join(', ')} }</h2>
+                <div class="small">Literales de tu rama abierta: <span class="mono" style="color:#67e8f9;font-weight:800">{ ${esc(lits.join(', '))} }</span></div>
+                <div class="flex col g6">
+                  ${g.cmAtoms.map((at) => `
+                    <div class="flex aic jcb card" style="padding:9px 12px">
+                      <span class="mono" style="font-size:14.5px;font-weight:900">${esc(at)} =</span>
+                      <div class="flex g6">
+                        <button class="btn" style="padding:7px 14px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${g.cm[at] === 1 ? 'var(--close)' : 'var(--border-hi)'};background:${g.cm[at] === 1 ? 'var(--close-bg)' : '#0b1020'}"
+                          onclick="State.game.cm['${at}']=1;Sound.tap();render()">V (1)</button>
+                        <button class="btn" style="padding:7px 14px;border-radius:10px;font-weight:800;font-size:12px;border:1px solid ${g.cm[at] === 0 ? 'var(--coral)' : 'var(--border-hi)'};background:${g.cm[at] === 0 ? 'var(--coral-bg)' : '#0b1020'}"
+                          onclick="State.game.cm['${at}']=0;Sound.tap();render()">F (0)</button>
+                      </div>
+                    </div>`).join('')}
+                </div>
+                <div style="font-size:13px;font-weight:800;margin-top:4px">${esc(fp.verdictPrompt)}</div>
+                <div class="flex col g6">
+                  ${fp.verdictOptions.map((o) => `
+                    <button class="row-btn btn" style="border-color:${g.cmVerdict === o.id ? 'var(--alpha)' : 'var(--border)'};background:${g.cmVerdict === o.id ? 'var(--alpha-bg)' : 'rgba(15,23,42,0.88)'}"
+                      onclick="State.game.cmVerdict='${o.id}';Sound.tap();render()">
+                      <span style="font-size:12.5px;font-weight:700">${esc(o.text)}</span>
+                    </button>`).join('')}
+                </div>
+                ${g.finalFb ? `<div class="card" style="padding:10px;font-size:12px;font-weight:700;background:var(--coral-bg);border-color:var(--coral-bd)">⚠️ ${esc(g.finalFb.text)}</div>` : ''}
+                <button class="cta cta-gamma btn" onclick="submitCountermodel()">Comprobar Contramodelo y Veredicto ✓</button>
+              </div>
+            </main>`;
+        }
+
+        return `
+          <main class="pad scroll-y">
+            <div class="sec-card cmp">
+              <span class="badge b-close">Veredicto de Examen</span>
+              <h2 style="margin:0;font-size:18px;font-weight:900">${esc(fp.title)}</h2>
+              <div class="small" style="color:#e2e8f0">${esc(fp.prompt)}</div>
+              <div class="flex col g8">
+                ${fp.options.map((o) => `
+                  <button class="row-btn btn" onclick="pickVerdict('${o.id}')">
+                    <span style="font-size:13px;font-weight:700">${esc(o.text)}</span>
+                  </button>`).join('')}
+              </div>
+              ${g.finalFb ? `<div class="card" style="padding:10px 12px;font-size:12.2px;font-weight:700;background:${g.finalFb.ok ? 'var(--close-bg)' : 'var(--coral-bg)'};border-color:${g.finalFb.ok ? 'var(--close-bd)' : 'var(--coral-bd)'}">${esc(g.finalFb.text)}</div>` : ''}
+            </div>
+          </main>`;
+      }
+
+      // 5) VICTORIA DE NIVEL
+      if (g.phase === 'victory') {
+        const w = g.win;
+        const idx = CAMPAIGN_LEVELS.findIndex((x) => x.id === g.lv.id);
+        const nxt = CAMPAIGN_LEVELS[idx + 1];
+        return `
+          <main class="pad scroll-y jcc">
+            <div class="sec-card ac tc">
+              <div style="font-size:36px;letter-spacing:6px">${starsHtml(w.stars)}</div>
+              <h2 style="margin:2px 0 0;font-size:20px;font-weight:900">¡Nivel ${g.lv.num} Superado!</h2>
+              <div class="small">${esc(g.lv.title)}</div>
+              <div class="grid3" style="margin:8px 0">
+                <div class="card" style="padding:9px"><div class="mono" style="font-size:16px;font-weight:900;color:#67e8f9">${w.total}</div><div class="xs">Puntos</div></div>
+                <div class="card" style="padding:9px"><div class="mono" style="font-size:16px;font-weight:900;color:${w.steps <= w.par ? '#86efac' : '#fcd34d'}">${w.steps}/${w.par}</div><div class="xs">Pasos (Par)</div></div>
+                <div class="card" style="padding:9px"><div class="mono" style="font-size:16px;font-weight:900;color:${w.hintsUsed === 0 ? '#86efac' : '#fda4af'}">${w.hintsUsed}</div><div class="xs">Pistas</div></div>
+              </div>
+              <div class="xs">${w.stars === 3 ? '¡Maestría total! Cumpliste el Par óptimo sin pistas de pago.' : `Para 3★: resuelve en ≤ ${w.par} pasos de expansión sin pistas de pago.`}</div>
+              <div class="flex col g8" style="margin-top:8px">
+                ${nxt
+                  ? `<button class="cta cta-gamma btn" onclick="startLevel('${nxt.id}')">Siguiente: Nivel ${nxt.num} →</button>`
+                  : `<button class="cta cta-delta btn" onclick="startForge()">¡Probar Forja & Mini-Mundos! 🌍</button>`}
+                <div class="grid2">
+                  <button class="cta cta-ghost btn" onclick="startLevel('${g.lv.id}')">Reintentar</button>
+                  <button class="cta cta-ghost btn" onclick="go('home')">Inicio</button>
+                </div>
+              </div>
+            </div>
+          </main>`;
+      }
+
+      // 6) TABLERO ACTIVO (FASE TREE)
+      const invConsts = allOpenConstants(g);
+      return `
+        <!-- Banner de Coach o Estadísticas -->
+        ${g.isAcademy ? `
+          <div class="coach-bar">
+            <span style="font-size:17px">🧭</span>
+            <div style="font-size:12.2px;font-weight:700;color:#ecfdf5">${esc(g.coach)}</div>
+          </div>` : `
+          <div style="padding:8px 12px;background:rgba(15,23,42,0.94);border-bottom:1px solid var(--border);flex-shrink:0">
+            <div class="flex aic jcb g8">
+              <div class="xs trunc" style="color:#cbd5e1">${esc(g.lv.goal)}</div>
+              <div class="flex aic g6 mono" style="font-size:11px;font-weight:900;flex-shrink:0">
+                <span style="color:#67e8f9">${g.score} pts</span>
+                <span style="color:${g.steps <= g.lv.par ? '#86efac' : '#fcd34d'}">Par ${g.steps}/${g.lv.par}</span>
+              </div>
+            </div>
+          </div>`}
+
+        <!-- Barra de Inventario de Constantes -->
+        <div class="const-bar">
+          <div class="flex aic g6 wrap">
+            <span class="xs" style="color:#6ee7b7;font-weight:800;text-transform:uppercase">Inventario:</span>
+            ${invConsts.length
+              ? invConsts.map((c) => `<span class="const-pill">${c}</span>`).join('')
+              : '<span class="xs" style="color:#cbd5e1">Vacío (aún sin constantes)</span>'}
+          </div>
+          <span class="xs" style="color:#fcd34d;flex-shrink:0">δ nueva · γ ∞</span>
+        </div>
+
+        ${g.tip ? `
+          <div style="padding:8px 12px;background:rgba(245,158,11,0.16);border-bottom:1px solid var(--delta-bd);font-size:11.8px;font-weight:700;color:#fef3c7;flex-shrink:0">
+            🧭 ${esc(g.tip)}
+          </div>` : ''}
+
+        ${g.selLit ? `
+          <div style="padding:8px 12px;background:rgba(245,158,11,0.22);border-bottom:1px solid var(--delta-bd);font-size:11.8px;font-weight:800;color:#fef3c7;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0">
+            <span>Literal: <span class="mono">${esc(g.nodes[g.selLit].f)}</span> → toca su contrario en la misma rama</span>
+            <button class="mini-btn btn" onclick="State.game.selLit=null;render()">✕</button>
+          </div>` : ''}
+
+        <!-- Lienzo del Árbol -->
+        <div class="tree-wrap">
+          <div class="tree-float-l">
+            <button class="mini-btn btn" onclick="undoStep()" ${g.history.length ? '' : 'disabled'}>↩ Deshacer</button>
+          </div>
+          <div class="tree-float-r">
+            <button class="mini-btn btn" onclick="zoomTree(-0.12)" aria-label="Alejar">−</button>
+            <button class="mini-btn btn" onclick="zoomTree(0)">${Math.round(g.zoom * 100)}%</button>
+            <button class="mini-btn btn" onclick="zoomTree(0.12)" aria-label="Acercar">+</button>
+          </div>
+          <div class="tree-scroll">
+            <div class="tree-inner" style="transform:scale(${g.zoom})">
+              ${renderTreeNode(g, g.rootId)}
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra inferior de herramientas -->
+        <div class="play-foot" style="grid-template-columns:${g.isAcademy ? '1fr 1fr' : '1fr 1fr 1fr'}">
+          <button class="tool-btn btn" style="background:var(--delta-bg);border-color:var(--delta-bd)" onclick="useCompass()">
+            <span style="font-size:12px;font-weight:800;color:#fcd34d">🧭 Brújula</span>
+            <span class="xs">${g.isAcademy ? 'Gratis' : '-20 pts'}</span>
+          </button>
+          ${!g.isAcademy ? `
+            <button class="tool-btn btn" style="background:var(--beta-bg);border-color:var(--beta-bd)" onclick="useAutoStep()">
+              <span style="font-size:12px;font-weight:800;color:#ddd6fe">⚡ Resolver Paso</span>
+              <span class="xs">-40 pts</span>
+            </button>` : ''}
+          <button class="tool-btn btn" style="background:rgba(30,41,59,0.85)" onclick="${g.isAcademy ? `startLesson('${g.les.id}')` : `startLevel('${g.lv.id}')`}">
+            <span style="font-size:12px;font-weight:800">🔄 Reiniciar</span>
+            <span class="xs">Desde cero</span>
+          </button>
+        </div>
+
+        ${g.sheet ? renderExpansionSheet(g) : ''}`;
+    }
+
+    function renderExpansionSheet(g) {
+      const sh = g.sheet;
+      const nd = g.nodes[sh.nodeId];
+      const info = FOL.classify(astOf(nd));
+
+      // Selector táctil de 3 opciones para reglas α y β
+      if (sh.mode === 'prop') {
+        return `
+          <div class="backdrop" onclick="if(event.target===this){State.game.sheet=null;render()}">
+            <div class="sheet">
+              <div class="flex aic jcb" style="margin-bottom:10px">
+                <div>
+                  <span class="badge ${info.kind === 'alpha' ? 'b-alpha' : 'b-beta'}">${esc(info.name)}</span>
+                  <div class="mono" style="font-size:16px;font-weight:900;margin-top:4px">${esc(nd.f)}</div>
+                </div>
+                <button class="icon-btn btn" onclick="State.game.sheet=null;render()">✕</button>
+              </div>
+              <div class="small" style="margin-bottom:8px">Elige la expansión correcta (cuidado con las trampas de examen):</div>
+              <div class="flex col g8 scroll-y">
+                ${sh.choices.map((c) => {
+                  const bad = sh.wrongId === c.id;
+                  const txt = c.kind === 'alpha'
+                    ? c.branches[0].map((x) => FOL.format(x, true)).join('   ↓   ')
+                    : c.branches.map((b) => b.map((x) => FOL.format(x, true)).join(', ')).join('   |   ');
+                  return `
+                    <button class="row-btn btn ${bad ? 'anim-shake' : ''}" style="justify-content:space-between;${bad ? 'border-color:var(--coral);background:var(--coral-bg)' : ''}" onclick="pickPropChoice('${c.id}')">
+                      <span class="mono" style="font-size:13.5px;font-weight:800">${esc(txt)}</span>
+                      <span class="badge ${c.kind === 'alpha' ? 'b-alpha' : 'b-beta'}">${c.kind === 'alpha' ? 'α Apila' : 'β Bifurca'}</span>
+                    </button>`;
+                }).join('')}
+              </div>
+              ${sh.fb ? `<div class="card" style="margin-top:10px;padding:10px;font-size:12px;font-weight:700;background:var(--coral-bg);border-color:var(--coral-bd)">⚠️ ${esc(sh.fb)}</div>` : ''}
+            </div>
+          </div>`;
+      }
+
+      // Selector de Constantes para δ (constante nueva obligatoria) y γ (reutilizable ∞)
+      const isDelta = sh.mode === 'delta';
+      return `
+        <div class="backdrop" onclick="if(event.target===this){State.game.sheet=null;render()}">
+          <div class="sheet">
+            <div class="flex aic jcb" style="margin-bottom:8px">
+              <div>
+                <span class="badge ${isDelta ? 'b-delta' : 'b-gamma'}">${esc(info.name)}</span>
+                <div class="mono" style="font-size:16.5px;font-weight:900;margin-top:4px">${esc(nd.f)}</div>
+              </div>
+              <button class="icon-btn btn" onclick="State.game.sheet=null;render()">✕</button>
+            </div>
+
+            <div class="small" style="margin-bottom:10px">
+              ${isDelta
+                ? 'Toca una constante <strong>NUEVA</strong> que no esté en uso en esta rama para sustituir <span class="mono">' + info.v + '</span>:'
+                : 'Toca la constante con la que quieres instanciar <span class="mono">' + info.v + '</span> (puedes reutilizar esta γ varias veces):'}
+            </div>
+
+            <div class="grid2" style="margin-bottom:8px">
+              ${FOL.CONSTS.map((c) => {
+                const inBranch = sh.bc.includes(c);
+                const alreadyUsedHere = !isDelta && nd.usedConsts.includes(c);
+                const preview = FOL.format(info.instantiate(c), true);
+
+                let bd = 'var(--border-hi)', bg = 'rgba(18,28,52,0.92)', statusTxt = 'Libre', statusCol = '#94a3b8';
+                if (isDelta) {
+                  if (inBranch) {
+                    bd = 'var(--coral-bd)'; bg = 'rgba(244,63,94,0.12)';
+                    statusTxt = 'En uso en rama'; statusCol = '#fda4af';
+                  } else {
+                    bd = 'var(--delta-bd)'; bg = 'var(--delta-bg)';
+                    statusTxt = 'Nueva ✓'; statusCol = '#fcd34d';
+                  }
+                } else {
+                  if (alreadyUsedHere) {
+                    bd = 'rgba(100,116,139,0.45)'; bg = 'rgba(15,23,42,0.65)';
+                    statusTxt = 'Ya instanciada'; statusCol = '#94a3b8';
+                  } else if (inBranch) {
+                    bd = 'var(--gamma-bd)'; bg = 'var(--gamma-bg)';
+                    statusTxt = 'En rama ★'; statusCol = '#6ee7b7';
+                  } else {
+                    statusTxt = 'Nueva';
+                  }
+                }
+
+                return `
+                  <button class="btn" style="padding:11px 10px;border-radius:14px;border:1px solid ${bd};background:${bg};text-align:left;display:flex;flex-direction:column;gap:4px" onclick="pickConstant('${c}')">
+                    <div class="flex aic jcb w100">
+                      <span class="mono" style="font-size:16px;font-weight:900;color:#f8fafc">${info.v} := ${c}</span>
+                      <span style="font-size:10px;font-weight:800;color:${statusCol}">${statusTxt}</span>
+                    </div>
+                    <div class="mono trunc w100" style="font-size:12px;color:#cbd5e1">→ ${esc(preview)}</div>
+                  </button>`;
+              }).join('')}
+            </div>
+
+            ${sh.deltaAlert ? `
+              <div class="card anim-shake" style="padding:11px 12px;font-size:12.2px;font-weight:700;background:var(--coral-bg);border-color:var(--coral);color:#ffe4e6">
+                🚨 ${esc(sh.deltaAlert)}
+              </div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    /* =========================================================================
+       13. RENDERIZADO DE FORJA & MINI-MUNDOS (CON LIENZO SVG DE DOMINIO FINITO)
+       ========================================================================= */
+    function renderMiniWorldSVG(world) {
+      const nodeMap = {};
+      world.nodes.forEach((n) => { nodeMap[n.id] = n; });
+
+      const edgesSvg = world.edges.map(([uId, vId]) => {
+        const u = nodeMap[uId], v = nodeMap[vId];
+        if (!u || !v) return '';
+        if (uId === vId) {
+          // Bucle elegante sobre el propio nodo
+          return `<path d="M ${u.x + 14} ${u.y - 16} C ${u.x + 56} ${u.y - 54}, ${u.x + 58} ${u.y + 34}, ${u.x + 22} ${u.y + 10}" fill="none" stroke="#f59e0b" stroke-width="2.6" marker-end="url(#arrow-w)" />`;
+        }
+        const dx = v.x - u.x, dy = v.y - u.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        const ux = dx / dist, uy = dy / dist;
+        const x1 = u.x + ux * 23, y1 = u.y + uy * 23;
+        const x2 = v.x - ux * 27, y2 = v.y - uy * 27;
+        // Leve curvatura para claridad visual
+        const mx = (x1 + x2) / 2 - uy * 14;
+        const my = (y1 + y2) / 2 + ux * 14;
+        return `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow-w)" />`;
+      }).join('');
+
+      const nodesSvg = world.nodes.map((n) => {
+        const shapeEl = n.shape === 'square'
+          ? `<rect x="${n.x - 19}" y="${n.y - 19}" width="38" height="38" rx="9" fill="#0b1020" stroke="${n.color}" stroke-width="3.2" />`
+          : `<circle cx="${n.x}" cy="${n.y}" r="20" fill="#0b1020" stroke="${n.color}" stroke-width="3.2" />`;
+        return `
+          <g>
+            ${shapeEl}
+            <text x="${n.x}" y="${n.y + 5}" text-anchor="middle" fill="#f8fafc" font-family="monospace" font-size="16" font-weight="900">${n.id}</text>
+          </g>`;
+      }).join('');
+
+      return `
+        <svg viewBox="0 0 300 195" style="width:100%;height:auto;max-height:195px;background:#060913;border:1px solid var(--border-hi);border-radius:16px;display:block">
+          <defs>
+            <marker id="arrow-w" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#22d3ee" />
+            </marker>
+          </defs>
+          ${edgesSvg}
+          ${nodesSvg}
+        </svg>`;
+    }
+
+    function renderForge() {
+      const f = State.forge;
+      if (!f) return '';
+
+      if (f.done) {
+        return `
+          <main class="pad scroll-y jcc">
+            <div class="sec-card forge tc">
+              <div style="font-size:48px">🌍</div>
+              <span class="badge b-delta" style="margin:0 auto">Forja Completada</span>
+              <h2 style="margin:4px 0 0;font-size:21px;font-weight:900">${f.hits}/${FORGE_CHALLENGES.length} Aciertos</h2>
+              <div class="grid3" style="margin:8px 0">
+                <div class="card" style="padding:9px"><div class="mono" style="font-size:16px;font-weight:900;color:#fcd34d">${f.score}</div><div class="xs">Puntos</div></div>
+                <div class="card" style="padding:9px"><div class="mono" style="font-size:16px;font-weight:900;color:#6ee7b7">${f.bestStreak}</div><div class="xs">Mejor Racha</div></div>
+                <div class="card" style="padding:9px"><div class="mono" style="font-size:16px;font-weight:900;color:#67e8f9">${State.save.forgeBest}</div><div class="xs">Récord</div></div>
+              </div>
+              <div class="flex col g8" style="margin-top:8px">
+                <button class="cta cta-delta btn" onclick="startForge()">Jugar otra ronda 🔄</button>
+                <button class="cta cta-ghost btn" onclick="go('home')">Volver al Inicio</button>
+              </div>
+            </div>
+          </main>`;
+      }
+
+      const ch = FORGE_CHALLENGES[f.idx];
+      return `
+        <main class="pad scroll-y">
+          <div class="flex aic jcb">
+            <span class="badge ${ch.kind === 'world' ? 'b-alpha' : 'b-beta'}">${esc(ch.tag)}</span>
+            <div class="flex aic g8 mono xs" style="font-weight:800">
+              <span style="color:#fcd34d">${f.score} pts</span>
+              <span style="color:#6ee7b7">🔥 ×${f.streak}</span>
+            </div>
+          </div>
+
+          <div class="sec-card">
+            <div style="font-size:13px;font-weight:700">${esc(ch.prompt)}</div>
+            <div class="mono tc" style="background:#060913;border:1px solid var(--border-hi);border-radius:14px;padding:12px;font-size:15.5px;font-weight:900;color:#67e8f9">${esc(ch.formula)}</div>
+
+            ${ch.kind === 'world' ? `
+              ${renderMiniWorldSVG(ch.world)}
+              <div class="xs tc">${esc(ch.legend)}</div>` : ''}
+
+            <div class="${ch.kind === 'world' ? 'grid2' : 'flex col g8'}" style="margin-top:4px">
+              ${ch.options.map((o) => {
+                let st = '';
+                if (f.answered) {
+                  if (o.ok) st = 'border-color:var(--close);background:var(--close-bg)';
+                  else if (f.pickedId === o.id) st = 'border-color:var(--coral);background:var(--coral-bg)';
+                }
+                return `
+                  <button class="row-btn btn ${ch.kind === 'world' ? 'jcc' : ''}" style="${st}" onclick="pickForgeOption('${o.id}')" ${f.answered ? 'disabled' : ''}>
+                    <span class="${ch.kind === 'formal' ? 'mono' : ''}" style="font-size:13.5px;font-weight:800">${esc(o.text)}</span>
+                  </button>`;
+              }).join('')}
+            </div>
+
+            ${f.answered ? `
+              <div class="card" style="padding:11px;font-size:12.3px;font-weight:700;background:${f.isRight ? 'var(--close-bg)' : 'var(--coral-bg)'};border-color:${f.isRight ? 'var(--close-bd)' : 'var(--coral-bd)'}">
+                ${f.isRight ? '✅ ¡Correcto! ' : '❌ Casi: '}${esc(ch.exp)}
+              </div>
+              <button class="cta cta-delta btn" onclick="nextForge()">
+                ${f.idx + 1 < FORGE_CHALLENGES.length ? 'Siguiente Reto →' : 'Ver Resultados 🏆'}
+              </button>` : ''}
+          </div>
+        </main>`;
+    }
+
+    /* =========================================================================
+       14. GRIMORIO DE 3 PESTAÑAS + CONFIRMACIÓN DE COSTE PROGRESIVO
+       ========================================================================= */
+    function renderGrimorioModal() {
+      if (State.grim.confirmPay && State.game) {
+        const cost = State.game.lv.grimCost;
+        return `
+          <div class="backdrop center" onclick="if(event.target===this){State.grim.confirmPay=false;render()}">
+            <div class="dialog tc">
+              <div style="font-size:36px">📖</div>
+              <h3 style="margin:6px 0 4px;font-size:17px;font-weight:900">¿Abrir el Grimorio?</h3>
+              <div class="small" style="margin-bottom:14px">
+                A partir del Nivel 2 consultar el Grimorio cuesta <strong style="color:#fcd34d">-${cost} puntos</strong> la primera vez en este intento (después queda libre durante el resto del nivel).
+              </div>
+              <div class="grid2">
+                <button class="cta cta-ghost btn" onclick="State.grim.confirmPay=false;Sound.tap();render()">Cancelar</button>
+                <button class="cta cta-delta btn" onclick="confirmGrimPay()">Abrir (-${cost} pts)</button>
+              </div>
+            </div>
+          </div>`;
+      }
+
+      if (!State.grim.open) return '';
+      const tab = State.grim.tab;
+
+      return `
+        <div class="backdrop" onclick="if(event.target===this){State.grim.open=false;render()}">
+          <div class="sheet" style="max-height:88vh">
+            <div class="flex aic jcb" style="margin-bottom:10px">
+              <div>
+                <div style="font-weight:900;font-size:16px">📖 Grimorio de Predicados</div>
+                <div class="xs">Guía rápida de reglas, estrategia y Fase 0</div>
+              </div>
+              <button class="icon-btn btn" onclick="State.grim.open=false;Sound.tap();render()">✕</button>
+            </div>
+
+            <div class="tabs" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+              <button class="tab-btn ${tab === 'gd' ? 'active' : ''}" onclick="State.grim.tab='gd';Sound.tap();render()">Reglas γ y δ</button>
+              <button class="tab-btn ${tab === 'strat' ? 'active' : ''}" onclick="State.grim.tab='strat';Sound.tap();render()">Estrategia</button>
+              <button class="tab-btn ${tab === 'exam' ? 'active' : ''}" onclick="State.grim.tab='exam';Sound.tap();render()">Recetario</button>
+            </div>
+
+            <div class="scroll-y flex col g10" style="padding-bottom:6px">
+              ${tab === 'gd' ? `
+                <div class="card" style="border-color:var(--delta-bd);background:rgba(245,158,11,0.08)">
+                  <span class="badge b-delta">Reglas δ · Existenciales · CONSTANTE NUEVA</span>
+                  <div class="grid2" style="margin-top:8px">
+                    <div style="background:#060913;border-radius:11px;padding:9px;text-align:center">
+                      <div class="mono" style="font-size:13px;font-weight:900;color:#fcd34d">∃x φ(x)</div>
+                      <div class="mono xs" style="color:#f8fafc;margin-top:3px">↓ φ(c nueva)</div>
+                    </div>
+                    <div style="background:#060913;border-radius:11px;padding:9px;text-align:center">
+                      <div class="mono" style="font-size:13px;font-weight:900;color:#fcd34d">¬∀x φ(x)</div>
+                      <div class="mono xs" style="color:#f8fafc;margin-top:3px">↓ ¬φ(c nueva)</div>
+                    </div>
+                  </div>
+                  <div class="xs" style="margin-top:7px;color:#fef3c7">La constante <strong>c</strong> NO puede haber aparecido antes en esa rama. Se marca ✓ tras usarse.</div>
+                </div>
+
+                <div class="card" style="border-color:var(--gamma-bd);background:rgba(16,185,129,0.08)">
+                  <span class="badge b-gamma">Reglas γ · Universales · REUTILIZABLE ∞</span>
+                  <div class="grid2" style="margin-top:8px">
+                    <div style="background:#060913;border-radius:11px;padding:9px;text-align:center">
+                      <div class="mono" style="font-size:13px;font-weight:900;color:#6ee7b7">∀x φ(x)</div>
+                      <div class="mono xs" style="color:#f8fafc;margin-top:3px">↓ φ(c cualquiera)</div>
+                    </div>
+                    <div style="background:#060913;border-radius:11px;padding:9px;text-align:center">
+                      <div class="mono" style="font-size:13px;font-weight:900;color:#6ee7b7">¬∃x φ(x)</div>
+                      <div class="mono xs" style="color:#f8fafc;margin-top:3px">↓ ¬φ(c cualquiera)</div>
+                    </div>
+                  </div>
+                  <div class="xs" style="margin-top:7px;color:#d1fae5">Elige constantes <strong>ya activas</strong> en la rama para buscar cierres. Puedes volver a usarla con nuevas constantes.</div>
+                </div>
+
+                <div class="card">
+                  <div class="xs" style="font-weight:800;color:#cbd5e1;margin-bottom:6px">RESUMEN PROPOSICIONAL (α y β)</div>
+                  <div class="grid2">
+                    <div class="mono xs" style="background:var(--alpha-bg);border:1px solid var(--alpha-bd);border-radius:10px;padding:8px;color:#cffafe">
+                      <strong>α (Apilan ↓)</strong><br/>A∧B → A, B<br/>¬(A∨B) → ¬A, ¬B<br/>¬(A→B) → A, ¬B<br/>¬¬A → A
+                    </div>
+                    <div class="mono xs" style="background:var(--beta-bg);border:1px solid var(--beta-bd);border-radius:10px;padding:8px;color:#ede9fe">
+                      <strong>β (Bifurcan |)</strong><br/>A∨B → A | B<br/>A→B → ¬A | B<br/>¬(A∧B) → ¬A | ¬B<br/>A↔B → A,B | ¬A,¬B
+                    </div>
+                  </div>
+                </div>` : ''}
+
+              ${tab === 'strat' ? `
+                <div class="card" style="border-color:var(--alpha-bd)">
+                  <span class="badge b-alpha">Orden Óptimo de Expansión</span>
+                  <div class="mono tc" style="font-size:16px;font-weight:900;margin:8px 0;color:#f8fafc">
+                    <span style="color:#22d3ee">α</span> → <span style="color:#f59e0b">δ</span> → <span style="color:#10b981">γ</span> → <span style="color:#a78bfa">β</span>
+                  </div>
+                  <div class="small">Apila siempre las lineales (<strong>α</strong>) y saca las existenciales (<strong>δ</strong>) antes de instanciar universales (<strong>γ</strong>) y abrir ramas (<strong>β</strong>).</div>
+                </div>
+                <div class="card">
+                  <div style="font-weight:800;font-size:13px;color:#fcd34d;margin-bottom:4px">¿Por qué δ exige constante nueva?</div>
+                  <div class="small">Si sabes que "alguien es médico" (<span class="mono">∃x P(x)</span>) y "alguien es músico" (<span class="mono">∃x Q(x)</span>), no puedes asumir que sean la misma persona. Por eso van a <span class="mono">a</span> y <span class="mono">b</span>.</div>
+                </div>
+                <div class="card">
+                  <div style="font-weight:800;font-size:13px;color:#6ee7b7;margin-bottom:4px">¿Por qué γ se puede reutilizar (∞)?</div>
+                  <div class="small">Una regla universal se cumple para <strong>todo</strong> el universo: si más tarde aparece una constante nueva <span class="mono">b</span>, debes poder aplicar tu <span class="mono">∀</span> también sobre <span class="mono">b</span>.</div>
+                </div>` : ''}
+
+              ${tab === 'exam' ? `
+                <div class="card">
+                  <span class="badge b-beta">Fase 0 · Qué poner en la raíz</span>
+                  <div class="flex col g6" style="margin-top:8px;font-size:12.5px">
+                    <div>• <strong>Validez (A):</strong> raíz <span class="mono">{ ¬A }</span> → Si todo cierra (×), ES válida.</div>
+                    <div>• <strong>Consecuencia (Γ ⊨ φ):</strong> raíz <span class="mono">{ Γ, ¬φ }</span> → Si todo cierra (×), SÍ es consecuencia.</div>
+                    <div>• <strong>Equivalencia (A ≡ B):</strong> raíz <span class="mono">{ ¬(A ↔ B) }</span> → Si todo cierra (×), SON equivalentes.</div>
+                    <div>• <strong>Satisfacibilidad (Γ):</strong> raíz <span class="mono">{ Γ }</span> sin negar → Si queda 1 rama abierta saturada, ES satisfacible.</div>
+                  </div>
+                </div>
+                <div class="card" style="border-color:var(--delta-bd)">
+                  <div style="font-weight:800;font-size:13px;color:#fcd34d;margin-bottom:5px">Trucos estrella de Preguntas 6–10</div>
+                  <div class="flex col g6 small" style="color:#e2e8f0">
+                    <div>1. <strong>Todos los A son B:</strong> siempre <span class="mono">∀x(A(x) → B(x))</span>.</div>
+                    <div>2. <strong>Algún A es B:</strong> siempre <span class="mono">∃x(A(x) ∧ B(x))</span>.</div>
+                    <div>3. <strong>Cuantificadores cruzados:</strong> <span class="mono">∃x ∀y R(x,y) ⊨ ∀y ∃x R(x,y)</span> es VÁLIDA, pero la inversa NO.</div>
+                    <div>4. <strong>Rama abierta saturada:</strong> te regala el contramodelo finito con las constantes de esa rama.</div>
+                  </div>
+                </div>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    /* =========================================================================
+       15. RENDER PRINCIPAL
+       ========================================================================= */
+    function render() {
+      let body = '';
+      if (State.screen === 'home') body = renderHome();
+      else if (State.screen === 'academy-quiz') body = renderAcademyQuiz();
+      else if (State.screen === 'play') body = renderPlay();
+      else if (State.screen === 'forge') body = renderForge();
+
+      const toastHtml = State.toast
+        ? `<div class="toast-wrap"><div class="toast-box t-${State.toast.type}">${esc(State.toast.text)}</div></div>`
+        : '';
+
+      document.getElementById('app').innerHTML = `
+        ${renderHeader()}
+        ${body}
+        ${renderGrimorioModal()}
+        ${toastHtml}`;
+    }
+
+    // Arranque inicial seguro
+    window.addEventListener('DOMContentLoaded', () => { render(); });
+  </script>
+</body>
+</html>
