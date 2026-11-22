@@ -1,0 +1,3658 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Tableau Quest · Lógica Proposicional</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tipografías Inter y JetBrains Mono con fallback de sistema -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            obsidian: '#0B1020',
+            surface: '#121A2F',
+            surfaceLight: '#192440',
+            cyanGlow: '#22D3EE',
+            violetGlow: '#A855F7',
+            emeraldGlow: '#10B981',
+            amberGlow: '#F59E0B',
+            roseGlow: '#F43F5E',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* =====================================================================
+       ESTILOS PERSONALIZADOS, CONECTORES DE ÁRBOL Y MICRO-ANIMACIONES
+       ===================================================================== */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #050811;
+      color: #F1F5F9;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overscroll-behavior: none;
+    }
+
+    /* Ambiente luminoso sutil en escritorio */
+    body {
+      background-image:
+        radial-gradient(circle at 18% 12%, rgba(34, 211, 238, 0.09), transparent 38%),
+        radial-gradient(circle at 82% 86%, rgba(168, 85, 247, 0.10), transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.04), transparent 60%);
+    }
+
+    /* Contenedor móvil centrado (max 440px, edge-to-edge en móvil) */
+    .app-shell {
+      width: 100%;
+      max-width: 440px;
+      height: 100dvh;
+      margin: 0 auto;
+      background: #0B1020;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 600px) {
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 16px;
+      }
+      .app-shell {
+        height: min(860px, calc(100vh - 32px));
+        border-radius: 32px;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        box-shadow:
+          0 28px 80px -12px rgba(0, 0, 0, 0.9),
+          0 0 0 1px rgba(34, 211, 238, 0.08) inset,
+          0 0 60px -20px rgba(168, 85, 247, 0.22);
+      }
+    }
+
+    /* Superficie Glass */
+    .glass-card {
+      background: rgba(18, 26, 47, 0.86);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    /* Scrollbars elegantes y discretas */
+    .thin-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .thin-scroll::-webkit-scrollbar-track {
+      background: rgba(11, 16, 32, 0.4);
+      border-radius: 99px;
+    }
+    .thin-scroll::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.42);
+      border-radius: 99px;
+    }
+
+    /* Fuente para fórmulas lógicas */
+    .formula-text {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      letter-spacing: -0.02em;
+    }
+
+    /* =====================================================================
+       CONECTORES JERÁRQUICOS DEL ÁRBOL SEMÁNTICO
+       ===================================================================== */
+    .tree-v-line {
+      width: 2px;
+      height: 12px;
+      background: linear-gradient(180deg, rgba(34, 211, 238, 0.55), rgba(148, 163, 184, 0.3));
+      margin: 0 auto;
+    }
+
+    .tree-v-line-neutral {
+      width: 2px;
+      height: 8px;
+      background: rgba(148, 163, 184, 0.28);
+      margin: 0 auto;
+    }
+
+    .tree-fork-stem {
+      width: 2px;
+      height: 12px;
+      background: linear-gradient(180deg, rgba(168, 85, 247, 0.75), rgba(168, 85, 247, 0.55));
+      margin: 0 auto;
+    }
+
+    .tree-split-row {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+      padding-top: 15px;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .tree-split-branch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      min-width: 0;
+    }
+
+    .tree-split-branch::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      height: 15px;
+      width: calc(50% + 6px);
+      border-top: 2px solid rgba(168, 85, 247, 0.6);
+    }
+
+    .tree-split-branch:first-child::before {
+      right: -6px;
+      border-left: 2px solid rgba(168, 85, 247, 0.6);
+      border-top-left-radius: 10px;
+    }
+
+    .tree-split-branch:last-child::before {
+      left: -6px;
+      border-right: 2px solid rgba(168, 85, 247, 0.6);
+      border-top-right-radius: 10px;
+    }
+
+    /* =====================================================================
+       ANIMACIONES DE JUEGO
+       ===================================================================== */
+    @keyframes nodePop {
+      0% { opacity: 0; transform: translateY(-7px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .anim-node-pop {
+      animation: nodePop 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes shakeX {
+      0%, 100% { transform: translateX(0); }
+      18% { transform: translateX(-6px); }
+      38% { transform: translateX(6px); }
+      58% { transform: translateX(-4px); }
+      78% { transform: translateX(4px); }
+    }
+    .anim-shake {
+      animation: shakeX 0.38s ease-in-out;
+    }
+
+    @keyframes closeSpark {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.9); transform: scale(1); }
+      45% { box-shadow: 0 0 26px 8px rgba(16, 185, 129, 0.55); transform: scale(1.05); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+    }
+    .anim-close-spark {
+      animation: closeSpark 0.75s ease-out;
+    }
+
+    @keyframes pulseHint {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.65); }
+      50% { box-shadow: 0 0 0 7px rgba(245, 158, 11, 0); }
+    }
+    .anim-hint-glow {
+      animation: pulseHint 1.25s infinite;
+      border-color: #F59E0B !important;
+      background: rgba(245, 158, 11, 0.16) !important;
+    }
+
+    @keyframes pulseSaturated {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.55); }
+      50% { box-shadow: 0 0 0 7px rgba(168, 85, 247, 0); }
+    }
+    .anim-saturated-pulse {
+      animation: pulseSaturated 1.6s infinite;
+    }
+
+    @keyframes sheetSlideUp {
+      0% { transform: translateY(100%); opacity: 0.4; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .anim-sheet-up {
+      animation: sheetSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes starBounce {
+      0% { transform: scale(0) rotate(-25deg); opacity: 0; }
+      65% { transform: scale(1.25) rotate(8deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .anim-star {
+      animation: starBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    }
+
+    .btn-game {
+      transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .btn-game:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app-shell"></div>
+
+  <script>
+    /* =========================================================================
+       1. MOTOR DE SONIDO SINTETIZADO (WEB AUDIO API)
+       - Soft click, α-stack chime, β-split swoosh, branch-lock snap, error buzz,
+         hint chime y victory fanfare. Sin dependencias externas.
+       ========================================================================= */
+    const SoundEngine = (() => {
+      let ctx = null;
+      let muted = false;
+
+      function getCtx() {
+        if (muted) return null;
+        if (!ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) ctx = new AudioCtx();
+        }
+        if (ctx && ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+        return ctx;
+      }
+
+      function tone(freq, duration, type = 'sine', vol = 0.075, delay = 0, freqEnd = null) {
+        const audio = getCtx();
+        if (!audio) return;
+        try {
+          const now = audio.currentTime + delay;
+          const osc = audio.createOscillator();
+          const gain = audio.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          if (freqEnd !== null) {
+            osc.frequency.exponentialRampToValueAtTime(freqEnd, now + duration);
+          }
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.exponentialRampToValueAtTime(vol, now + 0.014);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+          osc.connect(gain);
+          gain.connect(audio.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        } catch (_) {}
+      }
+
+      return {
+        isMuted: () => muted,
+        toggleMute: () => {
+          muted = !muted;
+          if (!muted) tone(587.33, 0.09, 'sine', 0.055);
+          return muted;
+        },
+        // Click suave táctil
+        tap: () => tone(480, 0.055, 'triangle', 0.04, 0, 560),
+        // Campanilla vertical para regla α
+        alphaExpand: () => {
+          tone(523.25, 0.13, 'sine', 0.07, 0);
+          tone(659.25, 0.16, 'sine', 0.075, 0.065);
+        },
+        // Swoosh armónico para bifurcación β
+        betaExpand: () => {
+          tone(330, 0.18, 'triangle', 0.06, 0, 587.33);
+          tone(493.88, 0.17, 'sine', 0.065, 0.05, 783.99);
+        },
+        // Chasquido/candado satisfactorio al cerrar rama
+        branchClose: () => {
+          tone(620, 0.07, 'triangle', 0.08, 0, 880);
+          tone(880, 0.16, 'sine', 0.085, 0.055);
+          tone(1318.5, 0.24, 'sine', 0.065, 0.11);
+        },
+        // Zumbido suave de error
+        error: () => {
+          tone(190, 0.14, 'sawtooth', 0.055, 0, 145);
+          tone(150, 0.18, 'sawtooth', 0.05, 0.08, 118);
+        },
+        // Aviso de pista / brújula
+        hint: () => {
+          tone(440, 0.12, 'sine', 0.06, 0);
+          tone(554.37, 0.16, 'sine', 0.065, 0.075);
+        },
+        // Fanfarria de victoria
+        victory: () => {
+          [523.25, 659.25, 783.99, 1046.5].forEach((n, i) => {
+            tone(n, 0.28, 'sine', 0.08, i * 0.085);
+          });
+        }
+      };
+    })();
+
+    /* =========================================================================
+       2. MOTOR DE LÓGICA PROPOSICIONAL (PARSER RECURSIVO, AST, REGLAS α/β)
+       ========================================================================= */
+    const Logic = (() => {
+      const atom = (name) => ({ op: 'ATOM', name });
+      const not = (arg) => ({ op: 'NOT', arg });
+      const bin = (op, left, right) => ({ op, left, right });
+
+      // Tokenizador para ¬, ∧, ∨, →, ↔, paréntesis y variables proposicionales
+      function tokenize(input) {
+        const tokens = [];
+        let i = 0;
+        while (i < input.length) {
+          const ch = input[i];
+          if (/\s/.test(ch)) { i++; continue; }
+          if ('()¬∧∨→↔'.includes(ch) || /[a-z]/.test(ch)) {
+            tokens.push(ch);
+            i++;
+          } else {
+            throw new Error('Símbolo no reconocido: ' + ch);
+          }
+        }
+        return tokens;
+      }
+
+      // Parser descendente recursivo (precedencia estándar: ¬ > ∧ > ∨ > → > ↔)
+      function parse(str) {
+        const tokens = tokenize(str);
+        let pos = 0;
+        const peek = () => tokens[pos];
+        const consume = (expected) => {
+          const tok = tokens[pos];
+          if (expected && tok !== expected) {
+            throw new Error(`Se esperaba '${expected}', encontrado '${tok}' en ${str}`);
+          }
+          pos++;
+          return tok;
+        };
+
+        function parseIff() {
+          let left = parseImp();
+          while (peek() === '↔') {
+            consume('↔');
+            left = bin('IFF', left, parseImp());
+          }
+          return left;
+        }
+        function parseImp() {
+          let left = parseOr();
+          if (peek() === '→') {
+            consume('→');
+            left = bin('IMP', left, parseImp());
+          }
+          return left;
+        }
+        function parseOr() {
+          let left = parseAnd();
+          while (peek() === '∨') {
+            consume('∨');
+            left = bin('OR', left, parseAnd());
+          }
+          return left;
+        }
+        function parseAnd() {
+          let left = parseUnary();
+          while (peek() === '∧') {
+            consume('∧');
+            left = bin('AND', left, parseUnary());
+          }
+          return left;
+        }
+        function parseUnary() {
+          if (peek() === '¬') {
+            consume('¬');
+            return not(parseUnary());
+          }
+          if (peek() === '(') {
+            consume('(');
+            const inner = parseIff();
+            consume(')');
+            return inner;
+          }
+          const tok = consume();
+          if (!tok || !/[a-z]/.test(tok)) {
+            throw new Error('Átomo esperado cerca de ' + tok);
+          }
+          return atom(tok);
+        }
+
+        const ast = parseIff();
+        if (pos !== tokens.length) {
+          throw new Error('Tokens sobrantes en: ' + str);
+        }
+        return ast;
+      }
+
+      // Impresora limpia con paréntesis mínimos necesarios
+      function format(ast, isRoot = true) {
+        if (!ast) return '';
+        if (ast.op === 'ATOM') return ast.name;
+        if (ast.op === 'NOT') {
+          const inner = ast.arg;
+          if (inner.op === 'ATOM' || inner.op === 'NOT') {
+            return '¬' + format(inner, false);
+          }
+          return '¬(' + format(inner, true) + ')';
+        }
+        const symbols = { AND: '∧', OR: '∨', IMP: '→', IFF: '↔' };
+        const leftStr = format(ast.left, false);
+        const rightStr = format(ast.right, false);
+        const expr = `${leftStr} ${symbols[ast.op]} ${rightStr}`;
+        return isRoot ? expr : `(${expr})`;
+      }
+
+      function getLiteralInfo(ast) {
+        if (ast.op === 'ATOM') return { isLiteral: true, atom: ast.name, negated: false };
+        if (ast.op === 'NOT' && ast.arg.op === 'ATOM') return { isLiteral: true, atom: ast.arg.name, negated: true };
+        return { isLiteral: false };
+      }
+
+      function areComplementary(astA, astB) {
+        const a = getLiteralInfo(astA);
+        const b = getLiteralInfo(astB);
+        return a.isLiteral && b.isLiteral && a.atom === b.atom && a.negated !== b.negated;
+      }
+
+      // Clasificación exacta de reglas α (verticales) y β (bifurcaciones)
+      function classify(ast) {
+        const lit = getLiteralInfo(ast);
+        if (lit.isLiteral) return { kind: 'literal', ...lit };
+
+        // ¬¬A  ==> α: [A]
+        if (ast.op === 'NOT' && ast.arg.op === 'NOT') {
+          return {
+            kind: 'alpha',
+            ruleName: 'Doble Negación (α)',
+            branches: [[ast.arg.arg]],
+            summary: `Eliminamos la doble negación de ${format(ast)} → ${format(ast.arg.arg)}.`
+          };
+        }
+        // A ∧ B ==> α: [A, B]
+        if (ast.op === 'AND') {
+          return {
+            kind: 'alpha',
+            ruleName: 'Conjunción (α)',
+            branches: [[ast.left, ast.right]],
+            summary: `Para que A ∧ B sea verdadera, AMBAS deben cumplirse en la misma rama (α vertical).`
+          };
+        }
+        // ¬(A ∨ B) ==> α: [¬A, ¬B] (De Morgan)
+        if (ast.op === 'NOT' && ast.arg.op === 'OR') {
+          const { left, right } = ast.arg;
+          return {
+            kind: 'alpha',
+            ruleName: 'De Morgan · ¬(A ∨ B) (α)',
+            branches: [[not(left), not(right)]],
+            summary: `Por De Morgan, ¬(A ∨ B) equivale a ¬A ∧ ¬B: ambos se apilan en vertical (α).`
+          };
+        }
+        // ¬(A → B) ==> α: [A, ¬B]
+        if (ast.op === 'NOT' && ast.arg.op === 'IMP') {
+          const { left, right } = ast.arg;
+          return {
+            kind: 'alpha',
+            ruleName: 'Condicional Negado (α)',
+            branches: [[left, not(right)]],
+            summary: `Un condicional solo es falso si el antecedente es V (A) y el consecuente F (¬B): regla α.`
+          };
+        }
+        // A ∨ B ==> β: [A] | [B]
+        if (ast.op === 'OR') {
+          return {
+            kind: 'beta',
+            ruleName: 'Disyunción (β)',
+            branches: [[ast.left], [ast.right]],
+            summary: `Basta con que uno de los dos sea verdadero: bifurca en 2 ramas (β).`
+          };
+        }
+        // A → B ==> β: [¬A] | [B]
+        if (ast.op === 'IMP') {
+          return {
+            kind: 'beta',
+            ruleName: 'Condicional (β)',
+            branches: [[not(ast.left)], [ast.right]],
+            summary: `A → B equivale a ¬A ∨ B: bifurca en ¬A a la izquierda y B a la derecha (β).`
+          };
+        }
+        // ¬(A ∧ B) ==> β: [¬A] | [¬B] (De Morgan)
+        if (ast.op === 'NOT' && ast.arg.op === 'AND') {
+          const { left, right } = ast.arg;
+          return {
+            kind: 'beta',
+            ruleName: 'De Morgan · ¬(A ∧ B) (β)',
+            branches: [[not(left)], [not(right)]],
+            summary: `Por De Morgan, ¬(A ∧ B) equivale a ¬A ∨ ¬B: bifurca en ¬A | ¬B (β).`
+          };
+        }
+        // A ↔ B ==> β: [A, B] | [¬A, ¬B]
+        if (ast.op === 'IFF') {
+          return {
+            kind: 'beta',
+            ruleName: 'Bicondicional (β)',
+            branches: [[ast.left, ast.right], [not(ast.left), not(ast.right)]],
+            summary: `A ↔ B exige valores iguales: bifurca en [A, B] por un lado y [¬A, ¬B] por el otro (β).`
+          };
+        }
+        // ¬(A ↔ B) ==> β: [A, ¬B] | [¬A, B]
+        if (ast.op === 'NOT' && ast.arg.op === 'IFF') {
+          const { left, right } = ast.arg;
+          return {
+            kind: 'beta',
+            ruleName: 'Bicondicional Negado (β)',
+            branches: [[left, not(right)], [not(left), right]],
+            summary: `¬(A ↔ B) exige valores opuestos: bifurca en [A, ¬B] y [¬A, B] (β).`
+          };
+        }
+
+        throw new Error('Fórmula no soportada: ' + format(ast));
+      }
+
+      // Firma canónica para asegurar que no haya opciones repetidas en el selector
+      function choiceSignature(choice) {
+        return choice.kind + '::' + choice.branches.map((br) => br.map((a) => format(a, true)).join(',')).join('|');
+      }
+
+      // Generador de 3–4 opciones plausibles con trampas clásicas de examen
+      function generateExpansionChoices(ast) {
+        const info = classify(ast);
+        const correct = {
+          id: 'correct',
+          isCorrect: true,
+          kind: info.kind,
+          branches: info.branches,
+          explanation: info.summary
+        };
+
+        const rawTraps = [];
+
+        if (ast.op === 'NOT' && ast.arg.op === 'NOT') {
+          const A = ast.arg.arg;
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[not(A)]],
+            explanation: '¡Ojo! Dos negaciones (¬¬) se cancelan entre sí, dejando la fórmula positiva.'
+          });
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[A], [not(A)]],
+            explanation: 'La doble negación es regla α (vertical); nunca abre dos ramas.'
+          });
+        } else if (ast.op === 'AND') {
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[ast.left], [ast.right]],
+            explanation: '¡Confusión clásica! A ∧ B requiere AMBOS verdaderos en la misma rama (α vertical), no bifurcar.'
+          });
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[not(ast.left), not(ast.right)]],
+            explanation: 'No hay negación delante de A ∧ B: conserva ambos términos sin negar.'
+          });
+        } else if (ast.op === 'NOT' && ast.arg.op === 'OR') {
+          const { left, right } = ast.arg;
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[not(left)], [not(right)]],
+            explanation: '¡Trampa de De Morgan! ¬(A ∨ B) cambia ∨ por ∧ (¬A ∧ ¬B): es α vertical, ¡no bifurca!'
+          });
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[left, not(right)]],
+            explanation: 'De Morgan reparte la negación a LOS DOS términos: ¬A y ¬B.'
+          });
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[left, right]],
+            explanation: 'Has olvidado aplicar la negación externa con De Morgan.'
+          });
+        } else if (ast.op === 'NOT' && ast.arg.op === 'IMP') {
+          const { left, right } = ast.arg;
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[not(left)], [right]],
+            explanation: 'Esa es la regla de A → B sin negar. Aquí tenemos ¬(A → B), que es α vertical: A y ¬B.'
+          });
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[not(left), right]],
+            explanation: '¡Al revés! Un condicional es falso cuando el antecedente es V (A) y el consecuente F (¬B).'
+          });
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[not(left), not(right)]],
+            explanation: 'Para hacer falso A → B, el antecedente A debe permanecer VERDADERO y solo B se niega.'
+          });
+        } else if (ast.op === 'OR') {
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[ast.left, ast.right]],
+            explanation: 'La disyunción (∨) es regla β: basta que se cumpla uno, así que debe bifurcar en 2 ramas.'
+          });
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[not(ast.left)], [ast.right]],
+            explanation: 'No niegues el primer término; esa es la regla del condicional (→), no de la disyunción (∨).'
+          });
+        } else if (ast.op === 'IMP') {
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[ast.left], [ast.right]],
+            explanation: '¡Error muy frecuente! A → B equivale a ¬A ∨ B: el antecedente va NEGADO en la rama izquierda.'
+          });
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[not(ast.left), ast.right]],
+            explanation: 'El condicional es regla β (bifurca en ¬A | B), no α vertical.'
+          });
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[ast.left], [not(ast.right)]],
+            explanation: 'Has negado el lado equivocado: se niega el antecedente (¬A), no el consecuente.'
+          });
+        } else if (ast.op === 'NOT' && ast.arg.op === 'AND') {
+          const { left, right } = ast.arg;
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[not(left), not(right)]],
+            explanation: '¡Trampa de De Morgan! ¬(A ∧ B) cambia ∧ por ∨ (¬A ∨ ¬B): es regla β y DEBE bifurcar.'
+          });
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[left], [not(right)]],
+            explanation: 'De Morgan niega ambos términos: ¬A por un lado y ¬B por el otro.'
+          });
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[left], [right]],
+            explanation: 'Has olvidado negar ambos lados al aplicar De Morgan.'
+          });
+        } else if (ast.op === 'IFF') {
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[ast.left, not(ast.right)], [not(ast.left), ast.right]],
+            explanation: 'Esas ramas son del bicondicional NEGADO. Sin negar, ambos términos deben coincidir en valor.'
+          });
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[ast.left, ast.right]],
+            explanation: 'A ↔ B también es verdadero cuando ambos son falsos (¬A, ¬B); necesita bifurcar.'
+          });
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[ast.left], [ast.right]],
+            explanation: 'Cada rama del bicondicional lleva el par completo: [A, B] o [¬A, ¬B].'
+          });
+        } else if (ast.op === 'NOT' && ast.arg.op === 'IFF') {
+          const { left, right } = ast.arg;
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[left, right], [not(left), not(right)]],
+            explanation: 'Al estar negado, los lados deben tener valores OPUESTOS: [A, ¬B] o [¬A, B].'
+          });
+          rawTraps.push({
+            kind: 'alpha',
+            branches: [[left, not(right)]],
+            explanation: '¬(A ↔ B) puede ser verdadero de dos formas opuestas: necesita bifurcar (β).'
+          });
+          rawTraps.push({
+            kind: 'beta',
+            branches: [[not(left)], [not(right)]],
+            explanation: 'Cada rama del bicondicional negado exige un par opuesto: [A, ¬B] y [¬A, B].'
+          });
+        }
+
+        // Deduplicar y quedarnos con 3–4 opciones
+        const seen = new Set([choiceSignature(correct)]);
+        const finalChoices = [correct];
+        let trapIdx = 1;
+        for (const t of rawTraps) {
+          const sig = choiceSignature(t);
+          if (!seen.has(sig) && finalChoices.length < 4) {
+            seen.add(sig);
+            finalChoices.push({ ...t, id: `trap_${trapIdx++}`, isCorrect: false });
+          }
+        }
+
+        // Barajar opciones
+        for (let i = finalChoices.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [finalChoices[i], finalChoices[j]] = [finalChoices[j], finalChoices[i]];
+        }
+        return finalChoices;
+      }
+
+      return { parse, format, getLiteralInfo, areComplementary, classify, generateExpansionChoices };
+    })();
+
+    /* =========================================================================
+       3. CONTENIDO: ACADEMIA (5 MICRO-LECCIONES), CAMPAÑA (5 NIVELES), BUGS (4)
+       ========================================================================= */
+    const ACADEMY_LESSONS = [
+      {
+        id: 1,
+        title: 'Reglas α y De Morgan',
+        subtitle: 'Apilar en vertical sin dividir el árbol',
+        tag: 'Lección 1 · Reglas α',
+        tagColor: 'text-cyan-300 bg-cyan-500/15 border-cyan-400/35',
+        introTitle: '¿Cómo funciona un Tableau?',
+        introPoints: [
+          'Un tableau intenta hacer <strong>VERDADERAS a la vez</strong> todas las fórmulas de una misma rama.',
+          'Las <span class="text-cyan-300 font-bold">reglas α (Cian)</span> exigen que AMBAS partes se cumplan, así que se <strong>apilan en vertical</strong> en la misma rama.',
+          'Fíjate en <strong>De Morgan</strong>: <span class="formula-text text-white">¬(A ∨ B)</span> equivale a <span class="formula-text text-cyan-200">¬A ∧ ¬B</span> → ¡se apilan <span class="formula-text text-cyan-200">¬A</span> y <span class="formula-text text-cyan-200">¬B</span>!'
+        ],
+        rulePills: [
+          { f: 'A ∧ B', out: 'A  ↓  B', kind: 'alpha' },
+          { f: '¬¬A', out: 'A', kind: 'alpha' },
+          { f: '¬(A ∨ B)', out: '¬A  ↓  ¬B', kind: 'alpha' }
+        ],
+        rootFormulas: ['¬(p ∨ q) ∧ ¬¬r'],
+        mode: 'guided-open',
+        coachIntro: 'Toca la fórmula resaltada para descomponer la conjunción principal (regla α vertical).',
+        completionNote: '¡Genial! Ya no quedan fórmulas compuestas ni contradicciones. Esta rama abierta y saturada nos da un modelo válido: I(p)=F, I(q)=F, I(r)=V.'
+      },
+      {
+        id: 2,
+        title: 'Reglas β (Bifurcar el árbol)',
+        subtitle: 'Abrir dos mundos paralelos con ∨, → y De Morgan',
+        tag: 'Lección 2 · Reglas β',
+        tagColor: 'text-violet-300 bg-violet-500/15 border-violet-400/35',
+        introTitle: 'Cuando basta con una opción: Reglas β',
+        introPoints: [
+          'Las <span class="text-violet-300 font-bold">reglas β (Violeta)</span> aparecen cuando basta que se cumpla <strong>al menos una</strong> alternativa: el árbol <strong>bifurca en 2 ramas</strong>.',
+          'El condicional <span class="formula-text text-white">A → B</span> equivale a <span class="formula-text text-violet-200">¬A ∨ B</span>, así que divide en <span class="formula-text text-violet-200">¬A | B</span>.',
+          'Por De Morgan, <span class="formula-text text-white">¬(A ∧ B)</span> equivale a <span class="formula-text text-violet-200">¬A ∨ ¬B</span> → bifurca en <span class="formula-text text-violet-200">¬A | ¬B</span>.'
+        ],
+        rulePills: [
+          { f: 'A ∨ B', out: 'A  |  B', kind: 'beta' },
+          { f: 'A → B', out: '¬A  |  B', kind: 'beta' },
+          { f: '¬(A ∧ B)', out: '¬A  |  ¬B', kind: 'beta' }
+        ],
+        rootFormulas: ['p → q', '¬(p ∧ r)'],
+        mode: 'guided-beta',
+        coachIntro: 'Empieza tocando p → q para ver cómo el árbol se divide limpiamente en dos ramas.',
+        completionNote: '¡Perfecto! Fíjate cómo al expandir ¬(p ∧ r), sus dos nuevas ramas se añadieron debajo de TODAS las ramas abiertas que colgaban de ella.'
+      },
+      {
+        id: 3,
+        title: 'Cerrar Ramas (×) y la Trampa Mortal',
+        subtitle: 'Contradicciones verticales vs. error de ramas hermanas',
+        tag: 'Lección 3 · Cierres',
+        tagColor: 'text-emerald-300 bg-emerald-500/15 border-emerald-400/35',
+        introTitle: '¿Cuándo se cierra una rama?',
+        introPoints: [
+          'Si una misma rama contiene un literal y su opuesto (<span class="formula-text text-emerald-300">p</span> y <span class="formula-text text-rose-300">¬p</span>) en su <strong>ruta vertical hasta la raíz</strong>, esa rama es imposible y se <strong>cierra (×)</strong>.',
+          'Las ramas cerradas se pliegan automáticamente para despejar la pantalla.',
+          '<span class="text-rose-300 font-bold">⚠️ Trampa #1 de examen:</span> NUNCA cierres juntando un literal de la rama izquierda con otro de la rama derecha.'
+        ],
+        rulePills: [
+          { f: 'p ... ¬p (misma ruta)', out: '× CERRADA', kind: 'close' },
+          { f: 'q (izq) + ¬q (der)', out: '✕ ILEGAL', kind: 'error' }
+        ],
+        rootFormulas: [], // Árbol preconstruido especial
+        mode: 'prebuilt-close',
+        coachIntro: 'Toca p (en la raíz) y después ¬p (en la rama izquierda) para cerrar la rama izquierda.',
+        completionNote: '¡Dominado! Recuerda siempre: solo valen contradicciones hacia arriba en la misma línea ancestral, nunca cruzando entre ramas hermanas.'
+      },
+      {
+        id: 4,
+        title: 'La Regla de Oro (α antes que β)',
+        subtitle: 'El secreto para árboles cortos y 3 estrellas',
+        tag: 'Lección 4 · Estrategia',
+        tagColor: 'text-amber-300 bg-amber-500/15 border-amber-400/35',
+        introTitle: '¿Por qué hacer α antes que β?',
+        introPoints: [
+          'Si abres una bifurcación <span class="text-violet-300 font-bold">β</span> primero, cualquier regla <span class="text-cyan-300 font-bold">α</span> pendiente tendrás que <strong>repetirla en ambas ramas</strong>.',
+          'Si apilas todas las <span class="text-cyan-300 font-bold">α</span> antes, solo las escribes <strong>una vez</strong> y luego al bifurcar cierras todo en segundos.',
+          'En la Campaña, cumplir este orden te da el <strong>Par óptimo (3★)</strong>.'
+        ],
+        showGoldenDiagram: true,
+        rootFormulas: ['p → q', 'p ∧ ¬q'],
+        mode: 'enforce-alpha-first',
+        coachIntro: 'Tienes una β (p → q) y una α (p ∧ ¬q). ¡Prueba cuál debes expandir primero!',
+        completionNote: '¡Viste qué limpio! Al hacer p ∧ ¬q primero obtuviste p y ¬q arriba, y al abrir p → q ambas ramas cerraron al instante.'
+      },
+      {
+        id: 5,
+        title: 'El Truco de Examen (Fase 0)',
+        subtitle: 'Reducción al absurdo: montar la raíz correcta',
+        tag: 'Lección 5 · Examen',
+        tagColor: 'text-rose-300 bg-rose-500/15 border-rose-400/35',
+        introTitle: 'Fase 0: ¿Qué pongo en la raíz?',
+        introPoints: [
+          'Un tableau siempre comprueba si un conjunto es <strong>satisfacible</strong>. Por eso en examen usamos <strong>reducción al absurdo</strong>:',
+          '• <strong>Tautología (A)</strong>: ponemos <span class="formula-text text-white">{ ¬A }</span>. Si todas las ramas cierran (×), ¡es tautología!',
+          '• <strong>Consecuencia (A ⊨ B)</strong>: ponemos <span class="formula-text text-white">{ A, ¬B }</span> (premisas V y conclusión F). Si todas cierran (×), ¡consecuencia demostrada!'
+        ],
+        rulePills: [
+          { f: 'Tautología A', out: 'Raíz: { ¬A }', kind: 'exam' },
+          { f: 'Consecuencia A ⊨ B', out: 'Raíz: { A, ¬B }', kind: 'exam' }
+        ],
+        rootFormulas: ['p ∧ q', '¬p'],
+        mode: 'exam-mini',
+        phase0: {
+          prompt: 'Demuestra mediante tableau la consecuencia lógica:',
+          expression: 'p ∧ q  ⊨  p',
+          instruction: 'Elige la raíz correcta para probarla por reducción al absurdo:',
+          options: [
+            {
+              id: 'a',
+              correct: true,
+              formula: '{ p ∧ q,  ¬p }',
+              caption: 'Premisa tal cual + conclusión negada',
+              feedback: '¡Exacto! Buscamos si puede ser p ∧ q verdadera y p falsa a la vez.'
+            },
+            {
+              id: 'b',
+              correct: false,
+              formula: '{ p ∧ q,  p }',
+              caption: 'Premisa + conclusión sin negar',
+              feedback: 'Sin negar la conclusión solo compruebas si son compatibles, no si p es consecuencia lógica.'
+            },
+            {
+              id: 'c',
+              correct: false,
+              formula: '{ ¬(p ∧ q),  p }',
+              caption: 'Premisa negada + conclusión',
+              feedback: 'Al revés: las premisas se asumen verdaderas y siempre negamos la conclusión.'
+            }
+          ]
+        },
+        coachIntro: 'Ahora expande p ∧ q (α) y cierra la rama emparejando p con ¬p.',
+        completionNote: '¡Consecuencia válida demostrada! Al cerrarse el árbol completo (×), es imposible hacer falsa la conclusión cuando la premisa es verdadera. ¡Ya estás listo para la Campaña!'
+      }
+    ];
+
+    const CAMPAIGN_LEVELS = [
+      {
+        id: 1,
+        title: 'Calentamiento α',
+        subtitle: '¿Es insatisfacible { ¬(p ∨ q), p ∧ r }?',
+        badge: 'Nivel 1 · Base α',
+        badgeColor: 'text-cyan-300 bg-cyan-500/15 border-cyan-400/35',
+        goal: 'Demuestra que el conjunto { ¬(p ∨ q), p ∧ r } es insatisfacible cerrando la rama.',
+        rootFormulas: ['¬(p ∨ q)', 'p ∧ r'],
+        par: 4,
+        grimorioCost: 0,
+        phase0: null,
+        finalPhase: null
+      },
+      {
+        id: 2,
+        title: 'Estrategia α antes que β',
+        subtitle: '¿Es insatisfacible { p → q, ¬(q ∨ ¬p) }?',
+        badge: 'Nivel 2 · Eficiencia',
+        badgeColor: 'text-amber-300 bg-amber-500/15 border-amber-400/35',
+        goal: 'Cierra todas las ramas dentro del Par (6 nodos). ¡Aplica las reglas α antes de bifurcar!',
+        rootFormulas: ['p → q', '¬(q ∨ ¬p)'],
+        par: 6,
+        grimorioCost: 50,
+        phase0: null,
+        finalPhase: null
+      },
+      {
+        id: 3,
+        title: 'Examen: Modus Tollens',
+        subtitle: '¿Es válido p → q, ¬q ⊨ ¬p?',
+        badge: 'Nivel 3 · Consecuencia',
+        badgeColor: 'text-violet-300 bg-violet-500/15 border-violet-400/35',
+        goal: 'Monta la raíz en Fase 0, cierra el tableau y da el veredicto de examen.',
+        rootFormulas: ['p → q', '¬q', '¬¬p'],
+        par: 3,
+        grimorioCost: 100,
+        phase0: {
+          prompt: 'Determina mediante tableaux si es válida la consecuencia lógica (Modus Tollens):',
+          expression: 'p → q,  ¬q  ⊨  ¬p',
+          instruction: '¿Qué fórmulas debes colocar en la raíz del árbol?',
+          options: [
+            {
+              id: 'a',
+              correct: true,
+              formula: '{ p → q,  ¬q,  ¬¬p }',
+              caption: 'Premisas + negación de la conclusión (¬(¬p))',
+              feedback: '¡Impecable! Negamos la conclusión ¬p, obteniendo ¬¬p junto a las premisas.'
+            },
+            {
+              id: 'b',
+              correct: false,
+              formula: '{ p → q,  ¬q,  ¬p }',
+              caption: 'Premisas + conclusión sin negar',
+              feedback: '¡Trampa clásica! La conclusión ya lleva un ¬, pero igualmente debes negarla (¬¬p).'
+            },
+            {
+              id: 'c',
+              correct: false,
+              formula: '{ ¬(p → q),  ¬q,  ¬¬p }',
+              caption: 'Negando también una premisa',
+              feedback: 'Nunca niegues las premisas; solo se niega la conclusión.'
+            }
+          ]
+        },
+        finalPhase: {
+          type: 'verdict',
+          title: 'Veredicto de Examen',
+          prompt: 'Todas las ramas se han cerrado por contradicción. ¿Qué respondes en el test?',
+          options: [
+            {
+              id: 'v1',
+              correct: true,
+              text: 'SÍ es consecuencia lógica válida (no existe contramodelo).',
+              feedback: '¡Exacto! El cierre total demuestra que siempre que las premisas son V, ¬p también es V.'
+            },
+            {
+              id: 'v2',
+              correct: false,
+              text: 'NO es consecuencia lógica (porque el árbol resultó insatisfacible).',
+              feedback: '¡Cuidado con ese giro verbal! Que {Premisas, ¬Conclusión} sea insatisfacible prueba que SÍ hay consecuencia.'
+            },
+            {
+              id: 'v3',
+              correct: false,
+              text: 'Depende del valor de verdad que tome q.',
+              feedback: 'El tableau ya ha explorado todos los casos posibles y todos llevaron a contradicción.'
+            }
+          ]
+        }
+      },
+      {
+        id: 4,
+        title: 'Examen: Contramodelo',
+        subtitle: '¿Es válido p → (q ∨ r), ¬q ⊨ r?',
+        badge: 'Nivel 4 · Contramodelo',
+        badgeColor: 'text-emerald-300 bg-emerald-500/15 border-emerald-400/35',
+        goal: 'Cierra las ramas contradictorias y extrae el contramodelo de la rama abierta saturada.',
+        rootFormulas: ['p → (q ∨ r)', '¬q', '¬r'],
+        par: 4,
+        grimorioCost: 100,
+        phase0: {
+          prompt: 'Comprueba mediante tableaux si es válida la siguiente consecuencia lógica:',
+          expression: 'p → (q ∨ r),  ¬q  ⊨  r',
+          instruction: 'Elige el conjunto inicial correcto para la raíz:',
+          options: [
+            {
+              id: 'a',
+              correct: true,
+              formula: '{ p → (q ∨ r),  ¬q,  ¬r }',
+              caption: 'Premisas + negación de la conclusión r',
+              feedback: '¡Perfecto! Buscamos una interpretación con premisas V y r = F.'
+            },
+            {
+              id: 'b',
+              correct: false,
+              formula: '{ p → (q ∨ r),  ¬q,  r }',
+              caption: 'Premisas + conclusión r sin negar',
+              feedback: 'Sin negar r no buscas un contramodelo. Debes colocar ¬r en la raíz.'
+            },
+            {
+              id: 'c',
+              correct: false,
+              formula: '{ ¬(p → (q ∨ r)),  ¬q,  ¬r }',
+              caption: 'Negando el condicional premisa y r',
+              feedback: 'Las premisas se mantienen verdaderas (sin negar); únicamente negamos la conclusión.'
+            }
+          ]
+        },
+        finalPhase: {
+          type: 'countermodel',
+          title: 'Extractor de Contramodelo',
+          atoms: ['p', 'q', 'r'],
+          verdictPrompt: 'Al sobrevivir una rama abierta saturada, ¿es válida la consecuencia lógica?',
+          verdictOptions: [
+            {
+              id: 'cm1',
+              correct: true,
+              text: 'NO es consecuencia lógica (el contramodelo hace V las premisas y F la conclusión).'
+            },
+            {
+              id: 'cm2',
+              correct: false,
+              text: 'SÍ es consecuencia lógica (porque 2 ramas se cerraron).'
+            },
+            {
+              id: 'cm3',
+              correct: false,
+              text: 'Es una tautología.'
+            }
+          ]
+        }
+      },
+      {
+        id: 5,
+        title: 'Reto Maestro: De Morgan',
+        subtitle: '¿Es tautología ¬(p ∧ q) ↔ (¬p ∨ ¬q)?',
+        badge: 'Nivel 5 · Maestro',
+        badgeColor: 'text-rose-300 bg-rose-500/15 border-rose-400/35',
+        goal: 'Demuestra la Ley de De Morgan con bicondicional. ¡Aplica α antes que β en cada rama!',
+        rootFormulas: ['¬(¬(p ∧ q) ↔ (¬p ∨ ¬q))'],
+        par: 15,
+        grimorioCost: 100,
+        phase0: {
+          prompt: 'Demuestra mediante tableaux si la siguiente fórmula es una TAUTOLOGÍA:',
+          expression: '¬(p ∧ q)  ↔  (¬p ∨ ¬q)',
+          instruction: '¿Qué fórmula debes situar en la raíz para demostrar una tautología?',
+          options: [
+            {
+              id: 'a',
+              correct: true,
+              formula: '{ ¬(¬(p ∧ q) ↔ (¬p ∨ ¬q)) }',
+              caption: 'Negamos la fórmula completa para intentar refutarla',
+              feedback: '¡Exacto! Si su negación cierra todas las ramas, la fórmula es siempre verdadera (tautología).'
+            },
+            {
+              id: 'b',
+              correct: false,
+              formula: '{ ¬(p ∧ q) ↔ (¬p ∨ ¬q) }',
+              caption: 'La colocamos sin negar',
+              feedback: 'Sin negar solo compruebas si es satisfacible. Para tautología SIEMPRE niega toda la fórmula.'
+            },
+            {
+              id: 'c',
+              correct: false,
+              formula: '{ (p ∧ q) ↔ (¬p ∨ ¬q) }',
+              caption: 'Quitamos la negación izquierda',
+              feedback: 'Debes envolver TODA la fórmula principal con ¬(...), no tocar una subfórmula suelta.'
+            }
+          ]
+        },
+        finalPhase: {
+          type: 'verdict',
+          title: 'Veredicto de Maestro',
+          prompt: '¡Árbol completamente cerrado! ¿Cuál es la conclusión oficial?',
+          options: [
+            {
+              id: 'm1',
+              correct: true,
+              text: 'SÍ es una tautología (Primera Ley de De Morgan demostrada).'
+            },
+            {
+              id: 'm2',
+              correct: false,
+              text: 'Es una contradicción (siempre falsa).'
+            },
+            {
+              id: 'm3',
+              correct: false,
+              text: 'Es contingente (a veces verdadera y a veces falsa).'
+            }
+          ]
+        }
+      }
+    ];
+
+    /* 4 casos contrarreloj (30s) para "Cazador de Bugs" */
+    const BUG_CASES = [
+      {
+        id: 'bug1',
+        title: 'Caso 1/4 · Cierre Fantasma',
+        subtitle: 'Toca el nodo o cierre que rompe las reglas de los tableaux.',
+        layout: 'cross-close',
+        bugTargetId: 'b1_bad_close',
+        explanation: '¡Error cazado! p está en la rama izquierda y ¬p en la derecha. Nunca puedes cerrar cruzando ramas hermanas.'
+      },
+      {
+        id: 'bug2',
+        title: 'Caso 2/4 · De Morgan Lineal',
+        subtitle: 'Hay una regla mal aplicada en este árbol. ¡Toca el paso culpable!',
+        layout: 'demorgan-and-bug',
+        bugTargetId: 'b2_bad_stack',
+        explanation: '¡Error cazado! ¬(p ∧ q) equivale a ¬p ∨ ¬q (De Morgan): es regla β y DEBE bifurcar en dos ramas, no apilarse en vertical.'
+      },
+      {
+        id: 'bug3',
+        title: 'Caso 3/4 · Condicional Negado',
+        subtitle: 'Encuentra la expansión ilegal antes de que el reloj llegue a cero.',
+        layout: 'neg-imp-bug',
+        bugTargetId: 'b3_bad_node',
+        explanation: '¡Error cazado! ¬(p → q) se expande en p y ¬q (antecedente V y consecuente F), nunca en ¬p y q.'
+      },
+      {
+        id: 'bug4',
+        title: 'Caso 4/4 · Olvido en Fase 0',
+        subtitle: 'Queremos probar: p → q, p ⊨ q. ¡Toca la fórmula culpable!',
+        layout: 'phase0-bug',
+        bugTargetId: 'b4_bad_root',
+        explanation: '¡Error cazado! Para demostrar p → q, p ⊨ q en Fase 0 debes NEGAR la conclusión (¬q), no dejarla como q.'
+      }
+    ];
+
+    /* =========================================================================
+       4. PERSISTENCIA Y ESTADO GLOBAL DE LA APP
+       ========================================================================= */
+    const STORAGE_KEY = 'tableau_quest_v2_progress';
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return {
+            completedLessons: Array.isArray(parsed.completedLessons) ? parsed.completedLessons : [],
+            stars: parsed.stars || {},
+            bestScore: parsed.bestScore || {},
+            bugBestScore: parsed.bugBestScore || 0,
+            bugCleared: !!parsed.bugCleared
+          };
+        }
+      } catch (_) {}
+      return {
+        completedLessons: [],
+        stars: {},
+        bestScore: {},
+        bugBestScore: 0,
+        bugCleared: false
+      };
+    }
+
+    function saveProgress(prog) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(prog));
+      } catch (_) {}
+    }
+
+    const AppState = {
+      screen: 'home', // 'home' | 'academy-menu' | 'play' | 'bug'
+      progress: loadProgress(),
+      toast: null,
+      toastTimer: null,
+
+      // Estado del Grimorio (siempre accesible)
+      grimorio: {
+        open: false,
+        tab: 'rules', // 'rules' | 'strategy' | 'exam'
+        confirmPending: false
+      },
+
+      // Estado de partida activa (sirve tanto para Campaña como para Academia)
+      game: null,
+
+      // Estado de Cazador de Bugs
+      bug: null
+    };
+
+    let uidCounter = 1;
+    const nextId = (prefix = 'n') => `${prefix}_${uidCounter++}`;
+
+    function showToast(text, type = 'info', duration = 3000) {
+      if (AppState.toastTimer) clearTimeout(AppState.toastTimer);
+      AppState.toast = { text, type };
+      render();
+      AppState.toastTimer = setTimeout(() => {
+        AppState.toast = null;
+        render();
+      }, duration);
+    }
+
+    /* =========================================================================
+       5. MOTOR DE ÁRBOL SEMÁNTICO (NODO INDIVIDUAL POR FÓRMULA, AUTO-PLEGADO)
+       ========================================================================= */
+    function createFormulaNode(ast, parentId, isRoot = false) {
+      const info = Logic.classify(ast);
+      return {
+        id: nextId('nd'),
+        parentId,
+        formulaAst: ast,
+        formulaStr: Logic.format(ast, true),
+        expanded: false,
+        ruleType: info.kind, // 'alpha' | 'beta' | 'literal'
+        isRoot,
+        children: [],
+        branchClosed: false,
+        closedPairIds: null,
+        closedReason: null,
+        justClosed: false,
+        collapsed: false,
+        locked: false // usado en lección preconstruida
+      };
+    }
+
+    // Construye una cadena vertical inicial con las fórmulas de la raíz
+    function buildRootChain(rawFormulas) {
+      const nodes = {};
+      let rootId = null;
+      let prevId = null;
+      rawFormulas.forEach((raw) => {
+        const ast = Logic.parse(raw);
+        const node = createFormulaNode(ast, prevId, true);
+        nodes[node.id] = node;
+        if (!rootId) rootId = node.id;
+        if (prevId) nodes[prevId].children.push(node.id);
+        prevId = node.id;
+      });
+      return { nodes, rootId };
+    }
+
+    // Construye el árbol prefabricado de la Lección 3 de Academia
+    function buildLesson3PrebuiltTree() {
+      const nodes = {};
+      const nRoot = createFormulaNode(Logic.parse('p'), null, true);
+      const nLeft1 = createFormulaNode(Logic.parse('¬p'), nRoot.id, false);
+      const nLeft2 = createFormulaNode(Logic.parse('q'), nLeft1.id, false);
+      const nRight1 = createFormulaNode(Logic.parse('¬q'), nRoot.id, false);
+      const nRight2 = createFormulaNode(Logic.parse('r'), nRight1.id, false);
+
+      nRoot.children = [nLeft1.id, nRight1.id];
+      nLeft1.children = [nLeft2.id];
+      nRight1.children = [nRight2.id];
+
+      [nRoot, nLeft1, nLeft2, nRight1, nRight2].forEach((n) => {
+        nodes[n.id] = n;
+      });
+
+      return {
+        nodes,
+        rootId: nRoot.id,
+        ids: { p: nRoot.id, notP: nLeft1.id, q: nLeft2.id, notQ: nRight1.id, r: nRight2.id }
+      };
+    }
+
+    // Camino desde la raíz hasta nodeId
+    function getPathToNode(nodes, nodeId) {
+      const path = [];
+      let curr = nodes[nodeId];
+      while (curr) {
+        path.unshift(curr);
+        curr = curr.parentId ? nodes[curr.parentId] : null;
+      }
+      return path;
+    }
+
+    // Hojas en el subárbol de startId
+    function getLeavesInSubtree(nodes, startId) {
+      const leaves = [];
+      function dfs(id) {
+        const n = nodes[id];
+        if (!n) return;
+        if (n.children.length === 0) leaves.push(n);
+        else n.children.forEach(dfs);
+      }
+      dfs(startId);
+      return leaves;
+    }
+
+    // Todas las hojas abiertas del árbol
+    function getOpenLeaves(game) {
+      return getLeavesInSubtree(game.nodes, game.rootId).filter((l) => !l.branchClosed);
+    }
+
+    // Comprueba si ancestorId es ancestro de targetId (o igual)
+    function isAncestorOrSelf(nodes, ancestorId, targetId) {
+      let curr = nodes[targetId];
+      while (curr) {
+        if (curr.id === ancestorId) return true;
+        curr = curr.parentId ? nodes[curr.parentId] : null;
+      }
+      return false;
+    }
+
+    // Fórmulas compuestas sin expandir en la ruta hasta leafId
+    function getUnexpandedCompoundsOnPath(nodes, leafId) {
+      return getPathToNode(nodes, leafId).filter(
+        (n) => n.ruleType !== 'literal' && !n.expanded
+      );
+    }
+
+    // Busca contradicción entre literales en la ruta hasta leafId
+    function findContradictionOnPath(nodes, leafId) {
+      const lits = getPathToNode(nodes, leafId).filter((n) => n.ruleType === 'literal');
+      for (let i = 0; i < lits.length; i++) {
+        for (let j = i + 1; j < lits.length; j++) {
+          if (Logic.areComplementary(lits[i].formulaAst, lits[j].formulaAst)) {
+            return [lits[i], lits[j]];
+          }
+        }
+      }
+      return null;
+    }
+
+    // ¿Está una hoja abierta, sin compuestas pendientes y sin contradicciones?
+    function isLeafOpenSaturated(nodes, leafId) {
+      const leaf = nodes[leafId];
+      if (!leaf || leaf.branchClosed) return false;
+      if (getUnexpandedCompoundsOnPath(nodes, leafId).length > 0) return false;
+      return findContradictionOnPath(nodes, leafId) === null;
+    }
+
+    // Comprueba si todo el subárbol bajo nodeId está cerrado
+    function isSubtreeFullyClosed(nodes, nodeId) {
+      const leaves = getLeavesInSubtree(nodes, nodeId);
+      return leaves.length > 0 && leaves.every((l) => l.branchClosed);
+    }
+
+    // Sube hasta el hijo de la bifurcación más alta cuyo subárbol esté 100% cerrado para plegarlo limpiamente
+    function findCollapseAnchor(nodes, leafId) {
+      let curr = nodes[leafId];
+      let anchor = curr;
+      while (curr && curr.parentId) {
+        const parent = nodes[curr.parentId];
+        if (!parent) break;
+        if (parent.children.length === 2 && isSubtreeFullyClosed(nodes, curr.id)) {
+          anchor = curr;
+        }
+        curr = parent;
+      }
+      return anchor;
+    }
+
+    // Adjunta una lista vertical de fórmulas [ast1, ast2...] bajo parentId y devuelve el último nodo
+    function appendVerticalStack(nodes, parentId, astList) {
+      let currParent = parentId;
+      let added = 0;
+      astList.forEach((ast) => {
+        const newNode = createFormulaNode(ast, currParent, false);
+        nodes[newNode.id] = newNode;
+        nodes[currParent].children.push(newNode.id);
+        currParent = newNode.id;
+        added++;
+      });
+      return added;
+    }
+
+    // Expande un nodo compuesto en TODAS las hojas abiertas de su subárbol (regla estándar de tableaux)
+    function applyNodeExpansion(game, nodeId) {
+      const node = game.nodes[nodeId];
+      if (!node || node.expanded || node.ruleType === 'literal') return 0;
+
+      const openLeaves = getLeavesInSubtree(game.nodes, nodeId).filter((l) => !l.branchClosed);
+      if (openLeaves.length === 0) return 0;
+
+      const info = Logic.classify(node.formulaAst);
+      let newNodesCount = 0;
+
+      openLeaves.forEach((leaf) => {
+        if (info.kind === 'alpha') {
+          newNodesCount += appendVerticalStack(game.nodes, leaf.id, info.branches[0]);
+        } else {
+          // Regla β: bifurca en 2 ramas (cada rama puede llevar 1 o 2 fórmulas apiladas, ej. bicondicional)
+          info.branches.forEach((branchAsts) => {
+            const topNode = createFormulaNode(branchAsts[0], leaf.id, false);
+            game.nodes[topNode.id] = topNode;
+            leaf.children.push(topNode.id);
+            newNodesCount += 1;
+            if (branchAsts.length > 1) {
+              newNodesCount += appendVerticalStack(game.nodes, topNode.id, branchAsts.slice(1));
+            }
+          });
+        }
+      });
+
+      node.expanded = true;
+      game.nodesCreated += newNodesCount;
+      game.highlightedIds = [];
+      game.compassTip = null;
+      return newNodesCount;
+    }
+
+    /* =========================================================================
+       6. INICIO DE LECCIÓN DE ACADEMIA O NIVEL DE CAMPAÑA
+       ========================================================================= */
+    function startAcademyLesson(lessonId) {
+      const lesson = ACADEMY_LESSONS.find((l) => l.id === lessonId);
+      if (!lesson) return;
+      SoundEngine.tap();
+
+      let nodes = {};
+      let rootId = null;
+      let prebuiltIds = null;
+
+      if (lesson.mode === 'prebuilt-close') {
+        const built = buildLesson3PrebuiltTree();
+        nodes = built.nodes;
+        rootId = built.rootId;
+        prebuiltIds = built.ids;
+      } else {
+        const built = buildRootChain(lesson.rootFormulas);
+        nodes = built.nodes;
+        rootId = built.rootId;
+      }
+
+      let phase0Data = null;
+      if (lesson.phase0) {
+        const opts = [...lesson.phase0.options];
+        for (let i = opts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        phase0Data = { ...lesson.phase0, options: opts };
+      }
+
+      AppState.game = {
+        isAcademy: true,
+        lesson,
+        level: {
+          id: lesson.id,
+          title: lesson.title,
+          goal: lesson.coachIntro,
+          par: 99,
+          grimorioCost: 0
+        },
+        phase: 'intro', // 'intro' | 'phase0' | 'tree' | 'academy-quiz' | 'academy-complete'
+        phase0Data,
+        phase0Feedback: null,
+        nodes,
+        rootId,
+        prebuiltIds,
+        zoom: 1,
+        score: 0,
+        nodesCreated: 0,
+        mistakes: 0,
+        paidHintsUsed: 0,
+        solveStepUsed: false,
+        grimorioUnlocked: true,
+        selectedLiteralId: null,
+        expansionSheet: null,
+        highlightedIds: [],
+        compassTip: null,
+        coachMessage: lesson.coachIntro,
+        lesson3QuizAnswered: false,
+        lesson3QuizWrong: false
+      };
+
+      AppState.screen = 'play';
+      updateAcademyCoachGuide(AppState.game);
+      render();
+    }
+
+    function startCampaignLevel(levelId) {
+      const level = CAMPAIGN_LEVELS.find((l) => l.id === levelId);
+      if (!level) return;
+      SoundEngine.tap();
+
+      const { nodes, rootId } = buildRootChain(level.rootFormulas);
+
+      let phase0Data = null;
+      if (level.phase0) {
+        const opts = [...level.phase0.options];
+        for (let i = opts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        phase0Data = { ...level.phase0, options: opts };
+      }
+
+      AppState.game = {
+        isAcademy: false,
+        level,
+        phase: level.phase0 ? 'phase0' : 'tree', // 'phase0' | 'tree' | 'final' | 'victory'
+        phase0Data,
+        phase0Feedback: null,
+        nodes,
+        rootId,
+        zoom: 1,
+        score: 300,
+        streak: 0,
+        nodesCreated: 0,
+        mistakes: 0,
+        paidHintsUsed: 0,
+        solveStepUsed: false,
+        grimorioUnlocked: level.grimorioCost === 0,
+        selectedLiteralId: null,
+        expansionSheet: null,
+        highlightedIds: [],
+        compassTip: null,
+        saturatedLeafForFinal: null,
+        finalCountermodel: { p: null, q: null, r: null, s: null },
+        finalVerdictSelected: null,
+        finalFeedback: null,
+        victoryStats: null
+      };
+
+      AppState.screen = 'play';
+      render();
+    }
+
+    // Actualiza la guía luminosa y mensaje del Coach en cada paso de Academia
+    function updateAcademyCoachGuide(game) {
+      if (!game || !game.isAcademy) return;
+      const lesson = game.lesson;
+
+      if (lesson.mode === 'prebuilt-close') {
+        const leftClosed = game.nodes[game.prebuiltIds.notP] && isSubtreeFullyClosed(game.nodes, game.prebuiltIds.notP);
+        if (!leftClosed) {
+          game.highlightedIds = game.selectedLiteralId === game.prebuiltIds.p
+            ? [game.prebuiltIds.notP]
+            : [game.prebuiltIds.p, game.prebuiltIds.notP];
+          game.coachMessage = game.selectedLiteralId === game.prebuiltIds.p
+            ? '¡Eso es! Ahora toca ¬p en la rama izquierda para cerrarla (×).'
+            : 'Toca p (en la raíz) y luego ¬p (en la rama izquierda) para cerrar por contradicción.';
+        } else {
+          game.highlightedIds = [];
+          game.phase = 'academy-quiz';
+        }
+        return;
+      }
+
+      const step = computeOptimalStep(game);
+      if (!step) return;
+
+      if (lesson.mode === 'guided-open') {
+        if (step.action === 'expand') {
+          game.highlightedIds = [step.nodeId];
+          const fStr = game.nodes[step.nodeId].formulaStr;
+          game.coachMessage = `Toca ${fStr} (regla α) y elige cómo se apila en vertical.`;
+        } else if (step.action === 'saturated') {
+          completeAcademyLesson(game);
+        }
+      } else if (lesson.mode === 'guided-beta') {
+        const openLeaves = getOpenLeaves(game);
+        const anyUnexpanded = openLeaves.some((l) => getUnexpandedCompoundsOnPath(game.nodes, l.id).length > 0);
+        if (!anyUnexpanded) {
+          completeAcademyLesson(game);
+        } else if (step.action === 'expand') {
+          game.highlightedIds = [step.nodeId];
+          const fStr = game.nodes[step.nodeId].formulaStr;
+          game.coachMessage = `Toca ${fStr} (regla β) y selecciona cómo bifurca el árbol en 2 ramas.`;
+        }
+      } else if (lesson.mode === 'enforce-alpha-first') {
+        if (step.action === 'expand') {
+          game.highlightedIds = [step.nodeId];
+          const n = game.nodes[step.nodeId];
+          if (n.ruleType === 'alpha') {
+            game.coachMessage = `Regla de Oro: haz primero la fórmula α (${n.formulaStr}) para no duplicar trabajo.`;
+          } else {
+            game.coachMessage = `¡Genial! Ya tienes p y ¬q arriba. Ahora expande la β (${n.formulaStr}) y verás qué rápido se cierra todo.`;
+          }
+        } else if (step.action === 'close') {
+          game.highlightedIds = [step.litA.id, step.litB.id];
+          game.coachMessage = `¡Casi listo! Toca ${step.litA.formulaStr} y ${step.litB.formulaStr} en esa misma rama para cerrarla (×).`;
+        }
+      } else if (lesson.mode === 'exam-mini') {
+        if (step.action === 'expand') {
+          game.highlightedIds = [step.nodeId];
+          game.coachMessage = `Expande ${game.nodes[step.nodeId].formulaStr} (α) para sacar sus literales.`;
+        } else if (step.action === 'close') {
+          game.highlightedIds = [step.litA.id, step.litB.id];
+          game.coachMessage = `¡Contradicción a la vista! Empareja ${step.litA.formulaStr} con ${step.litB.formulaStr} para cerrar la rama.`;
+        }
+      }
+    }
+
+    function completeAcademyLesson(game) {
+      if (!game.isAcademy) return;
+      const lid = game.lesson.id;
+      if (!AppState.progress.completedLessons.includes(lid)) {
+        AppState.progress.completedLessons.push(lid);
+        saveProgress(AppState.progress);
+      }
+      game.highlightedIds = [];
+      game.phase = 'academy-complete';
+      SoundEngine.victory();
+      render();
+    }
+
+    /* =========================================================================
+       7. ASESOR ÓPTIMO (BRÚJULA ESTRATÉGICA Y RESOLVER PASO)
+       ========================================================================= */
+    function computeOptimalStep(game) {
+      const openLeaves = getOpenLeaves(game);
+      if (openLeaves.length === 0) return null;
+
+      // 1. Contradicción lista para cerrar
+      for (const leaf of openLeaves) {
+        const pair = findContradictionOnPath(game.nodes, leaf.id);
+        if (pair) {
+          return {
+            action: 'close',
+            leafId: leaf.id,
+            litA: pair[0],
+            litB: pair[1],
+            highlightIds: [pair[0].id, pair[1].id],
+            tip: `¡Contradicción disponible! Toca ${pair[0].formulaStr} y luego ${pair[1].formulaStr} en la misma rama para cerrarla.`,
+            autoNote: `Cerramos la rama automáticamente al emparejar ${pair[0].formulaStr} con ${pair[1].formulaStr}.`
+          };
+        }
+      }
+
+      // 2. Priorizar siempre reglas α (verticales) sobre β
+      const allPendingAlpha = [];
+      const allPendingBeta = [];
+      const seen = new Set();
+
+      openLeaves.forEach((leaf) => {
+        getUnexpandedCompoundsOnPath(game.nodes, leaf.id).forEach((n) => {
+          if (seen.has(n.id)) return;
+          seen.add(n.id);
+          if (n.ruleType === 'alpha') allPendingAlpha.push(n);
+          else allPendingBeta.push(n);
+        });
+      });
+
+      if (allPendingAlpha.length > 0) {
+        const chosen = allPendingAlpha[0];
+        return {
+          action: 'expand',
+          nodeId: chosen.id,
+          highlightIds: [chosen.id],
+          tip: `Estrategia óptima: expande primero la regla α ${chosen.formulaStr} antes de abrir bifurcaciones.`,
+          autoNote: `Aplicada regla α sobre ${chosen.formulaStr}: ${Logic.classify(chosen.formulaAst).summary}`
+        };
+      }
+
+      if (allPendingBeta.length > 0) {
+        const chosen = allPendingBeta[0];
+        return {
+          action: 'expand',
+          nodeId: chosen.id,
+          highlightIds: [chosen.id],
+          tip: `No quedan reglas α pendientes. Expande ${chosen.formulaStr} (regla β) para continuar.`,
+          autoNote: `Aplicada regla β sobre ${chosen.formulaStr}: ${Logic.classify(chosen.formulaAst).summary}`
+        };
+      }
+
+      // 3. Si no hay nada por expandir ni contradicciones -> rama abierta saturada
+      const satLeaf = openLeaves.find((l) => isLeafOpenSaturated(game.nodes, l.id));
+      if (satLeaf) {
+        return {
+          action: 'saturated',
+          leafId: satLeaf.id,
+          highlightIds: [`sat_${satLeaf.id}`],
+          tip: '¡Esta rama está saturada sin contradicciones! Pulsa "Rama saturada (Abierta) ✓" para extraer el contramodelo.',
+          autoNote: 'Rama abierta saturada detectada: pasamos al extractor de contramodelo.'
+        };
+      }
+
+      return null;
+    }
+
+    /* =========================================================================
+       8. INTERACCIONES DEL JUGADOR EN EL ÁRBOL Y MODALES
+       ========================================================================= */
+    function handleNodeTap(nodeId) {
+      const game = AppState.game;
+      if (!game || game.phase !== 'tree') return;
+      const node = game.nodes[nodeId];
+      if (!node) return;
+
+      // --- A) TOCAR UN LITERAL (p, ¬p...) ---
+      if (node.ruleType === 'literal') {
+        const openUnder = getLeavesInSubtree(game.nodes, nodeId).filter((l) => !l.branchClosed);
+        if (openUnder.length === 0) {
+          showToast('Este literal pertenece a una rama ya cerrada.', 'info', 1800);
+          return;
+        }
+
+        // Seleccionar primer literal
+        if (!game.selectedLiteralId) {
+          SoundEngine.tap();
+          game.selectedLiteralId = nodeId;
+          if (game.isAcademy) updateAcademyCoachGuide(game);
+          render();
+          return;
+        }
+
+        // Deseleccionar si toca el mismo
+        if (game.selectedLiteralId === nodeId) {
+          SoundEngine.tap();
+          game.selectedLiteralId = null;
+          if (game.isAcademy) updateAcademyCoachGuide(game);
+          render();
+          return;
+        }
+
+        const first = game.nodes[game.selectedLiteralId];
+        const second = node;
+
+        // 1. Verificar que sean complementarios
+        if (!Logic.areComplementary(first.formulaAst, second.formulaAst)) {
+          SoundEngine.error();
+          if (!game.isAcademy) {
+            game.score = Math.max(0, game.score - 20);
+            game.mistakes += 1;
+            game.streak = 0;
+          }
+          game.selectedLiteralId = null;
+          showToast(`No se contradicen (${first.formulaStr} y ${second.formulaStr}). Busca la misma letra con signo opuesto.`, 'error', 2800);
+          render();
+          return;
+        }
+
+        // 2. Verificar que estén en la MISMA ruta vertical ancestral
+        const sameBranch =
+          isAncestorOrSelf(game.nodes, first.id, second.id) ||
+          isAncestorOrSelf(game.nodes, second.id, first.id);
+
+        if (!sameBranch) {
+          SoundEngine.error();
+          if (!game.isAcademy) {
+            game.score = Math.max(0, game.score - 25);
+            game.mistakes += 1;
+            game.streak = 0;
+          }
+          game.selectedLiteralId = null;
+          showToast(
+            '¡Cuidado! Esos literales están en ramas distintas. Solo puedes cerrar con ancestros de la misma rama.',
+            'error',
+            4200
+          );
+          render();
+          return;
+        }
+
+        // 3. ¡Cierre válido!
+        executeBranchClosure(game, first, second);
+        return;
+      }
+
+      // --- B) TOCAR UNA FÓRMULA COMPUESTA ---
+      game.selectedLiteralId = null;
+
+      if (node.expanded) {
+        showToast('Esta fórmula ya fue expandida (✓).', 'info', 1600);
+        return;
+      }
+
+      const openUnder = getLeavesInSubtree(game.nodes, nodeId).filter((l) => !l.branchClosed);
+      if (openUnder.length === 0) {
+        showToast('Todas las ramas bajo esta fórmula ya están cerradas.', 'info', 1800);
+        return;
+      }
+
+      // En Academia Lección 4: intervenir amablemente si intenta hacer β antes de α
+      if (game.isAcademy && game.lesson.mode === 'enforce-alpha-first' && node.ruleType === 'beta') {
+        const openLeaves = getOpenLeaves(game);
+        const alphaPending = openLeaves.some((l) =>
+          getUnexpandedCompoundsOnPath(game.nodes, l.id).some((n) => n.ruleType === 'alpha')
+        );
+        if (alphaPending) {
+          SoundEngine.error();
+          game.coachMessage = '¡Espera! Tienes una regla α (p ∧ ¬q) disponible. Hazla primero para no duplicarla en dos ramas.';
+          showToast('¡Recuerda la Regla de Oro! Haz la regla α antes que la β.', 'warn', 2800);
+          render();
+          return;
+        }
+      }
+
+      SoundEngine.tap();
+      game.expansionSheet = {
+        nodeId,
+        node,
+        choices: Logic.generateExpansionChoices(node.formulaAst),
+        wrongChoiceId: null,
+        wrongFeedback: null
+      };
+      render();
+    }
+
+    function executeBranchClosure(game, litA, litB) {
+      const deeperId = isAncestorOrSelf(game.nodes, litA.id, litB.id) ? litB.id : litA.id;
+      const leavesToClose = getLeavesInSubtree(game.nodes, deeperId).filter((l) => !l.branchClosed);
+      if (leavesToClose.length === 0) return;
+
+      leavesToClose.forEach((leaf) => {
+        leaf.branchClosed = true;
+        leaf.closedPairIds = [litA.id, litB.id];
+        leaf.closedReason = `${litA.formulaStr} / ${litB.formulaStr}`;
+        leaf.justClosed = true;
+
+        // Auto-plegado del segmento cerrado tras animación de chispa
+        const leafIdCopy = leaf.id;
+        setTimeout(() => {
+          if (!AppState.game || !AppState.game.nodes[leafIdCopy]) return;
+          AppState.game.nodes[leafIdCopy].justClosed = false;
+          const anchor = findCollapseAnchor(AppState.game.nodes, leafIdCopy);
+          if (anchor && anchor.parentId !== null) {
+            anchor.collapsed = true;
+          }
+          render();
+        }, 880);
+      });
+
+      SoundEngine.branchClose();
+      game.selectedLiteralId = null;
+      game.highlightedIds = [];
+      game.compassTip = null;
+
+      if (!game.isAcademy) {
+        game.score += 80 * leavesToClose.length;
+        game.streak += 1;
+      }
+
+      // Evaluar estado tras cierre
+      const remainingOpen = getOpenLeaves(game);
+
+      if (game.isAcademy) {
+        if (game.lesson.mode === 'prebuilt-close') {
+          showToast(`¡Rama izquierda cerrada (${litA.formulaStr} / ${litB.formulaStr})!`, 'success', 2000);
+          setTimeout(() => {
+            if (AppState.game && AppState.game.isAcademy) {
+              updateAcademyCoachGuide(AppState.game);
+              render();
+            }
+          }, 950);
+        } else if (remainingOpen.length === 0) {
+          setTimeout(() => {
+            if (AppState.game && AppState.game.isAcademy) completeAcademyLesson(AppState.game);
+          }, 700);
+        } else {
+          updateAcademyCoachGuide(game);
+        }
+        render();
+        return;
+      }
+
+      // Modo Campaña
+      if (remainingOpen.length === 0) {
+        setTimeout(() => {
+          if (!AppState.game) return;
+          if (AppState.game.level.finalPhase && AppState.game.level.finalPhase.type === 'verdict') {
+            AppState.game.phase = 'final';
+            render();
+          } else {
+            finishCampaignVictory(AppState.game);
+          }
+        }, 720);
+      } else {
+        showToast(`¡Rama cerrada (${litA.formulaStr} / ${litB.formulaStr})! +${80 * leavesToClose.length} pts`, 'success', 2100);
+      }
+
+      render();
+    }
+
+    function handleSelectExpansion(choiceId) {
+      const game = AppState.game;
+      if (!game || !game.expansionSheet) return;
+      const choice = game.expansionSheet.choices.find((c) => c.id === choiceId);
+      if (!choice) return;
+
+      if (choice.isCorrect) {
+        const targetNodeId = game.expansionSheet.nodeId;
+        const kind = choice.kind;
+        game.expansionSheet = null;
+
+        if (kind === 'alpha') SoundEngine.alphaExpand();
+        else SoundEngine.betaExpand();
+
+        applyNodeExpansion(game, targetNodeId);
+
+        if (!game.isAcademy) {
+          const streakBonus = Math.min(game.streak * 15, 45);
+          game.score += 60 + streakBonus;
+          game.streak += 1;
+          showToast(
+            streakBonus > 0 ? `¡Exacto! +${60 + streakBonus} pts (racha x${game.streak})` : '¡Expansión correcta! +60 pts',
+            'success',
+            1650
+          );
+        } else {
+          showToast(choice.explanation, 'success', 2400);
+          updateAcademyCoachGuide(game);
+        }
+
+        render();
+      } else {
+        SoundEngine.error();
+        if (!game.isAcademy) {
+          game.score = Math.max(0, game.score - 30);
+          game.mistakes += 1;
+          game.streak = 0;
+        }
+        game.expansionSheet.wrongChoiceId = choiceId;
+        game.expansionSheet.wrongFeedback = choice.explanation;
+        render();
+        setTimeout(() => {
+          if (AppState.game && AppState.game.expansionSheet) {
+            AppState.game.expansionSheet.wrongChoiceId = null;
+          }
+        }, 420);
+      }
+    }
+
+    /* =========================================================================
+       9. GRIMORIO (SIEMPRE ACCESIBLE CON 3 PESTAÑAS Y CONFIRMACIÓN EN NV. 2-5)
+       ========================================================================= */
+    function openGrimorio(defaultTab = 'rules') {
+      SoundEngine.tap();
+      AppState.grimorio.tab = defaultTab;
+
+      // Comprobar si estamos en un nivel de campaña con coste y aún no desbloqueado
+      if (
+        AppState.screen === 'play' &&
+        AppState.game &&
+        !AppState.game.isAcademy &&
+        AppState.game.phase !== 'victory' &&
+        AppState.game.level.grimorioCost > 0 &&
+        !AppState.game.grimorioUnlocked
+      ) {
+        AppState.grimorio.confirmPending = true;
+      } else {
+        AppState.grimorio.confirmPending = false;
+      }
+
+      AppState.grimorio.open = true;
+      render();
+    }
+
+    function confirmUnlockGrimorio() {
+      const game = AppState.game;
+      if (!game) return;
+      SoundEngine.hint();
+      const cost = game.level.grimorioCost;
+      game.score = Math.max(0, game.score - cost);
+      game.paidHintsUsed += 1;
+      game.grimorioUnlocked = true;
+      AppState.grimorio.confirmPending = false;
+      showToast(`Grimorio desbloqueado para este intento (-${cost} pts)`, 'warn', 2100);
+      render();
+    }
+
+    function closeGrimorio() {
+      SoundEngine.tap();
+      AppState.grimorio.open = false;
+      AppState.grimorio.confirmPending = false;
+      render();
+    }
+
+    /* =========================================================================
+       10. PISTAS DE PARTIDA (BRÚJULA Y RESOLVER PASO) Y CONTROLES DE ZOOM
+       ========================================================================= */
+    function handleUseCompass() {
+      const game = AppState.game;
+      if (!game || game.phase !== 'tree') return;
+      const step = computeOptimalStep(game);
+      if (!step) return;
+
+      SoundEngine.hint();
+      if (!game.isAcademy) {
+        game.score = Math.max(0, game.score - 75);
+        game.paidHintsUsed += 1;
+      }
+      game.highlightedIds = step.highlightIds;
+      game.compassTip = step.tip;
+      render();
+    }
+
+    function handleSolveStep() {
+      const game = AppState.game;
+      if (!game || game.phase !== 'tree') return;
+      const step = computeOptimalStep(game);
+      if (!step) return;
+
+      if (!game.isAcademy) {
+        game.score = Math.max(0, game.score - 150);
+        game.paidHintsUsed += 1;
+        game.solveStepUsed = true;
+        game.streak = 0;
+      }
+      game.expansionSheet = null;
+      game.selectedLiteralId = null;
+
+      if (step.action === 'close') {
+        executeBranchClosure(game, step.litA, step.litB);
+        showToast(step.autoNote, 'info', 3200);
+      } else if (step.action === 'saturated') {
+        if (game.isAcademy) completeAcademyLesson(game);
+        else openCountermodelExtractor(step.leafId);
+      } else if (step.action === 'expand') {
+        const node = game.nodes[step.nodeId];
+        if (node.ruleType === 'alpha') SoundEngine.alphaExpand();
+        else SoundEngine.betaExpand();
+        applyNodeExpansion(game, step.nodeId);
+        showToast(step.autoNote, 'info', 3400);
+        if (game.isAcademy) updateAcademyCoachGuide(game);
+        render();
+      }
+    }
+
+    function adjustZoom(delta) {
+      if (!AppState.game) return;
+      SoundEngine.tap();
+      if (delta === 0) AppState.game.zoom = 1;
+      else AppState.game.zoom = Math.min(1.25, Math.max(0.65, +(AppState.game.zoom + delta).toFixed(2)));
+      render();
+    }
+
+    /* =========================================================================
+       11. FASE 0, CONTRAMODELO, VEREDICTO Y VICTORIA DE CAMPAÑA
+       ========================================================================= */
+    function handlePhase0Choice(optionId) {
+      const game = AppState.game;
+      if (!game || !game.phase0Data) return;
+      const opt = game.phase0Data.options.find((o) => o.id === optionId);
+      if (!opt) return;
+
+      if (opt.correct) {
+        SoundEngine.branchClose();
+        if (!game.isAcademy) game.score += 75;
+        game.phase0Feedback = { ok: true, text: opt.feedback };
+        render();
+        setTimeout(() => {
+          if (AppState.game) {
+            AppState.game.phase = 'tree';
+            AppState.game.phase0Feedback = null;
+            if (AppState.game.isAcademy) updateAcademyCoachGuide(AppState.game);
+            render();
+          }
+        }, 1050);
+      } else {
+        SoundEngine.error();
+        if (!game.isAcademy) {
+          game.score = Math.max(0, game.score - 35);
+          game.mistakes += 1;
+        }
+        game.phase0Feedback = { ok: false, text: opt.feedback, wrongId: optionId };
+        render();
+      }
+    }
+
+    function openCountermodelExtractor(leafId) {
+      const game = AppState.game;
+      if (!game) return;
+      SoundEngine.alphaExpand();
+      game.saturatedLeafForFinal = leafId;
+      game.phase = 'final';
+      game.finalFeedback = null;
+      render();
+    }
+
+    function handleFinalVerdictChoice(optionId) {
+      const game = AppState.game;
+      if (!game || !game.level.finalPhase) return;
+      const opt = game.level.finalPhase.options.find((o) => o.id === optionId);
+      if (!opt) return;
+
+      if (opt.correct) {
+        SoundEngine.branchClose();
+        game.score += 100;
+        game.finalFeedback = { ok: true, text: opt.feedback };
+        render();
+        setTimeout(() => {
+          if (AppState.game) finishCampaignVictory(AppState.game);
+        }, 850);
+      } else {
+        SoundEngine.error();
+        game.score = Math.max(0, game.score - 40);
+        game.mistakes += 1;
+        game.finalFeedback = { ok: false, text: opt.feedback };
+        render();
+      }
+    }
+
+    function handleSubmitCountermodel() {
+      const game = AppState.game;
+      if (!game || !game.level.finalPhase) return;
+      const fp = game.level.finalPhase;
+
+      const missing = fp.atoms.some((a) => game.finalCountermodel[a] === null);
+      if (missing || !game.finalVerdictSelected) {
+        SoundEngine.error();
+        game.finalFeedback = {
+          ok: false,
+          text: 'Selecciona V (1) o F (0) para cada variable y marca el veredicto de examen.'
+        };
+        render();
+        return;
+      }
+
+      // Validar dinámicamente contra los literales reales presentes en la rama abierta
+      const pathLits = getPathToNode(game.nodes, game.saturatedLeafForFinal).filter(
+        (n) => n.ruleType === 'literal'
+      );
+      const validAssignment = pathLits.every((litNode) => {
+        const info = Logic.getLiteralInfo(litNode.formulaAst);
+        const chosenVal = game.finalCountermodel[info.atom];
+        return info.negated ? chosenVal === 0 : chosenVal === 1;
+      });
+
+      const verdictObj = fp.verdictOptions.find((o) => o.id === game.finalVerdictSelected);
+      const verdictOk = verdictObj && verdictObj.correct;
+
+      if (!validAssignment) {
+        SoundEngine.error();
+        game.score = Math.max(0, game.score - 30);
+        game.mistakes += 1;
+        game.finalFeedback = {
+          ok: false,
+          text: 'Revisa los literales de tu rama abierta: si aparece ¬p, entonces I(p)=F (0); si aparece p sin negar, I(p)=V (1).'
+        };
+        render();
+        return;
+      }
+
+      if (!verdictOk) {
+        SoundEngine.error();
+        game.score = Math.max(0, game.score - 30);
+        game.mistakes += 1;
+        game.finalFeedback = {
+          ok: false,
+          text: '¡Ojo al veredicto! Al sobrevivir una rama abierta saturada hemos encontrado un contramodelo: NO es consecuencia lógica.'
+        };
+        render();
+        return;
+      }
+
+      SoundEngine.branchClose();
+      game.score += 120;
+      finishCampaignVictory(game);
+    }
+
+    function finishCampaignVictory(game) {
+      const { level, nodesCreated, mistakes, paidHintsUsed, solveStepUsed } = game;
+      let stars = 1;
+      if (!solveStepUsed && mistakes <= 1) {
+        stars = 2;
+      }
+      if (nodesCreated <= level.par && paidHintsUsed === 0 && !solveStepUsed && mistakes === 0) {
+        stars = 3;
+      }
+
+      const parBonus = nodesCreated <= level.par ? 120 : 0;
+      const finalScore = Math.max(0, game.score + parBonus);
+      game.score = finalScore;
+
+      AppState.progress.stars[level.id] = Math.max(AppState.progress.stars[level.id] || 0, stars);
+      AppState.progress.bestScore[level.id] = Math.max(AppState.progress.bestScore[level.id] || 0, finalScore);
+      saveProgress(AppState.progress);
+
+      game.victoryStats = {
+        stars,
+        finalScore,
+        parBonus,
+        nodesCreated,
+        par: level.par,
+        mistakes,
+        paidHintsUsed
+      };
+      game.phase = 'victory';
+      SoundEngine.victory();
+      render();
+    }
+
+    /* =========================================================================
+       12. MODO "CAZADOR DE BUGS" (4 CASOS · CONTRARRELOJ 30s)
+       ========================================================================= */
+    function startBugHunter() {
+      clearBugTimer();
+      SoundEngine.tap();
+      AppState.screen = 'bug';
+      AppState.bug = {
+        caseIndex: 0,
+        score: 0,
+        combo: 0,
+        caught: 0,
+        timeLeft: 30,
+        status: 'playing', // 'playing' | 'resolved' | 'timeout' | 'summary'
+        wrongId: null,
+        feedback: null,
+        timerId: null
+      };
+      startBugCountdown();
+      render();
+    }
+
+    function clearBugTimer() {
+      if (AppState.bug && AppState.bug.timerId) {
+        clearInterval(AppState.bug.timerId);
+        AppState.bug.timerId = null;
+      }
+    }
+
+    function startBugCountdown() {
+      clearBugTimer();
+      AppState.bug.timerId = setInterval(() => {
+        if (!AppState.bug || AppState.bug.status !== 'playing') {
+          clearBugTimer();
+          return;
+        }
+        AppState.bug.timeLeft = Math.max(0, +(AppState.bug.timeLeft - 0.1).toFixed(1));
+        const bar = document.getElementById('bug-timer-bar');
+        const label = document.getElementById('bug-timer-text');
+        if (bar && label) {
+          const pct = (AppState.bug.timeLeft / 30) * 100;
+          bar.style.width = `${pct}%`;
+          label.textContent = `${Math.ceil(AppState.bug.timeLeft)}s`;
+          if (AppState.bug.timeLeft <= 8) {
+            bar.className = 'h-full bg-rose-500 transition-all duration-100 rounded-full';
+            label.className = 'font-mono font-bold text-rose-400 text-sm';
+          } else if (AppState.bug.timeLeft <= 15) {
+            bar.className = 'h-full bg-amber-400 transition-all duration-100 rounded-full';
+            label.className = 'font-mono font-bold text-amber-300 text-sm';
+          }
+        }
+        if (AppState.bug.timeLeft <= 0) {
+          clearBugTimer();
+          SoundEngine.error();
+          const c = BUG_CASES[AppState.bug.caseIndex];
+          AppState.bug.combo = 0;
+          AppState.bug.status = 'timeout';
+          AppState.bug.feedback = `¡Tiempo agotado! ${c.explanation}`;
+          render();
+        }
+      }, 100);
+    }
+
+    function handleBugTap(targetId) {
+      const bug = AppState.bug;
+      if (!bug || bug.status !== 'playing') return;
+      const c = BUG_CASES[bug.caseIndex];
+
+      if (targetId === c.bugTargetId) {
+        clearBugTimer();
+        SoundEngine.branchClose();
+        bug.combo += 1;
+        const pts = 100 + Math.round(bug.timeLeft * 10) + (bug.combo - 1) * 35;
+        bug.score += pts;
+        bug.caught += 1;
+        bug.status = 'resolved';
+        bug.feedback = `${c.explanation} (+${pts} pts${bug.combo > 1 ? ` · Combo x${bug.combo}` : ''})`;
+        render();
+      } else {
+        SoundEngine.error();
+        bug.timeLeft = Math.max(0, +(bug.timeLeft - 3).toFixed(1));
+        bug.combo = 0;
+        bug.wrongId = targetId;
+        showToast('Ese paso es correcto. ¡Sigue buscando el error! (-3s)', 'error', 1800);
+        render();
+        setTimeout(() => {
+          if (AppState.bug) AppState.bug.wrongId = null;
+        }, 400);
+      }
+    }
+
+    function handleNextBugCase() {
+      const bug = AppState.bug;
+      if (!bug) return;
+      SoundEngine.tap();
+      if (bug.caseIndex + 1 < BUG_CASES.length) {
+        bug.caseIndex += 1;
+        bug.timeLeft = 30;
+        bug.status = 'playing';
+        bug.feedback = null;
+        bug.wrongId = null;
+        startBugCountdown();
+        render();
+      } else {
+        clearBugTimer();
+        bug.status = 'summary';
+        if (bug.score > AppState.progress.bugBestScore) {
+          AppState.progress.bugBestScore = bug.score;
+        }
+        if (bug.caught === BUG_CASES.length) {
+          AppState.progress.bugCleared = true;
+        }
+        saveProgress(AppState.progress);
+        SoundEngine.victory();
+        render();
+      }
+    }
+
+    function goHome() {
+      clearBugTimer();
+      SoundEngine.tap();
+      AppState.screen = 'home';
+      AppState.game = null;
+      AppState.bug = null;
+      AppState.grimorio.open = false;
+      render();
+    }
+
+    function goAcademyMenu() {
+      clearBugTimer();
+      SoundEngine.tap();
+      AppState.screen = 'academy-menu';
+      AppState.game = null;
+      AppState.bug = null;
+      render();
+    }
+
+    /* =========================================================================
+       13. COMPONENTES DE INTERFAZ (UI MÓVIL HIGH-CRAFT)
+       ========================================================================= */
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function renderStarSvg(filled, size = 18, extraClass = '') {
+      return `
+        <svg width="${size}" height="${size}" viewBox="0 0 24 24" class="${extraClass}" fill="${filled ? '#F59E0B' : 'rgba(148,163,184,0.2)'}" stroke="${filled ? '#FBBF24' : 'rgba(148,163,184,0.35)'}" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+        </svg>
+      `;
+    }
+
+    function renderSoundButton() {
+      const muted = SoundEngine.isMuted();
+      return `
+        <button onclick="SoundEngine.toggleMute(); render();" aria-label="Sonido" class="btn-game w-9 h-9 rounded-xl bg-slate-800/85 border border-slate-700/75 flex items-center justify-center text-slate-300 hover:text-white shrink-0">
+          ${muted
+            ? `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`
+            : `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`
+          }
+        </button>
+      `;
+    }
+
+    function renderGrimorioIconBtn() {
+      return `
+        <button onclick="openGrimorio()" title="Grimorio y Guía Maestra" class="btn-game h-9 px-2.5 rounded-xl bg-violet-500/15 border border-violet-400/40 flex items-center gap-1.5 text-violet-200 text-xs font-bold shrink-0">
+          <span>📖</span>
+          <span class="hidden sm:inline">Guía</span>
+        </button>
+      `;
+    }
+
+    // --- PANTALLA 1: HOME SCREEN ---
+    function renderHomeScreen() {
+      const totalStars = CAMPAIGN_LEVELS.reduce((s, l) => s + (AppState.progress.stars[l.id] || 0), 0);
+      const maxStars = CAMPAIGN_LEVELS.length * 3;
+      const doneLessons = AppState.progress.completedLessons.length;
+      const totalLessons = ACADEMY_LESSONS.length;
+      const academyPct = Math.round((doneLessons / totalLessons) * 100);
+
+      return `
+        <header class="px-4 pt-4 pb-3.5 border-b border-slate-800/90 bg-gradient-to-b from-slate-900/95 to-[#0B1020] shrink-0">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-400/30 text-cyan-300 text-[10px] font-bold uppercase tracking-wider">
+                <span>⚡</span> Lógica Proposicional
+              </div>
+              <h1 class="text-xl font-black tracking-tight text-white mt-1 flex items-center gap-1.5">
+                TABLEAU <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400">QUEST</span>
+              </h1>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="h-9 px-2.5 rounded-xl bg-amber-500/15 border border-amber-400/35 flex items-center gap-1 text-amber-300 font-mono text-xs font-extrabold">
+                ${renderStarSvg(true, 15)}
+                <span>${totalStars}/${maxStars}</span>
+              </div>
+              ${renderGrimorioIconBtn()}
+              ${renderSoundButton()}
+            </div>
+          </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto thin-scroll px-4 py-4 space-y-4">
+          <!-- TARJETA DESTACADA: ACADEMIA TABLEAUX DESDE CERO -->
+          <section>
+            <button onclick="goAcademyMenu()" class="btn-game w-full text-left rounded-3xl p-4 bg-gradient-to-br from-cyan-950/80 via-[#131F3A] to-violet-950/70 border border-cyan-400/45 shadow-[0_8px_30px_rgba(34,211,238,0.12)] relative overflow-hidden">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-start gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400/25 to-violet-500/25 border border-cyan-300/40 flex items-center justify-center text-2xl shrink-0">
+                    🎓
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/35">Gratis • Sin penalización</span>
+                      <span class="text-[10px] font-bold text-cyan-300 font-mono">${doneLessons}/${totalLessons} lecciones</span>
+                    </div>
+                    <h2 class="text-base font-extrabold text-white mt-1.5 leading-tight">Academia: Tableaux desde Cero</h2>
+                    <p class="text-xs text-slate-300/90 mt-0.5 leading-snug">¿Conoces ∧, ∨, → pero aún no dominas los tableaux? Aprende paso a paso en 5 micro-lecciones.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3.5">
+                <div class="flex items-center justify-between text-[11px] mb-1.5">
+                  <span class="text-cyan-200 font-semibold">${doneLessons === totalLessons ? '¡Academia completada! 🏆' : 'Recomendado antes de jugar'}</span>
+                  <span class="text-cyan-300 font-bold">${doneLessons === 0 ? 'Empezar →' : 'Continuar →'}</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-900/90 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-cyan-400 to-violet-400 rounded-full transition-all duration-300" style="width: ${Math.max(academyPct, 6)}%"></div>
+                </div>
+              </div>
+            </button>
+          </section>
+
+          <!-- CAMPAÑA PRINCIPAL (5 NIVELES) -->
+          <section class="space-y-2.5">
+            <div class="flex items-center justify-between px-1">
+              <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Campaña Principal</h2>
+              <span class="text-[10px] text-slate-500">5 Niveles · Acceso libre</span>
+            </div>
+
+            ${CAMPAIGN_LEVELS.map((lvl) => {
+              const earned = AppState.progress.stars[lvl.id] || 0;
+              const best = AppState.progress.bestScore[lvl.id] || 0;
+              const costBadge = lvl.grimorioCost === 0 ? 'Guía Gratis' : `Guía -${lvl.grimorioCost} pts`;
+              return `
+                <button onclick="startCampaignLevel(${lvl.id})" class="btn-game w-full text-left glass-card rounded-2xl p-3.5 hover:border-cyan-400/45 transition-colors">
+                  <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-900/90 border border-slate-700/80 flex items-center justify-center font-mono font-extrabold text-cyan-300 text-base shrink-0">
+                      ${lvl.id}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${lvl.badgeColor}">${lvl.badge}</span>
+                        <span class="text-[10px] text-slate-400 font-mono">${costBadge}</span>
+                      </div>
+                      <h3 class="text-sm font-bold text-white mt-1.5">${esc(lvl.title)}</h3>
+                      <p class="formula-text text-[11px] text-slate-400 mt-0.5 truncate">${esc(lvl.subtitle)}</p>
+                    </div>
+                  </div>
+                  <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                    <div class="flex items-center gap-1">
+                      ${[1, 2, 3].map((s) => renderStarSvg(s <= earned, 16)).join('')}
+                      <span class="ml-2 text-[11px] font-mono text-slate-400">
+                        ${best > 0 ? `Récord ${best} pts` : `Par óptimo: ${lvl.par} nodos`}
+                      </span>
+                    </div>
+                    <span class="text-xs font-bold text-cyan-400">Jugar →</span>
+                  </div>
+                </button>
+              `;
+            }).join('')}
+          </section>
+
+          <!-- MODO CAZADOR DE BUGS -->
+          <section class="pt-1 pb-2">
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-rose-400 px-1 mb-2 flex items-center gap-1.5">
+              <span>🔥</span> Entrenamiento Rápido
+            </h2>
+            <button onclick="startBugHunter()" class="btn-game w-full text-left rounded-2xl p-4 bg-gradient-to-br from-rose-950/65 via-[#1B152C] to-[#121A2F] border border-rose-500/40 hover:border-rose-400/70">
+              <div class="flex items-start gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-2xl shrink-0">
+                  🐛
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/35">Contrarreloj 30s</span>
+                    <span class="text-[10px] text-slate-400">4 Casos</span>
+                  </div>
+                  <h3 class="text-base font-extrabold text-white mt-1">Cazador de Bugs</h3>
+                  <p class="text-xs text-slate-300/85 mt-0.5">Encuentra el único fallo típico de examen en tableaux ya terminados antes de que acabe el tiempo.</p>
+                </div>
+              </div>
+              <div class="mt-3 pt-2.5 border-t border-rose-500/20 flex items-center justify-between">
+                <span class="text-[11px] font-mono text-rose-300">
+                  ${AppState.progress.bugBestScore > 0 ? `Mejor puntuación: ${AppState.progress.bugBestScore} pts` : '¡Afina tu ojo clínico!'}
+                </span>
+                <span class="text-xs font-bold text-rose-300">Entrar →</span>
+              </div>
+            </button>
+          </section>
+        </main>
+      `;
+    }
+
+    // --- PANTALLA 2: MENÚ DE LA ACADEMIA (5 MICRO-LECCIONES) ---
+    function renderAcademyMenuScreen() {
+      const done = AppState.progress.completedLessons;
+      return `
+        <header class="px-4 py-3.5 border-b border-slate-800 bg-slate-900/95 flex items-center justify-between gap-2 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <button onclick="goHome()" class="btn-game w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold">←</button>
+            <div>
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-400">🎓 Academia Interactiva</p>
+              <h1 class="text-sm font-extrabold text-white">Tableaux desde Cero</h1>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            ${renderGrimorioIconBtn()}
+            ${renderSoundButton()}
+          </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto thin-scroll px-4 py-4 space-y-3">
+          <div class="rounded-2xl bg-cyan-500/10 border border-cyan-400/25 p-3.5 flex items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-bold text-cyan-200">Progreso de Academia: ${done.length}/${ACADEMY_LESSONS.length}</p>
+              <p class="text-[11px] text-slate-300 mt-0.5">Sin penalización de puntos. Puedes abrir el Grimorio gratis en cualquier paso.</p>
+            </div>
+            <div class="text-2xl shrink-0">${done.length === ACADEMY_LESSONS.length ? '🏆' : '🧭'}</div>
+          </div>
+
+          ${ACADEMY_LESSONS.map((lesson) => {
+            const isDone = done.includes(lesson.id);
+            return `
+              <button onclick="startAcademyLesson(${lesson.id})" class="btn-game w-full text-left glass-card rounded-2xl p-4 hover:border-cyan-400/50 transition-all">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center font-mono font-extrabold text-sm shrink-0 border ${isDone ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-300' : 'bg-slate-900 border-slate-700 text-cyan-300'}">
+                    ${isDone ? '✓' : lesson.id}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${lesson.tagColor}">${lesson.tag}</span>
+                      <span class="text-[10px] font-bold ${isDone ? 'text-emerald-400' : 'text-cyan-400'}">${isDone ? 'Completada' : 'Practicar →'}</span>
+                    </div>
+                    <h3 class="text-sm font-bold text-white mt-1.5">${esc(lesson.title)}</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">${esc(lesson.subtitle)}</p>
+                  </div>
+                </div>
+              </button>
+            `;
+          }).join('')}
+        </main>
+      `;
+    }
+
+    // --- TARJETA DE INTRODUCCIÓN VISUAL DE CADA LECCIÓN DE ACADEMIA ---
+    function renderAcademyIntro(game) {
+      const l = game.lesson;
+      const nextPhase = l.phase0 ? 'phase0' : 'tree';
+      return `
+        <main class="flex-1 overflow-y-auto thin-scroll px-4 py-5 flex flex-col justify-between gap-4">
+          <div class="space-y-4">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold ${l.tagColor}">
+              🎓 ${esc(l.tag)}
+            </div>
+
+            <div class="glass-card rounded-3xl p-4 space-y-3 border-slate-700/70">
+              <h2 class="text-lg font-extrabold text-white">${esc(l.introTitle)}</h2>
+              <ul class="space-y-2.5 text-xs text-slate-200 leading-relaxed">
+                ${l.introPoints.map((pt) => `
+                  <li class="flex items-start gap-2">
+                    <span class="text-cyan-400 mt-0.5 font-bold">▸</span>
+                    <span>${pt}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+
+            ${l.rulePills ? `
+              <div class="grid ${l.rulePills.length === 3 ? 'grid-cols-3' : 'grid-cols-2'} gap-2">
+                ${l.rulePills.map((pill) => {
+                  const styleMap = {
+                    alpha: 'bg-cyan-500/10 border-cyan-400/35 text-cyan-200',
+                    beta: 'bg-violet-500/10 border-violet-400/35 text-violet-200',
+                    close: 'bg-emerald-500/10 border-emerald-400/40 text-emerald-300',
+                    error: 'bg-rose-500/10 border-rose-400/40 text-rose-300',
+                    exam: 'bg-amber-500/10 border-amber-400/35 text-amber-200'
+                  };
+                  return `
+                    <div class="rounded-2xl border p-2.5 text-center ${styleMap[pill.kind] || styleMap.alpha}">
+                      <div class="formula-text text-[11px] font-bold text-white pb-1.5 border-b border-white/10">${esc(pill.f)}</div>
+                      <div class="formula-text text-[11px] font-extrabold pt-1.5">${esc(pill.out)}</div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : ''}
+
+            ${l.showGoldenDiagram ? `
+              <div class="grid grid-cols-2 gap-2.5">
+                <div class="rounded-2xl bg-emerald-950/35 border border-emerald-400/35 p-3 text-center">
+                  <div class="text-[10px] font-extrabold text-emerald-300 uppercase mb-1.5">✓ α antes que β</div>
+                  <div class="formula-text text-[11px] text-cyan-200">p, ¬q (1 vez)</div>
+                  <div class="text-violet-300 text-xs my-0.5">⑂</div>
+                  <div class="formula-text text-[11px] text-emerald-300">¬p ×  |  q ×</div>
+                  <div class="text-[10px] text-emerald-400 mt-1.5 font-bold">¡Solo 4 nodos!</div>
+                </div>
+                <div class="rounded-2xl bg-rose-950/30 border border-rose-400/35 p-3 text-center">
+                  <div class="text-[10px] font-extrabold text-rose-300 uppercase mb-1.5">✕ β antes que α</div>
+                  <div class="formula-text text-[11px] text-violet-200">¬p  |  q</div>
+                  <div class="text-cyan-300 text-[10px] my-0.5">↓     ↓</div>
+                  <div class="formula-text text-[10px] text-slate-300">p,¬q  |  p,¬q</div>
+                  <div class="text-[10px] text-rose-400 mt-1.5 font-bold">¡Duplicas trabajo!</div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="space-y-2">
+            <button onclick="SoundEngine.tap(); AppState.game.phase = '${nextPhase}'; updateAcademyCoachGuide(AppState.game); render();" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-violet-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-cyan-900/30">
+              ¡Probarlo ahora en el Tableau! →
+            </button>
+            <button onclick="openGrimorio('rules')" class="btn-game w-full py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-xs font-semibold text-slate-300">
+              📖 Abrir Grimorio completo (Gratis)
+            </button>
+          </div>
+        </main>
+      `;
+    }
+
+    // --- PANTALLA QUIZ INTERACTIVO DE LECCIÓN 3 (TRAMPA HERMANA) ---
+    function renderAcademyLesson3Quiz(game) {
+      return `
+        <main class="flex-1 overflow-y-auto thin-scroll px-4 py-5 flex flex-col justify-between gap-4">
+          <div class="space-y-4">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold">
+              ✓ RAMA IZQUIERDA CERRADA · PREGUNTA TRAMPA
+            </div>
+
+            <div class="glass-card rounded-3xl p-4 space-y-3 border-amber-400/35">
+              <p class="text-xs text-slate-200 leading-relaxed">
+                Fíjate: en la rama izquierda aparecía <span class="formula-text font-bold text-cyan-300">q</span> y en la rama derecha aparece <span class="formula-text font-bold text-cyan-300">¬q</span>.
+              </p>
+              <h3 class="text-base font-extrabold text-white">¿Podemos usar q (izq.) y ¬q (der.) para cerrar la rama derecha?</h3>
+            </div>
+
+            <div class="space-y-2.5">
+              <button onclick="completeAcademyLesson(AppState.game)" class="btn-game w-full text-left rounded-2xl p-4 bg-card border border-slate-700/80 hover:border-emerald-400/60 text-xs font-bold text-white leading-snug">
+                ✓ NO. Están en ramas hermanas distintas; la rama derecha sigue abierta.
+              </button>
+              <button onclick="SoundEngine.error(); AppState.game.lesson3QuizWrong = true; render();" class="btn-game w-full text-left rounded-2xl p-4 bg-card border ${game.lesson3QuizWrong ? 'border-rose-500 bg-rose-500/15 anim-shake' : 'border-slate-700/80'} text-xs font-bold text-slate-200 leading-snug">
+                ✕ SÍ. Como q y ¬q son opuestos, pueden cerrar la rama derecha.
+              </button>
+            </div>
+
+            ${game.lesson3QuizWrong ? `
+              <div class="rounded-2xl bg-rose-500/15 border border-rose-500/45 p-3.5 text-xs text-rose-200 leading-relaxed">
+                <strong>¡Cuidado con esa trampa!</strong> Cada rama es un "mundo paralelo" independiente. Solo cuentan los literales que están en línea recta hacia arriba hasta la raíz.
+              </div>
+            ` : ''}
+          </div>
+        </main>
+      `;
+    }
+
+    // --- MODAL DE LECCIÓN DE ACADEMIA COMPLETADA ---
+    function renderAcademyCompleteModal(game) {
+      const nextLesson = ACADEMY_LESSONS.find((l) => l.id === game.lesson.id + 1);
+      return `
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
+          <div class="w-full max-w-[390px] glass-card rounded-3xl p-6 border-emerald-400/40 text-center shadow-2xl anim-node-pop">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-400/45 flex items-center justify-center text-3xl mx-auto mb-3">
+              🎓
+            </div>
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-300">Lección ${game.lesson.id} Superada</span>
+            <h2 class="text-xl font-black text-white mt-1">${esc(game.lesson.title)}</h2>
+            <p class="text-xs text-slate-300 mt-2.5 leading-relaxed bg-slate-900/75 border border-slate-800 rounded-2xl p-3.5">
+              ${esc(game.lesson.completionNote)}
+            </p>
+
+            <div class="mt-5 space-y-2.5">
+              ${nextLesson ? `
+                <button onclick="startAcademyLesson(${nextLesson.id})" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-extrabold text-sm">
+                  Siguiente: ${esc(nextLesson.title)} →
+                </button>
+              ` : `
+                <button onclick="startCampaignLevel(1)" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-violet-400 text-slate-950 font-extrabold text-sm">
+                  ¡Empezar Campaña (Nivel 1)! 🚀
+                </button>
+              `}
+              <button onclick="goAcademyMenu()" class="btn-game w-full py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300">
+                Volver a la Academia
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- FASE 0 (COMPARTIDA POR ACADEMIA LECCIÓN 5 Y CAMPAÑA NIVELES 3-5) ---
+    function renderPhase0(game) {
+      const p0 = game.phase0Data;
+      const fb = game.phase0Feedback;
+      return `
+        <main class="flex-1 overflow-y-auto thin-scroll px-4 py-5 flex flex-col justify-between gap-4">
+          <div class="space-y-4">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/20 border border-violet-400/40 text-violet-300 text-xs font-extrabold">
+              ⚡ FASE 0 · MONTA LA RAÍZ
+            </div>
+
+            <div class="glass-card rounded-3xl p-4 space-y-2.5 border-violet-500/30">
+              <p class="text-xs text-slate-300 leading-relaxed">${esc(p0.prompt)}</p>
+              <div class="rounded-2xl bg-slate-950/90 border border-slate-800 px-3 py-3 text-center">
+                <span class="formula-text text-[15px] font-extrabold text-violet-300">${esc(p0.expression)}</span>
+              </div>
+              <p class="text-xs font-bold text-slate-100 pt-1">${esc(p0.instruction)}</p>
+            </div>
+
+            <div class="space-y-2.5">
+              ${p0.options.map((opt, idx) => {
+                const letter = ['A', 'B', 'C'][idx];
+                const isWrong = fb && !fb.ok && fb.wrongId === opt.id;
+                const isSuccess = fb && fb.ok && opt.correct;
+                const cls = isSuccess
+                  ? 'border-emerald-400 bg-emerald-500/15'
+                  : isWrong
+                    ? 'border-rose-500 bg-rose-500/15 anim-shake'
+                    : 'border-slate-700/80 bg-surface hover:border-violet-400/60';
+                return `
+                  <button onclick="handlePhase0Choice('${opt.id}')" class="btn-game w-full text-left rounded-2xl p-3.5 border transition-all ${cls}">
+                    <div class="flex items-start gap-3">
+                      <span class="w-6 h-6 rounded-lg bg-slate-900 border border-slate-700 text-xs font-bold text-slate-300 flex items-center justify-center shrink-0 mt-0.5">${letter}</span>
+                      <div class="min-w-0">
+                        <div class="formula-text text-[13px] font-bold text-white break-words">${esc(opt.formula)}</div>
+                        <div class="text-[11px] text-slate-400 mt-1">${esc(opt.caption)}</div>
+                      </div>
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            ${fb ? `
+              <div class="rounded-2xl p-3.5 text-xs leading-relaxed border ${fb.ok ? 'bg-emerald-500/15 border-emerald-400/45 text-emerald-200' : 'bg-rose-500/15 border-rose-500/45 text-rose-200'}">
+                <strong>${fb.ok ? '✓ Raíz correcta:' : game.isAcademy ? '✕ Inténtalo de nuevo:' : '✕ Fallo (-35 pts):'}</strong> ${esc(fb.text)}
+              </div>
+            ` : ''}
+          </div>
+
+          <button onclick="openGrimorio('exam')" class="btn-game w-full py-3 rounded-xl bg-slate-800/85 border border-slate-700 text-xs font-bold text-slate-200 flex items-center justify-center gap-2">
+            📖 Ver Recetario de Examen en el Grimorio (${game.grimorioUnlocked ? 'Gratis' : '-' + game.level.grimorioCost + ' pts'})
+          </button>
+        </main>
+      `;
+    }
+
+    // --- RENDERIZADO RECURSIVO DEL ÁRBOL SEMÁNTICO (NODO A NODO) ---
+    function renderNodeSubtree(game, nodeId) {
+      const node = game.nodes[nodeId];
+      if (!node) return '';
+
+      // Si este nodo es ancla colapsada de una rama/subárbol cerrado
+      if (node.collapsed && isSubtreeFullyClosed(game.nodes, nodeId)) {
+        const closedLeaves = getLeavesInSubtree(game.nodes, nodeId);
+        const label = closedLeaves.length === 1
+          ? `× Cerrada (${closedLeaves[0].closedReason})`
+          : `× Cerradas (${closedLeaves.length} ramas)`;
+        return `
+          <div class="flex flex-col items-center anim-node-pop">
+            <button onclick="SoundEngine.tap(); AppState.game.nodes['${node.id}'].collapsed = false; render();" class="btn-game px-2.5 py-2 rounded-2xl bg-emerald-500/15 border border-emerald-400/50 text-emerald-300 flex flex-col items-center gap-0.5 shadow-sm max-w-[130px]">
+              <span class="formula-text text-[11px] font-extrabold leading-tight text-center">${esc(label)}</span>
+              <span class="text-[9px] text-emerald-400/80 underline mt-0.5">Tocar para ver</span>
+            </button>
+          </div>
+        `;
+      }
+
+      const isLeaf = node.children.length === 0;
+      const isSelected = game.selectedLiteralId === node.id;
+      const isHighlighted = game.highlightedIds.includes(node.id);
+      const saturated = isLeaf && !game.isAcademy && isLeafOpenSaturated(game.nodes, node.id);
+
+      // Borde izquierdo codificado por tipo de regla (Cyan α / Violet β / Slate-Sky literal)
+      let leftAccent = 'border-l-[3.5px] border-l-sky-400/60';
+      let badgeTag = '';
+      if (node.ruleType === 'alpha') {
+        leftAccent = 'border-l-[3.5px] border-l-cyan-400';
+        badgeTag = node.expanded ? '' : `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 shrink-0">α</span>`;
+      } else if (node.ruleType === 'beta') {
+        leftAccent = 'border-l-[3.5px] border-l-violet-400';
+        badgeTag = node.expanded ? '' : `<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 shrink-0">β</span>`;
+      }
+
+      // Estilo del estado del nodo
+      let cardCls = 'bg-surface/95 border-slate-700/80 text-white hover:border-slate-500';
+      if (node.expanded) {
+        cardCls = 'bg-slate-900/60 border-slate-800/90 text-slate-400 opacity-70';
+      } else if (isSelected) {
+        cardCls = 'bg-amber-500/20 border-amber-400 text-amber-100 shadow-[0_0_16px_rgba(245,158,11,0.45)] scale-[1.03]';
+      } else if (node.branchClosed) {
+        cardCls = 'bg-emerald-950/35 border-emerald-500/50 text-emerald-200';
+      } else if (node.ruleType === 'literal') {
+        cardCls = 'bg-[#142038] border-sky-500/35 text-sky-100 hover:border-amber-400/70';
+      }
+
+      const sparkCls = node.justClosed ? 'anim-close-spark' : '';
+      const hlCls = isHighlighted ? 'anim-hint-glow' : '';
+
+      // Contenido del nodo
+      const nodeButton = `
+        <button onclick="handleNodeTap('${node.id}')" class="btn-game relative rounded-xl border ${leftAccent} px-3 py-2 flex items-center justify-between gap-2 transition-all min-w-[86px] max-w-[235px] ${cardCls} ${sparkCls} ${hlCls}">
+          <span class="formula-text text-[12.5px] font-bold leading-snug text-left break-words ${node.expanded ? 'line-through decoration-slate-600' : ''}">${esc(node.formulaStr)}</span>
+          ${node.expanded
+            ? `<span class="text-[11px] font-black text-emerald-400 shrink-0">✓</span>`
+            : node.ruleType === 'literal'
+              ? isSelected
+                ? `<span class="text-[10px] font-black text-amber-300 shrink-0">●</span>`
+                : ''
+              : badgeTag
+          }
+        </button>
+      `;
+
+      // Pie de hoja (cerrada o abierta saturada)
+      let leafBadge = '';
+      if (isLeaf && node.branchClosed) {
+        const anchor = findCollapseAnchor(game.nodes, node.id);
+        const canCollapse = anchor && anchor.parentId !== null;
+        leafBadge = `
+          <div class="mt-1.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/45 text-emerald-300 text-[10px] font-extrabold">
+            <span>× ${esc(node.closedReason)}</span>
+            ${canCollapse ? `<button onclick="SoundEngine.tap(); AppState.game.nodes['${anchor.id}'].collapsed = true; render();" class="text-emerald-200/80 underline ml-1">Plegar</button>` : ''}
+          </div>
+        `;
+      } else if (saturated) {
+        const satHl = game.highlightedIds.includes(`sat_${node.id}`);
+        leafBadge = `
+          <button onclick="openCountermodelExtractor('${node.id}')" class="btn-game mt-2 px-3 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 border border-violet-300/50 text-white text-[10.5px] font-extrabold shadow-lg shadow-violet-950/60 anim-saturated-pulse ${satHl ? 'anim-hint-glow' : ''}">
+            Rama saturada (Abierta) ✓
+          </button>
+        `;
+      }
+
+      // Render de hijos
+      let childrenHtml = '';
+      if (node.children.length === 1) {
+        const child = game.nodes[node.children[0]];
+        const lineCls = child && child.isRoot ? 'tree-v-line-neutral' : 'tree-v-line';
+        childrenHtml = `
+          <div class="${lineCls}"></div>
+          ${renderNodeSubtree(game, node.children[0])}
+        `;
+      } else if (node.children.length === 2) {
+        childrenHtml = `
+          <div class="tree-fork-stem"></div>
+          <div class="tree-split-row">
+            ${node.children.map((cid) => {
+              const childNode = game.nodes[cid];
+              const compact = childNode && childNode.collapsed && isSubtreeFullyClosed(game.nodes, cid);
+              return `
+                <div class="tree-split-branch ${compact ? 'flex-none' : 'flex-1'}">
+                  ${renderNodeSubtree(game, cid)}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="flex flex-col items-center anim-node-pop">
+          ${nodeButton}
+          ${leafBadge}
+          ${childrenHtml}
+        </div>
+      `;
+    }
+
+    // --- BOTTOM ACTION SHEET PARA EXPANDIR FÓRMULA (3–4 OPCIONES) ---
+    function renderExpansionSheet(game) {
+      const sheet = game.expansionSheet;
+      if (!sheet) return '';
+      const isAlpha = sheet.node.ruleType === 'alpha';
+
+      return `
+        <div class="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/75 backdrop-blur-[2px]" onclick="AppState.game.expansionSheet = null; render();">
+          <div onclick="event.stopPropagation()" class="anim-sheet-up w-full max-w-[440px] rounded-t-3xl bg-[#10182B] border-t border-x border-slate-700/80 p-4 pb-6 shadow-2xl max-h-[82vh] overflow-y-auto thin-scroll">
+            <div class="w-10 h-1 bg-slate-700 rounded-full mx-auto mb-3"></div>
+
+            <div class="flex items-start justify-between gap-2 mb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${isAlpha ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/35' : 'bg-violet-500/20 text-violet-300 border border-violet-400/35'}">
+                    ${isAlpha ? 'Regla α (Vertical)' : 'Regla β (Bifurca)'}
+                  </span>
+                  <span class="text-[10px] text-slate-400">Elige la expansión exacta</span>
+                </div>
+                <div class="formula-text text-base font-extrabold text-white mt-1.5">${esc(sheet.node.formulaStr)}</div>
+              </div>
+              <button onclick="AppState.game.expansionSheet = null; render();" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 font-bold text-sm shrink-0">✕</button>
+            </div>
+
+            <div class="space-y-2">
+              ${sheet.choices.map((ch) => {
+                const isWrong = sheet.wrongChoiceId === ch.id;
+                const isBranch = ch.branches.length === 2;
+                return `
+                  <button onclick="handleSelectExpansion('${ch.id}')" class="btn-game w-full rounded-2xl p-3 border text-left transition-all ${isWrong ? 'border-rose-500 bg-rose-500/15 anim-shake' : 'border-slate-700/80 bg-slate-900/75 hover:border-slate-500'}">
+                    <div class="flex items-center justify-between mb-1.5">
+                      <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        ${isBranch ? 'Bifurcar en 2 ramas' : 'Apilar en vertical'}
+                      </span>
+                      <span class="text-xs font-mono text-slate-500">${isBranch ? '⑂' : '↓'}</span>
+                    </div>
+
+                    ${isBranch
+                      ? `
+                        <div class="grid grid-cols-2 gap-2">
+                          ${ch.branches.map((br) => `
+                            <div class="rounded-xl bg-slate-950/85 border border-slate-800 px-2.5 py-2 text-center space-y-1">
+                              ${br.map((ast) => `<div class="formula-text text-xs font-bold text-slate-100">${esc(Logic.format(ast, true))}</div>`).join('')}
+                            </div>
+                          `).join('')}
+                        </div>
+                      `
+                      : `
+                        <div class="rounded-xl bg-slate-950/85 border border-slate-800 px-3 py-2 flex flex-col items-center gap-1">
+                          ${ch.branches[0].map((ast) => `<div class="formula-text text-xs font-bold text-slate-100">${esc(Logic.format(ast, true))}</div>`).join('')}
+                        </div>
+                      `
+                    }
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            ${sheet.wrongFeedback ? `
+              <div class="mt-3 rounded-xl bg-rose-500/15 border border-rose-500/45 px-3 py-2.5 text-xs text-rose-200 leading-snug">
+                <strong>${game.isAcademy ? '💡 Pista:' : '✕ -30 pts:'}</strong> ${esc(sheet.wrongFeedback)}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // --- PANTALLA FINAL: VEREDICTO O EXTRACTOR DE CONTRAMODELO ---
+    function renderFinalPhase(game) {
+      const fp = game.level.finalPhase;
+
+      if (fp.type === 'verdict') {
+        const fb = game.finalFeedback;
+        return `
+          <main class="flex-1 overflow-y-auto thin-scroll px-4 py-5 space-y-4">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-extrabold">
+              ✓ TODAS LAS RAMAS CERRADAS
+            </div>
+
+            <div class="glass-card rounded-3xl p-4">
+              <h2 class="text-base font-extrabold text-white">${esc(fp.title)}</h2>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">${esc(fp.prompt)}</p>
+            </div>
+
+            <div class="space-y-2.5">
+              ${fp.options.map((opt) => `
+                <button onclick="handleFinalVerdictChoice('${opt.id}')" class="btn-game w-full text-left rounded-2xl p-3.5 bg-surface border border-slate-700/80 hover:border-emerald-400/55 text-xs font-semibold text-slate-100 leading-relaxed">
+                  ${esc(opt.text)}
+                </button>
+              `).join('')}
+            </div>
+
+            ${fb ? `
+              <div class="rounded-2xl p-3.5 text-xs border ${fb.ok ? 'bg-emerald-500/15 border-emerald-400/45 text-emerald-200' : 'bg-rose-500/15 border-rose-500/45 text-rose-200'}">
+                ${esc(fb.text)}
+              </div>
+            ` : ''}
+          </main>
+        `;
+      }
+
+      // Extractor de Contramodelo (Nivel 4)
+      const leafId = game.saturatedLeafForFinal || getOpenLeaves(game)[0]?.id;
+      const lits = leafId
+        ? getPathToNode(game.nodes, leafId).filter((n) => n.ruleType === 'literal')
+        : [];
+      const uniqueTexts = [...new Set(lits.map((n) => n.formulaStr))];
+
+      return `
+        <main class="flex-1 overflow-y-auto thin-scroll px-4 py-4 space-y-4">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/20 border border-violet-400/40 text-violet-300 text-xs font-extrabold">
+            ✦ EXTRACTOR DE CONTRAMODELO
+          </div>
+
+          <div class="glass-card rounded-3xl p-4 space-y-3 border-violet-500/35">
+            <p class="text-xs text-slate-300 font-semibold">Literales de tu rama abierta saturada:</p>
+            <div class="flex flex-wrap gap-2">
+              ${uniqueTexts.map((t) => `
+                <span class="formula-text px-3 py-1 rounded-xl bg-violet-500/20 border border-violet-400/45 text-violet-200 font-extrabold text-sm">${esc(t)}</span>
+              `).join('')}
+            </div>
+            <p class="text-[11px] text-slate-400">Ajusta los interruptores V/F para hacer verdaderos TODOS esos literales:</p>
+
+            <div class="space-y-2 pt-1">
+              ${fp.atoms.map((atomName) => {
+                const val = game.finalCountermodel[atomName];
+                return `
+                  <div class="flex items-center justify-between rounded-xl bg-slate-950/80 border border-slate-800 px-3.5 py-2.5">
+                    <span class="formula-text text-sm font-extrabold text-white">I(${atomName}) =</span>
+                    <div class="flex gap-2">
+                      <button onclick="SoundEngine.tap(); AppState.game.finalCountermodel['${atomName}'] = 1; render();" class="btn-game px-3.5 py-1.5 rounded-lg text-xs font-extrabold border ${val === 1 ? 'bg-emerald-500 text-slate-950 border-emerald-300' : 'bg-slate-800 text-slate-300 border-slate-700'}">
+                        V (1)
+                      </button>
+                      <button onclick="SoundEngine.tap(); AppState.game.finalCountermodel['${atomName}'] = 0; render();" class="btn-game px-3.5 py-1.5 rounded-lg text-xs font-extrabold border ${val === 0 ? 'bg-rose-500 text-white border-rose-300' : 'bg-slate-800 text-slate-300 border-slate-700'}">
+                        F (0)
+                      </button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="glass-card rounded-3xl p-4 space-y-2.5">
+            <p class="text-xs font-bold text-slate-100">${esc(fp.verdictPrompt)}</p>
+            <div class="space-y-2">
+              ${fp.verdictOptions.map((opt) => {
+                const active = game.finalVerdictSelected === opt.id;
+                return `
+                  <button onclick="SoundEngine.tap(); AppState.game.finalVerdictSelected = '${opt.id}'; render();" class="btn-game w-full text-left rounded-xl p-3 border text-xs font-medium leading-snug ${active ? 'bg-violet-500/20 border-violet-400 text-white' : 'bg-slate-900/70 border-slate-800 text-slate-300'}">
+                    ${esc(opt.text)}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          ${game.finalFeedback ? `
+            <div class="rounded-2xl p-3 text-xs bg-rose-500/15 border border-rose-500/45 text-rose-200">
+              ${esc(game.finalFeedback.text)}
+            </div>
+          ` : ''}
+
+          <button onclick="handleSubmitCountermodel()" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-violet-400 to-cyan-400 text-slate-950 font-extrabold text-sm shadow-lg shadow-violet-950/40">
+            Confirmar Contramodelo y Veredicto
+          </button>
+        </main>
+      `;
+    }
+
+    // --- MODAL DE VICTORIA DE CAMPAÑA ---
+    function renderVictoryModal(game) {
+      const st = game.victoryStats;
+      if (!st) return '';
+      const nextLvl = CAMPAIGN_LEVELS.find((l) => l.id === game.level.id + 1);
+
+      return `
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
+          <div class="w-full max-w-[390px] glass-card rounded-3xl p-6 border-emerald-400/40 text-center shadow-2xl anim-node-pop">
+            <span class="inline-flex px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold uppercase tracking-wider">
+              Nivel ${game.level.id} Completado
+            </span>
+
+            <div class="flex items-center justify-center gap-3 my-4">
+              ${[1, 2, 3].map((i) => `
+                <div class="anim-star" style="animation-delay: ${(i - 1) * 0.14}s">
+                  ${renderStarSvg(i <= st.stars, i === 2 ? 48 : 36)}
+                </div>
+              `).join('')}
+            </div>
+
+            <h2 class="text-xl font-black text-white">
+              ${st.stars === 3 ? '¡Eficiencia de Maestro!' : st.stars === 2 ? '¡Gran razonamiento!' : '¡Prueba superada!'}
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              ${st.stars === 3
+                ? 'Clavaste el Par de nodos aplicando α antes que β y sin pistas de pago.'
+                : st.nodesCreated > st.par
+                  ? `Generaste ${st.nodesCreated} nodos (Par: ${st.par}). Aplica α antes que β para lograr 3★.`
+                  : 'Supera el nivel sin errores ni pistas de pago para conseguir 3★.'
+              }
+            </p>
+
+            <div class="grid grid-cols-2 gap-2 my-4 text-left">
+              <div class="rounded-2xl bg-slate-900/85 border border-slate-800 p-3">
+                <p class="text-[10px] uppercase text-slate-400 font-bold">Puntuación</p>
+                <p class="text-lg font-black font-mono text-cyan-300">${st.finalScore} <span class="text-[10px] text-slate-400">pts</span></p>
+              </div>
+              <div class="rounded-2xl bg-slate-900/85 border border-slate-800 p-3">
+                <p class="text-[10px] uppercase text-slate-400 font-bold">Eficiencia</p>
+                <p class="text-lg font-black font-mono ${st.nodesCreated <= st.par ? 'text-emerald-400' : 'text-amber-300'}">${st.nodesCreated}<span class="text-xs text-slate-500"> / Par ${st.par}</span></p>
+              </div>
+              <div class="rounded-2xl bg-slate-900/85 border border-slate-800 p-3">
+                <p class="text-[10px] uppercase text-slate-400 font-bold">Errores</p>
+                <p class="text-base font-bold font-mono ${st.mistakes === 0 ? 'text-emerald-400' : 'text-rose-300'}">${st.mistakes}</p>
+              </div>
+              <div class="rounded-2xl bg-slate-900/85 border border-slate-800 p-3">
+                <p class="text-[10px] uppercase text-slate-400 font-bold">Pistas pago</p>
+                <p class="text-base font-bold font-mono text-slate-200">${st.paidHintsUsed}</p>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              ${nextLvl ? `
+                <button onclick="startCampaignLevel(${nextLvl.id})" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-extrabold text-sm">
+                  Siguiente: ${esc(nextLvl.title)} →
+                </button>
+              ` : `
+                <button onclick="startBugHunter()" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-400 text-slate-950 font-extrabold text-sm">
+                  ¡Probar Cazador de Bugs! 🐛 →
+                </button>
+              `}
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="startCampaignLevel(${game.level.id})" class="btn-game py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200">
+                  ↻ Repetir
+                </button>
+                <button onclick="goHome()" class="btn-game py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-400">
+                  Inicio
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- PANTALLA DE PARTIDA (ACADEMIA Y CAMPAÑA) ---
+    function renderPlayScreen() {
+      const game = AppState.game;
+      const lvl = game.level;
+      const backAction = game.isAcademy ? 'goAcademyMenu()' : 'goHome()';
+      const grimCostLabel = game.grimorioUnlocked ? 'GRATIS' : `-${lvl.grimorioCost} pts`;
+      const compassCostLabel = game.isAcademy ? 'GRATIS' : '-75 pts';
+
+      return `
+        <header class="px-3.5 py-3 border-b border-slate-800/90 bg-slate-900/95 flex items-center justify-between gap-2 shrink-0">
+          <div class="flex items-center gap-2 min-w-0">
+            <button onclick="${backAction}" class="btn-game w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold shrink-0">←</button>
+            <div class="min-w-0">
+              <p class="text-[10px] font-extrabold uppercase tracking-wider ${game.isAcademy ? 'text-cyan-400' : 'text-violet-400'}">
+                ${game.isAcademy ? `🎓 Academia · Lección ${lvl.id}` : `Campaña · Nivel ${lvl.id}`}
+              </p>
+              <h2 class="text-xs font-extrabold text-white truncate">${esc(lvl.title)}</h2>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 shrink-0">
+            ${!game.isAcademy ? `
+              <div class="px-2 py-1 rounded-xl bg-slate-800/90 border border-slate-700/75 text-center">
+                <div class="text-[8px] text-slate-400 uppercase font-bold leading-none">Par</div>
+                <div class="formula-text text-[11px] font-extrabold ${game.nodesCreated <= lvl.par ? 'text-emerald-400' : 'text-amber-300'}">${game.nodesCreated}/${lvl.par}</div>
+              </div>
+              <div class="px-2 py-1 rounded-xl bg-slate-800/90 border border-slate-700/75 text-center">
+                <div class="text-[8px] text-slate-400 uppercase font-bold leading-none">Pts</div>
+                <div class="formula-text text-[11px] font-extrabold text-cyan-300">${game.score}</div>
+              </div>
+            ` : `
+              ${renderGrimorioIconBtn()}
+            `}
+            ${renderSoundButton()}
+          </div>
+        </header>
+
+        ${game.phase === 'intro'
+          ? renderAcademyIntro(game)
+          : game.phase === 'phase0'
+            ? renderPhase0(game)
+            : game.phase === 'academy-quiz'
+              ? renderAcademyLesson3Quiz(game)
+              : game.phase === 'final'
+                ? renderFinalPhase(game)
+                : `
+                  <!-- Banner de Coach (Academia) u Objetivo (Campaña) -->
+                  ${game.isAcademy ? `
+                    <div class="px-3.5 py-2.5 bg-gradient-to-r from-cyan-950/75 to-violet-950/60 border-b border-cyan-400/30 flex items-start gap-2.5 shrink-0">
+                      <span class="text-base shrink-0 mt-0.5">🎓</span>
+                      <p class="text-[11.5px] text-cyan-100 leading-snug font-medium">${esc(game.coachMessage)}</p>
+                    </div>
+                  ` : `
+                    <div class="px-3.5 py-2 bg-slate-900/70 border-b border-slate-800/80 shrink-0">
+                      <p class="text-[11px] text-slate-300 leading-snug"><span class="text-cyan-400 font-bold">Objetivo:</span> ${esc(lvl.goal)}</p>
+                    </div>
+                  `}
+
+                  <!-- Banner de literal seleccionado (Cierre táctil) -->
+                  ${game.selectedLiteralId ? `
+                    <div class="mx-3 mt-2 px-3 py-2 rounded-xl bg-amber-500/20 border border-amber-400/55 flex items-center justify-between gap-2 shrink-0 anim-node-pop">
+                      <p class="text-[11px] text-amber-100 leading-snug">
+                        Seleccionado <strong class="formula-text text-amber-300">${esc(game.nodes[game.selectedLiteralId].formulaStr)}</strong>. Toca su opuesto en la <strong>misma rama</strong> para cerrar (×).
+                      </p>
+                      <button onclick="SoundEngine.tap(); AppState.game.selectedLiteralId = null; render();" class="px-2 py-1 rounded-lg bg-slate-950/70 text-[10px] font-bold text-slate-300 shrink-0">✕</button>
+                    </div>
+                  ` : ''}
+
+                  <!-- Banner de Brújula -->
+                  ${game.compassTip ? `
+                    <div class="mx-3 mt-2 px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-400/45 flex items-start justify-between gap-2 shrink-0 anim-node-pop">
+                      <p class="text-[11px] text-amber-100 leading-snug"><strong>🧭 Brújula:</strong> ${esc(game.compassTip)}</p>
+                      <button onclick="AppState.game.compassTip = null; AppState.game.highlightedIds = []; render();" class="text-amber-300 text-xs font-bold px-1">✕</button>
+                    </div>
+                  ` : ''}
+
+                  <!-- Lienzo del Árbol con Zoom y Scroll suave -->
+                  <div class="relative flex-1 overflow-hidden flex flex-col">
+                    <!-- Controles flotantes de Zoom -->
+                    <div class="absolute top-2.5 right-2.5 z-20 flex items-center gap-1 rounded-xl bg-slate-900/90 border border-slate-700/80 p-1 backdrop-blur-md shadow-lg">
+                      <button onclick="adjustZoom(-0.12)" class="btn-game w-6 h-6 rounded-lg bg-slate-800 text-slate-200 text-xs font-bold flex items-center justify-center">−</button>
+                      <button onclick="adjustZoom(0)" class="btn-game px-1.5 h-6 rounded-lg text-[10px] font-mono font-bold text-slate-300">${Math.round(game.zoom * 100)}%</button>
+                      <button onclick="adjustZoom(0.12)" class="btn-game w-6 h-6 rounded-lg bg-slate-800 text-slate-200 text-xs font-bold flex items-center justify-center">+</button>
+                    </div>
+
+                    <main class="flex-1 overflow-auto thin-scroll px-3 pt-10 pb-12">
+                      <div style="transform: scale(${game.zoom}); transform-origin: top center;" class="min-w-full w-max mx-auto flex justify-center transition-transform duration-150">
+                        ${renderNodeSubtree(game, game.rootId)}
+                      </div>
+                    </main>
+                  </div>
+
+                  <!-- Barra inferior de Pistas (3 capas) -->
+                  <footer class="px-3 py-2.5 bg-slate-900/95 border-t border-slate-800/90 grid ${game.isAcademy ? 'grid-cols-2' : 'grid-cols-3'} gap-2 shrink-0">
+                    <button onclick="openGrimorio('rules')" class="btn-game rounded-xl py-2 px-2 bg-violet-500/15 border border-violet-400/35 flex flex-col items-center justify-center">
+                      <span class="text-xs font-bold text-violet-200">📖 Grimorio</span>
+                      <span class="text-[10px] font-mono ${game.grimorioUnlocked ? 'text-emerald-300 font-bold' : 'text-violet-300/85'}">${grimCostLabel}</span>
+                    </button>
+                    <button onclick="handleUseCompass()" class="btn-game rounded-xl py-2 px-2 bg-amber-500/15 border border-amber-400/35 flex flex-col items-center justify-center">
+                      <span class="text-xs font-bold text-amber-200">🧭 Brújula</span>
+                      <span class="text-[10px] font-mono ${game.isAcademy ? 'text-emerald-300 font-bold' : 'text-amber-300/85'}">${compassCostLabel}</span>
+                    </button>
+                    ${!game.isAcademy ? `
+                      <button onclick="handleSolveStep()" class="btn-game rounded-xl py-2 px-2 bg-cyan-500/15 border border-cyan-400/35 flex flex-col items-center justify-center">
+                        <span class="text-xs font-bold text-cyan-200">⚡ Resolver</span>
+                        <span class="text-[10px] font-mono text-cyan-300/85">-150 pts</span>
+                      </button>
+                    ` : ''}
+                  </footer>
+                `
+        }
+
+        ${renderExpansionSheet(game)}
+        ${game.phase === 'victory' ? renderVictoryModal(game) : ''}
+        ${game.phase === 'academy-complete' ? renderAcademyCompleteModal(game) : ''}
+      `;
+    }
+
+    // --- PANTALLA 4: CAZADOR DE BUGS (4 CASOS) ---
+    function renderBugTree(bugCase, bugState) {
+      const done = bugState.status !== 'playing';
+      const clsFor = (id) => {
+        if (done && id === bugCase.bugTargetId) {
+          return 'border-rose-400 bg-rose-500/25 shadow-[0_0_22px_rgba(244,63,94,0.5)]';
+        }
+        if (bugState.wrongId === id) {
+          return 'anim-shake border-slate-500 bg-surface';
+        }
+        return 'border-slate-700/80 bg-surface hover:border-rose-400/60';
+      };
+
+      if (bugCase.layout === 'cross-close') {
+        return `
+          <div class="flex flex-col items-center w-full">
+            <button onclick="handleBugTap('b1_root')" class="btn-game rounded-2xl border p-3 w-full max-w-[240px] text-center ${clsFor('b1_root')}">
+              <div class="text-[9px] uppercase text-slate-400 font-bold mb-1">Raíz</div>
+              <div class="formula-text text-xs text-slate-400 line-through">p ∨ r ✓</div>
+              <div class="formula-text text-xs text-slate-400 line-through mt-0.5">q → ¬p ✓</div>
+            </button>
+            <div class="tree-fork-stem"></div>
+            <div class="tree-split-row">
+              <div class="tree-split-branch flex-1">
+                <button onclick="handleBugTap('b1_l')" class="btn-game rounded-xl border p-2.5 w-full max-w-[120px] ${clsFor('b1_l')}">
+                  <div class="formula-text text-sm font-bold text-cyan-300">p</div>
+                </button>
+              </div>
+              <div class="tree-split-branch flex-1">
+                <button onclick="handleBugTap('b1_r')" class="btn-game rounded-xl border p-2 w-full max-w-[140px] ${clsFor('b1_r')}">
+                  <div class="formula-text text-sm font-bold text-cyan-300">r</div>
+                </button>
+                <div class="tree-fork-stem"></div>
+                <div class="tree-split-row">
+                  <div class="tree-split-branch flex-1">
+                    <button onclick="handleBugTap('b1_r1')" class="btn-game rounded-xl border p-2 ${clsFor('b1_r1')}">
+                      <span class="formula-text text-xs font-bold text-sky-200">¬q</span>
+                    </button>
+                  </div>
+                  <div class="tree-split-branch flex-1">
+                    <div class="flex flex-col items-center gap-1.5">
+                      <button onclick="handleBugTap('b1_r2')" class="btn-game rounded-xl border p-2 ${clsFor('b1_r2')}">
+                        <span class="formula-text text-xs font-bold text-sky-200">¬p</span>
+                      </button>
+                      <button onclick="handleBugTap('b1_bad_close')" class="btn-game rounded-xl border px-2 py-1.5 text-[10px] font-extrabold text-emerald-300 bg-emerald-500/15 ${clsFor('b1_bad_close')}">
+                        × Cerrada (p / ¬p)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (bugCase.layout === 'demorgan-and-bug') {
+        return `
+          <div class="flex flex-col items-center w-full">
+            <button onclick="handleBugTap('b2_root')" class="btn-game rounded-2xl border p-3 w-full max-w-[240px] text-center ${clsFor('b2_root')}">
+              <div class="text-[9px] uppercase text-slate-400 font-bold mb-1">Raíz</div>
+              <div class="formula-text text-xs text-slate-400 line-through">¬(p ∧ q) ✓</div>
+              <div class="formula-text text-xs text-white font-bold mt-1">p → r</div>
+            </button>
+            <div class="tree-v-line"></div>
+            <button onclick="handleBugTap('b2_bad_stack')" class="btn-game rounded-2xl border p-3 w-full max-w-[220px] text-center ${clsFor('b2_bad_stack')}">
+              <div class="text-[10px] text-cyan-300 font-semibold mb-1">Expansión vertical de ¬(p ∧ q):</div>
+              <div class="formula-text text-sm font-bold text-white">¬p</div>
+              <div class="formula-text text-sm font-bold text-white mt-0.5">¬q</div>
+            </button>
+          </div>
+        `;
+      }
+
+      if (bugCase.layout === 'neg-imp-bug') {
+        return `
+          <div class="flex flex-col items-center w-full">
+            <button onclick="handleBugTap('b3_root')" class="btn-game rounded-2xl border p-3 w-full max-w-[240px] text-center ${clsFor('b3_root')}">
+              <div class="text-[9px] uppercase text-slate-400 font-bold mb-1">Raíz</div>
+              <div class="formula-text text-xs text-slate-400 line-through">¬(p → q) ✓</div>
+              <div class="formula-text text-xs text-slate-400 line-through mt-0.5">q ∨ r ✓</div>
+            </button>
+            <div class="tree-v-line"></div>
+            <button onclick="handleBugTap('b3_bad_node')" class="btn-game rounded-2xl border p-3 w-full max-w-[220px] text-center ${clsFor('b3_bad_node')}">
+              <div class="text-[10px] text-cyan-300 font-semibold mb-1">Expansión de ¬(p → q):</div>
+              <div class="formula-text text-sm font-bold text-white">¬p</div>
+              <div class="formula-text text-sm font-bold text-white mt-0.5">q</div>
+            </button>
+            <div class="tree-fork-stem"></div>
+            <div class="tree-split-row">
+              <div class="tree-split-branch flex-1">
+                <button onclick="handleBugTap('b3_l')" class="btn-game rounded-xl border p-2.5 w-full max-w-[115px] ${clsFor('b3_l')}">
+                  <span class="formula-text text-sm font-bold text-sky-200">q</span>
+                </button>
+              </div>
+              <div class="tree-split-branch flex-1">
+                <button onclick="handleBugTap('b3_r')" class="btn-game rounded-xl border p-2.5 w-full max-w-[115px] ${clsFor('b3_r')}">
+                  <span class="formula-text text-sm font-bold text-sky-200">r</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // layout === 'phase0-bug'
+      return `
+        <div class="flex flex-col items-center w-full">
+          <div class="rounded-xl bg-violet-500/15 border border-violet-400/35 px-3 py-1.5 text-[11px] font-bold text-violet-200 mb-3">
+            Enunciado: Comprobar <span class="formula-text text-white">p → q, p ⊨ q</span>
+          </div>
+          <div class="flex flex-col items-center gap-1.5 w-full max-w-[220px]">
+            <button onclick="handleBugTap('b4_ok1')" class="btn-game w-full rounded-xl border p-2 text-center ${clsFor('b4_ok1')}">
+              <span class="formula-text text-xs text-slate-400 line-through">p → q ✓</span>
+            </button>
+            <button onclick="handleBugTap('b4_ok2')" class="btn-game w-full rounded-xl border p-2 text-center ${clsFor('b4_ok2')}">
+              <span class="formula-text text-xs font-bold text-sky-200">p</span>
+            </button>
+            <button onclick="handleBugTap('b4_bad_root')" class="btn-game w-full rounded-xl border p-2 text-center ${clsFor('b4_bad_root')}">
+              <span class="formula-text text-xs font-bold text-white">q</span>
+              <span class="text-[9px] text-slate-400 ml-1">(conclusión)</span>
+            </button>
+          </div>
+          <div class="tree-fork-stem"></div>
+          <div class="tree-split-row">
+            <div class="tree-split-branch flex-1">
+              <button onclick="handleBugTap('b4_l')" class="btn-game rounded-xl border p-2.5 w-full max-w-[125px] ${clsFor('b4_l')}">
+                <div class="formula-text text-xs font-bold text-emerald-300">¬p  ×</div>
+              </button>
+            </div>
+            <div class="tree-split-branch flex-1">
+              <button onclick="handleBugTap('b4_r')" class="btn-game rounded-xl border p-2.5 w-full max-w-[125px] ${clsFor('b4_r')}">
+                <div class="formula-text text-xs font-bold text-sky-200">q</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBugScreen() {
+      const bug = AppState.bug;
+      if (!bug) return '';
+
+      if (bug.status === 'summary') {
+        return `
+          <header class="px-4 py-3.5 border-b border-slate-800 flex items-center justify-between">
+            <button onclick="goHome()" class="btn-game px-3 py-1.5 rounded-xl bg-slate-800 text-xs font-bold text-slate-300">← Inicio</button>
+            <span class="text-xs font-extrabold uppercase text-rose-400">Cazador de Bugs</span>
+            ${renderSoundButton()}
+          </header>
+          <main class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-400/45 flex items-center justify-center text-3xl mb-4">
+              ${bug.caught === BUG_CASES.length ? '🏆' : '🐛'}
+            </div>
+            <h2 class="text-2xl font-black text-white">¡Ronda Terminada!</h2>
+            <p class="text-xs text-slate-400 mt-1">Cazaste ${bug.caught} de ${BUG_CASES.length} errores clásicos de examen.</p>
+
+            <div class="glass-card rounded-3xl p-4 w-full max-w-[290px] my-6 border-rose-500/30">
+              <p class="text-[10px] uppercase text-slate-400 font-bold">Puntuación Total</p>
+              <p class="text-3xl font-black font-mono text-rose-300 mt-1">${bug.score} <span class="text-sm text-slate-400">pts</span></p>
+            </div>
+
+            <div class="w-full max-w-[290px] space-y-2.5">
+              <button onclick="startBugHunter()" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 to-amber-400 text-slate-950 font-extrabold text-sm">
+                ↻ Jugar Otra Ronda
+              </button>
+              <button onclick="goHome()" class="btn-game w-full py-3 rounded-2xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200">
+                Volver al Inicio
+              </button>
+            </div>
+          </main>
+        `;
+      }
+
+      const c = BUG_CASES[bug.caseIndex];
+      const pct = (bug.timeLeft / 30) * 100;
+
+      return `
+        <header class="px-4 py-3 border-b border-rose-500/25 bg-slate-900/95 flex items-center justify-between gap-2 shrink-0">
+          <div class="flex items-center gap-2">
+            <button onclick="goHome()" class="btn-game w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold">←</button>
+            <div>
+              <p class="text-[10px] font-extrabold uppercase tracking-wider text-rose-400">🐛 Cazador de Bugs</p>
+              <h2 class="text-xs font-extrabold text-white">${esc(c.title)}</h2>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="formula-text text-xs font-extrabold text-amber-300 bg-slate-800 px-2.5 py-1 rounded-xl">${bug.score} pts</span>
+            ${renderSoundButton()}
+          </div>
+        </header>
+
+        <div class="px-4 pt-3 pb-2.5 bg-slate-900/55 border-b border-slate-800/75 shrink-0">
+          <div class="flex items-center justify-between gap-2 mb-1.5">
+            <span class="text-[11px] text-slate-300 leading-tight">${esc(c.subtitle)}</span>
+            <span id="bug-timer-text" class="font-mono font-bold text-cyan-300 text-sm shrink-0">${Math.ceil(bug.timeLeft)}s</span>
+          </div>
+          <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+            <div id="bug-timer-bar" class="h-full bg-cyan-400 transition-all duration-100 rounded-full" style="width: ${pct}%"></div>
+          </div>
+        </div>
+
+        <main class="flex-1 overflow-auto thin-scroll px-3 py-5 flex flex-col justify-between">
+          <div class="w-full flex justify-center">
+            ${renderBugTree(c, bug)}
+          </div>
+
+          ${bug.feedback ? `
+            <div class="mt-5 space-y-3 anim-node-pop">
+              <div class="rounded-2xl p-3.5 text-xs leading-relaxed border ${bug.status === 'resolved' ? 'bg-emerald-500/15 border-emerald-400/45 text-emerald-200' : 'bg-rose-500/15 border-rose-500/45 text-rose-200'}">
+                ${esc(bug.feedback)}
+              </div>
+              <button onclick="handleNextBugCase()" class="btn-game w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-extrabold text-sm">
+                ${bug.caseIndex + 1 < BUG_CASES.length ? 'Siguiente Caso →' : 'Ver Resumen Final →'}
+              </button>
+            </div>
+          ` : `
+            <p class="text-center text-[11px] text-slate-500 pt-6">Toca directamente el nodo, fórmula o cierre culpable.</p>
+          `}
+        </main>
+      `;
+    }
+
+    // --- MODAL SIEMPRE ACCESIBLE: GRIMORIO & GUÍA MAESTRA (3 PESTAÑAS) ---
+    function renderGrimorioModal() {
+      if (!AppState.grimorio.open) return '';
+
+      // Si requiere confirmación de coste en Nivel 2–5
+      if (AppState.grimorio.confirmPending && AppState.game) {
+        const cost = AppState.game.level.grimorioCost;
+        return `
+          <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4" onclick="closeGrimorio()">
+            <div onclick="event.stopPropagation()" class="w-full max-w-[360px] glass-card rounded-3xl p-5 border-violet-400/40 text-center anim-node-pop">
+              <div class="w-12 h-12 rounded-2xl bg-violet-500/20 border border-violet-400/40 flex items-center justify-center text-2xl mx-auto mb-3">📖</div>
+              <h3 class="text-base font-extrabold text-white">Abrir Grimorio en Nivel ${AppState.game.level.id}</h3>
+              <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                Desbloquear la guía en este nivel cuesta <strong class="text-amber-300 font-mono">-${cost} pts</strong> (una sola vez por intento; después podrás consultarla gratis toda la partida).
+              </p>
+              <div class="mt-4 space-y-2">
+                <button onclick="confirmUnlockGrimorio()" class="btn-game w-full py-3 rounded-2xl bg-gradient-to-r from-violet-500 to-cyan-400 text-slate-950 font-extrabold text-xs">
+                  Desbloquear Grimorio (-${cost} pts)
+                </button>
+                <button onclick="closeGrimorio()" class="btn-game w-full py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300">
+                  Cancelar (Seguir sin pistas)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      const tab = AppState.grimorio.tab;
+      const tabBtn = (id, label) => `
+        <button onclick="SoundEngine.tap(); AppState.grimorio.tab = '${id}'; render();" class="flex-1 py-2 px-2 rounded-xl text-[11px] font-extrabold transition-all ${tab === id ? 'bg-violet-500/25 text-white border border-violet-400/45 shadow-sm' : 'text-slate-400 hover:text-slate-200'}">
+          ${label}
+        </button>
+      `;
+
+      return `
+        <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/80 backdrop-blur-sm p-0 sm:p-4" onclick="closeGrimorio()">
+          <div onclick="event.stopPropagation()" class="anim-sheet-up w-full max-w-[436px] max-h-[88vh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-[#0F172A] border border-slate-700/85 shadow-2xl overflow-hidden">
+            <!-- Header del Grimorio -->
+            <div class="px-4 pt-4 pb-3 border-b border-slate-800 shrink-0">
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <div>
+                  <h2 class="text-base font-black text-white flex items-center gap-2">📖 Grimorio & Guía Maestra</h2>
+                  <p class="text-[11px] text-slate-400">Referencia rápida de Tableaux Proposicionales</p>
+                </div>
+                <button onclick="closeGrimorio()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 font-bold text-sm">✕</button>
+              </div>
+              <div class="flex gap-1.5 bg-slate-950/80 p-1 rounded-2xl border border-slate-800">
+                ${tabBtn('rules', 'Reglas α / β')}
+                ${tabBtn('strategy', 'Estrategia')}
+                ${tabBtn('exam', 'Examen (F0)')}
+              </div>
+            </div>
+
+            <!-- Contenido de la pestaña activa -->
+            <div class="flex-1 overflow-y-auto thin-scroll p-4 space-y-4">
+              ${tab === 'rules' ? `
+                <!-- TAB 1: REGLAS α Y β + DE MORGAN -->
+                <section>
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                      <span>↓</span> Reglas α · Apilan en vertical
+                    </h3>
+                    <span class="text-[10px] text-cyan-300/80 font-semibold">¡Hazlas primero!</span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    ${[
+                      { label: 'Conjunción', f: 'A ∧ B', r1: 'A', r2: 'B' },
+                      { label: 'Doble Negación', f: '¬¬A', r1: 'A', r2: '' },
+                      { label: 'De Morgan', f: '¬(A ∨ B)', r1: '¬A', r2: '¬B' },
+                      { label: 'Cond. Negado', f: '¬(A → B)', r1: 'A', r2: '¬B' }
+                    ].map((item) => `
+                      <div class="rounded-2xl bg-cyan-500/10 border border-cyan-400/30 p-2.5 text-center">
+                        <div class="text-[9px] uppercase font-extrabold text-cyan-300/90 mb-1">${item.label}</div>
+                        <div class="formula-text text-xs font-extrabold text-white pb-1.5 border-b border-cyan-400/20">${item.f}</div>
+                        <div class="pt-1.5 flex flex-col items-center leading-tight">
+                          <span class="formula-text text-xs font-bold text-cyan-200">${item.r1}</span>
+                          ${item.r2 ? `<span class="text-[9px] text-cyan-400/70">↓</span><span class="formula-text text-xs font-bold text-cyan-200">${item.r2}</span>` : ''}
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </section>
+
+                <section>
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-violet-400 flex items-center gap-1.5">
+                      <span>⑂</span> Reglas β · Bifurcan en 2 ramas
+                    </h3>
+                    <span class="text-[10px] text-violet-300/80 font-semibold">Déjalas para después</span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    ${[
+                      { label: 'Disyunción', f: 'A ∨ B', l: 'A', r: 'B' },
+                      { label: 'Condicional', f: 'A → B', l: '¬A', r: 'B' },
+                      { label: 'De Morgan', f: '¬(A ∧ B)', l: '¬A', r: '¬B' },
+                      { label: 'Bicondicional', f: 'A ↔ B', l: 'A\nB', r: '¬A\n¬B' },
+                      { label: 'Bicond. Negado', f: '¬(A ↔ B)', l: 'A\n¬B', r: '¬A\nB', full: true }
+                    ].map((item) => `
+                      <div class="rounded-2xl bg-violet-500/10 border border-violet-400/30 p-2.5 text-center ${item.full ? 'col-span-2' : ''}">
+                        <div class="text-[9px] uppercase font-extrabold text-violet-300/90 mb-1">${item.label}</div>
+                        <div class="formula-text text-xs font-extrabold text-white pb-1.5 border-b border-violet-400/20">${item.f}</div>
+                        <div class="grid grid-cols-2 divide-x divide-violet-400/25 pt-1.5 formula-text text-xs font-bold text-violet-200 whitespace-pre-line leading-snug">
+                          <span>${item.l}</span>
+                          <span>${item.r}</span>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                </section>
+              ` : tab === 'strategy' ? `
+                <!-- TAB 2: ESTRATEGIA MAESTRA -->
+                <div class="space-y-3">
+                  <div class="rounded-2xl bg-cyan-500/10 border border-cyan-400/30 p-3.5 space-y-2">
+                    <h3 class="text-xs font-extrabold text-cyan-300 uppercase">1. Regla de Oro: Siempre α antes que β</h3>
+                    <p class="text-xs text-slate-200 leading-relaxed">
+                      Expande todas las reglas <strong class="text-cyan-300">α (cian)</strong> disponibles antes de abrir una bifurcación <strong class="text-violet-300">β (violeta)</strong>. Así evitas copiar las mismas fórmulas en varias ramas y consigues las 3★.
+                    </p>
+                    <div class="rounded-xl bg-slate-950/80 p-2.5 formula-text text-[11px] text-center text-slate-300">
+                      <span class="text-cyan-300">p ∧ ¬q</span> (α) → p, ¬q → luego <span class="text-violet-300">p → q</span> (β) → <span class="text-emerald-300">¬p × | q ×</span>
+                    </div>
+                  </div>
+
+                  <div class="rounded-2xl bg-emerald-500/10 border border-emerald-400/30 p-3.5 space-y-1.5">
+                    <h3 class="text-xs font-extrabold text-emerald-300 uppercase">2. Regla de Cierre (×)</h3>
+                    <p class="text-xs text-slate-200 leading-relaxed">
+                      Cierra una rama tan pronto aparezcan <span class="formula-text text-white">p</span> y <span class="formula-text text-white">¬p</span> en la <strong>misma ruta vertical hasta la raíz</strong>. Nunca cruces literales de ramas hermanas.
+                    </p>
+                  </div>
+
+                  <div class="rounded-2xl bg-violet-500/10 border border-violet-400/30 p-3.5 space-y-1.5">
+                    <h3 class="text-xs font-extrabold text-violet-300 uppercase">3. Rama Abierta Saturada</h3>
+                    <p class="text-xs text-slate-200 leading-relaxed">
+                      Cuando una rama no tiene ninguna fórmula compuesta sin expandir ni contradicciones, está <strong>saturada</strong>. Sus literales te dan directamente un modelo/contramodelo (<span class="formula-text text-white">p → V</span>, <span class="formula-text text-white">¬q → F</span>).
+                    </p>
+                  </div>
+                </div>
+              ` : `
+                <!-- TAB 3: RECETARIO DE EXAMEN (FASE 0) -->
+                <div class="space-y-2.5">
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    Guía directa para las 5 primeras preguntas del examen. Elige qué poner en la raíz según lo que te pregunten:
+                  </p>
+                  ${[
+                    { q: '¿Es satisfacible Γ?', root: 'Γ (tal cual)', res: '1 rama abierta = SÍ · Todas × = NO' },
+                    { q: '¿Es insatisfacible Γ?', root: 'Γ (tal cual)', res: 'Todas las ramas × = SÍ' },
+                    { q: '¿Es tautología A?', root: '{ ¬A }', res: 'Todas × = SÍ · Abierta = Contramodelo' },
+                    { q: '¿Consecuencia P₁, P₂ ⊨ C?', root: '{ P₁, P₂, ¬C }', res: 'Todas × = SÍ · Abierta = Contramodelo' },
+                    { q: '¿Equivalentes A ≡ B?', root: '{ ¬(A ↔ B) }', res: 'Todas las ramas × = SÍ' }
+                  ].map((row) => `
+                    <div class="rounded-2xl bg-slate-900/90 border border-slate-800 p-3">
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-extrabold text-white">${row.q}</span>
+                        <span class="formula-text text-[11px] font-extrabold px-2 py-0.5 rounded-lg bg-violet-500/20 text-violet-200 border border-violet-400/30 shrink-0">${row.root}</span>
+                      </div>
+                      <p class="text-[11px] text-emerald-300/90 mt-1.5 font-medium">${row.res}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- TOAST FLOTANTE ---
+    function renderToast() {
+      if (!AppState.toast) return '';
+      const styles = {
+        success: 'bg-emerald-950/95 border-emerald-400/65 text-emerald-100',
+        error: 'bg-rose-950/95 border-rose-500/70 text-rose-100',
+        warn: 'bg-amber-950/95 border-amber-400/65 text-amber-100',
+        info: 'bg-slate-900/95 border-cyan-400/55 text-cyan-100'
+      };
+      return `
+        <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-32px)] max-w-[408px] pointer-events-none">
+          <div class="rounded-2xl border px-3.5 py-2.5 text-xs font-semibold shadow-2xl backdrop-blur-md text-center leading-snug anim-node-pop ${styles[AppState.toast.type] || styles.info}">
+            ${esc(AppState.toast.text)}
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       14. BUCLE DE RENDERIZADO PRINCIPAL
+       ========================================================================= */
+    function render() {
+      const root = document.getElementById('app');
+      if (!root) return;
+
+      let screenHtml = '';
+      if (AppState.screen === 'home') screenHtml = renderHomeScreen();
+      else if (AppState.screen === 'academy-menu') screenHtml = renderAcademyMenuScreen();
+      else if (AppState.screen === 'play') screenHtml = renderPlayScreen();
+      else if (AppState.screen === 'bug') screenHtml = renderBugScreen();
+
+      root.innerHTML = screenHtml + renderGrimorioModal() + renderToast();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      render();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1120" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>UNED Study Arcade — Hub de Apps de Estudio</title>
+  <style>
+    /* =========================================================================
+       DESIGN TOKENS — MODO OSCURO CYBER-SLATE (COHERENTE CON LA TRILOGÍA UNED)
+       ========================================================================= */
+    :root {
+      --bg-deep: #0b1120;
+      --bg-surface: #0f172a;
+      --bg-card: #111827;
+      --bg-card-hover: #172033;
+      --border: rgba(148, 163, 184, 0.16);
+      --border-hi: rgba(148, 163, 184, 0.34);
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --cyan: #06b6d4;
+      --violet: #8b5cf6;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #ec4899;
+      --sky: #38bdf8;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(6, 182, 212, 0.13), transparent 36%),
+        radial-gradient(circle at 88% 12%, rgba(139, 92, 246, 0.12), transparent 36%),
+        radial-gradient(circle at 50% 92%, rgba(16, 185, 129, 0.08), transparent 42%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+      color: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* =========================================================================
+       CONTENEDOR PRINCIPAL Y CABECERA HERO
+       ========================================================================= */
+    .wrapper {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.96), rgba(15, 23, 42, 0.92));
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 26px;
+      padding: 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      right: -80px;
+      top: -90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-badge {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.24), rgba(139, 92, 246, 0.28));
+      border: 1px solid rgba(56, 189, 248, 0.48);
+      display: grid;
+      place-items: center;
+      font-size: 1.7rem;
+      box-shadow: 0 0 24px rgba(6, 182, 212, 0.22);
+      flex-shrink: 0;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: clamp(1.45rem, 3.6vw, 2.1rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .hero-title span {
+      background: linear-gradient(90deg, var(--cyan), var(--violet), var(--emerald));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.94rem;
+    }
+
+    .btn-install {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      min-height: 44px;
+      border-radius: 13px;
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.42);
+      color: #e0f2fe;
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: transform 0.14s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-install:hover {
+      background: rgba(56, 189, 248, 0.22);
+      box-shadow: 0 6px 18px rgba(6, 182, 212, 0.24);
+    }
+
+    .btn-install:active {
+      transform: scale(0.97);
+    }
+
+    /* Panel de resumen superior */
+    .summary-strip {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .summary-item {
+      background: rgba(15, 23, 42, 0.84);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .summary-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .summary-val {
+      font-size: 1.25rem;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .summary-lbl {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* =========================================================================
+       PESTAÑAS DE FILTRO POR ASIGNATURA
+       ========================================================================= */
+    .tabs-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 18px;
+      scrollbar-width: none;
+    }
+
+    .tabs-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      min-height: 44px;
+      border-radius: 13px;
+      background: rgba(17, 24, 39, 0.86);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      border-color: var(--border-hi);
+      background: var(--bg-card-hover);
+    }
+
+    .tab-btn.active {
+      color: #06131f;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--sky));
+      box-shadow: 0 6px 18px rgba(6, 182, 212, 0.34);
+    }
+
+    .tab-count {
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .tab-btn.active .tab-count {
+      background: rgba(6, 19, 31, 0.22);
+      color: #06131f;
+    }
+
+    /* =========================================================================
+       GRID DE TARJETAS DE APPS
+       ========================================================================= */
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      flex: 1;
+      align-content: start;
+    }
+
+    .app-card {
+      --accent: #06b6d4;
+      --accent-soft: rgba(6, 182, 212, 0.15);
+      --accent-glow: rgba(6, 182, 212, 0.28);
+
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    a.app-card {
+      cursor: pointer;
+    }
+
+    a.app-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5), 0 0 26px var(--accent-glow);
+    }
+
+    .app-card.upcoming {
+      opacity: 0.7;
+      background: rgba(15, 23, 42, 0.74);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .app-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 15px;
+      background-color: var(--accent);
+      background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(0, 0, 0, 0.26));
+      display: grid;
+      place-items: center;
+      font-size: 1.65rem;
+      box-shadow: 0 8px 20px var(--accent-glow);
+      flex-shrink: 0;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-ready {
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.42);
+      color: #6ee7b7;
+    }
+
+    .status-soon {
+      background: rgba(148, 163, 184, 0.14);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: var(--text-muted);
+    }
+
+    .meta-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .meta-tag {
+      font-size: 0.73rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+    }
+
+    .meta-tag.block {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.71rem;
+    }
+
+    .app-title {
+      margin: 10px 0 2px;
+      font-size: 1.22rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .app-subtitle {
+      margin: 0 0 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .app-desc {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    /* Píldoras de progreso automático desde localStorage */
+    .progress-box {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 9px 11px;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .progress-box.started {
+      border-color: rgba(245, 158, 11, 0.36);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .prog-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .prog-pill.xp {
+      color: #fde68a;
+      border-color: rgba(245, 158, 11, 0.35);
+      background: rgba(245, 158, 11, 0.14);
+    }
+
+    .prog-pill.score {
+      color: #6ee7b7;
+      border-color: rgba(16, 185, 129, 0.35);
+      background: rgba(16, 185, 129, 0.14);
+    }
+
+    /* Botón de acción dentro de la tarjeta */
+    .btn-play {
+      width: 100%;
+      min-height: 46px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 0.94rem;
+      color: #ffffff;
+      background-color: var(--accent);
+      background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(0, 0, 0, 0.24));
+      box-shadow: 0 8px 22px var(--accent-glow);
+      transition: transform 0.13s ease, filter 0.2s ease;
+    }
+
+    a.app-card:hover .btn-play {
+      filter: brightness(1.08);
+    }
+
+    a.app-card:active .btn-play {
+      transform: scale(0.98);
+    }
+
+    .btn-disabled {
+      width: 100%;
+      min-height: 46px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.89rem;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed var(--border);
+      cursor: not-allowed;
+    }
+
+    /* Estado vacío para pestañas futuras */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 44px 20px;
+      background: rgba(17, 24, 39, 0.72);
+      border: 1px dashed var(--border-hi);
+      border-radius: var(--radius-lg);
+      color: var(--text-muted);
+    }
+
+    /* =========================================================================
+       PIE DE PÁGINA
+       ========================================================================= */
+    .footer {
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    .btn-footer {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      min-height: 40px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.83rem;
+      transition: 0.18s ease;
+    }
+
+    .btn-footer:hover {
+      border-color: var(--cyan);
+      background: rgba(6, 182, 212, 0.12);
+    }
+
+    /* =========================================================================
+       MODALES (INSTALAR EN MÓVIL + ESTRUCTURA GITHUB)
+       ========================================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(5, 8, 18, 0.8);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-hi);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 900;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      font-size: 1.15rem;
+      display: grid;
+      place-items: center;
+    }
+
+    .modal-close:hover {
+      border-color: var(--cyan);
+    }
+
+    .guide-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .guide-box h4 {
+      margin: 0 0 6px;
+      font-size: 0.95rem;
+      color: #67e8f9;
+    }
+
+    .guide-box ol {
+      margin: 0;
+      padding-left: 18px;
+      color: #cbd5e1;
+      font-size: 0.88rem;
+    }
+
+    .guide-box li {
+      margin-bottom: 5px;
+    }
+
+    .tree-pre {
+      margin: 0;
+      padding: 14px;
+      border-radius: 13px;
+      background: #070c18;
+      border: 1px solid var(--border-hi);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #e2e8f0;
+      overflow-x: auto;
+    }
+
+    /* =========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================= */
+    @media (max-width: 980px) {
+      .apps-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .wrapper {
+        padding: 14px 12px 32px;
+      }
+      .hero {
+        padding: 18px;
+        border-radius: 20px;
+      }
+      .summary-strip {
+        grid-template-columns: 1fr;
+      }
+      .apps-grid {
+        grid-template-columns: 1fr;
+      }
+      .btn-install {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+
+    <!-- ======================= CABECERA HERO ======================= -->
+    <header class="hero">
+      <div class="hero-top">
+        <div class="brand-block">
+          <div class="brand-badge" aria-hidden="true">🕹️</div>
+          <div>
+            <h1 class="hero-title"><span>UNED Study Arcade</span></h1>
+            <p class="hero-sub">Grado en Ingeniería en Inteligencia Artificial</p>
+          </div>
+        </div>
+
+        <button type="button" class="btn-install" onclick="openModal('installModal')">
+          📱 Instalar en móvil
+        </button>
+      </div>
+
+      <!-- Resumen dinámico -->
+      <div class="summary-strip" aria-label="Resumen del Hub">
+        <div class="summary-item">
+          <div class="summary-icon" aria-hidden="true">🎮</div>
+          <div>
+            <div class="summary-val" id="statAvailable">0</div>
+            <div class="summary-lbl">Apps disponibles ahora</div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon" aria-hidden="true">📚</div>
+          <div>
+            <div class="summary-val" id="statSubjects">0</div>
+            <div class="summary-lbl">Asignaturas activas</div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon" aria-hidden="true">⭐</div>
+          <div>
+            <div class="summary-val" id="statTotalXp">0 XP</div>
+            <div class="summary-lbl">Progreso acumulado aquí</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================= FILTRO DE ASIGNATURAS ======================= -->
+    <nav class="tabs-bar" id="subjectTabs" aria-label="Filtrar por asignatura"></nav>
+
+    <!-- ======================= GRID DE APPS ======================= -->
+    <main class="apps-grid" id="appsGrid"></main>
+
+    <!-- ======================= PIE DE PÁGINA ======================= -->
+    <footer class="footer">
+      <div>
+        💾 <strong>Privacidad total:</strong> Todo tu progreso (XP, estrellas y notas) se guarda localmente en el navegador de este dispositivo.
+      </div>
+      <button type="button" class="btn-footer" onclick="openModal('githubModal')">
+        📁 Ver estructura de carpetas para GitHub
+      </button>
+    </footer>
+
+  </div>
+
+  <!-- ======================= MODAL 1: INSTALAR EN MÓVIL ======================= -->
+  <div class="modal-backdrop" id="installModal" role="dialog" aria-modal="true" aria-labelledby="installTitle" onclick="backdropClose(event, 'installModal')">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title" id="installTitle">📱 Usar como app nativa en tu móvil</h3>
+        <button type="button" class="modal-close" onclick="closeModal('installModal')" aria-label="Cerrar">✕</button>
+      </div>
+      <p style="margin:0 0 14px; color:var(--text-muted); font-size:0.9rem;">
+        Una vez publicada en GitHub Pages, puedes añadir este Hub a la pantalla de inicio de tu teléfono para abrirlo a pantalla completa en un toque:
+      </p>
+
+      <div class="guide-box">
+        <h4>🤖 En Android (Google Chrome)</h4>
+        <ol>
+          <li>Abre la URL de tu GitHub Pages en <strong>Chrome</strong>.</li>
+          <li>Pulsa el botón de menú <strong>⋮</strong> (arriba a la derecha).</li>
+          <li>Selecciona <strong>«Añadir a pantalla de inicio»</strong> (o «Instalar aplicación»).</li>
+          <li>Confirma el nombre <em>UNED Arcade</em> y pulsa <strong>Añadir</strong>.</li>
+        </ol>
+      </div>
+
+      <div class="guide-box" style="margin-bottom:0;">
+        <h4>🍎 En iPhone / iPad (Safari)</h4>
+        <ol>
+          <li>Abre la URL de tu GitHub Pages en <strong>Safari</strong>.</li>
+          <li>Pulsa el icono de <strong>Compartir</strong> (cuadrado con flecha hacia arriba) en la barra inferior.</li>
+          <li>Desliza hacia abajo y toca <strong>«Añadir a pantalla de inicio»</strong>.</li>
+          <li>Pulsa <strong>Añadir</strong> arriba a la derecha. ¡Listo!</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= MODAL 2: ESTRUCTURA GITHUB ======================= -->
+  <div class="modal-backdrop" id="githubModal" role="dialog" aria-modal="true" aria-labelledby="githubTitle" onclick="backdropClose(event, 'githubModal')">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title" id="githubTitle">📁 Estructura recomendada para GitHub Pages</h3>
+        <button type="button" class="modal-close" onclick="closeModal('githubModal')" aria-label="Cerrar">✕</button>
+      </div>
+      <p style="margin:0 0 12px; color:var(--text-muted); font-size:0.89rem;">
+        Organiza tu repositorio con esta estructura de carpetas para que todos los enlaces del menú funcionen automáticamente:
+      </p>
+
+      <pre class="tree-pre">/ (raíz del repositorio)
+├── index.html
+├── logica/
+│   ├── tableau_quest.html
+│   ├── predicados.html
+│   ├── examen.html
+│   ├── setquest_conjuntos.html
+│   ├── nexus_relacional.html
+│   └── biyeccion_blitz.html
+├── fp/
+└── ia/</pre>
+
+      <div class="guide-box" style="margin-top:14px; margin-bottom:0;">
+        <h4>🚀 Activar GitHub Pages en 3 pasos</h4>
+        <ol>
+          <li>Crea un repositorio público en GitHub y sube <code>index.html</code> y la carpeta <code>logica/</code>.</li>
+          <li>Ve a <strong>Settings → Pages</strong> en tu repositorio.</li>
+          <li>En <em>Branch</em> elige <strong>main</strong> y carpeta <strong>/(root)</strong>, pulsa <strong>Save</strong> y en 1 minuto tendrás tu URL activa.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       JAVASCRIPT — CONFIGURACIÓN DE APPS Y MOTOR DEL HUB
+       ========================================================================= -->
+  <script>
+    "use strict";
+
+    /* =========================================================================
+       ⚙️ CONFIGURACIÓN DE APPS (EDITA O AÑADE NUEVAS APPS AQUÍ EN 15 SEGUNDOS)
+       -------------------------------------------------------------------------
+       Para activar una app de "Próximamente":
+         1) Sube su archivo .html a la carpeta correspondiente en GitHub.
+         2) Cambia status: "upcoming" por status: "available".
+       Para añadir una app nueva:
+         Copia uno de los bloques de abajo, pégalo al final del array APPS y
+         ajusta id, title, subtitle, icon, subject, subjectLabel, tag, url,
+         description, storageKey y color.
+       ========================================================================= */
+    const SUBJECTS = [
+      { id: "all",    label: "Todas" },
+      { id: "logica", label: "Lógica y Estructuras Discretas" },
+      { id: "fp",     label: "Fundamentos de Programación" },
+      { id: "ia",     label: "Introducción a la IA" }
+    ];
+
+    const APPS = [
+      /* === LÓGICA Y ESTRUCTURAS DISCRETAS — BLOQUE 1: LÓGICA Y TABLEAUX === */
+      {
+        id: "tableau_quest",
+        title: "Tableau Quest",
+        subtitle: "Lógica Proposicional y Tableaux",
+        icon: "🌳",
+        subject: "logica",
+        subjectLabel: "Lógica y Estructuras Discretas",
+        tag: "P1–P5 · Tableaux",
+        status: "available",
+        url: "logica/tableau_quest.html",
+        description: "Aprende y practica tableaux semánticos proposicionales, reglas α/β, cierre de ramas y contramodelos.",
+        storageKey: "tableau_quest_v1",
+        color: "#f59e0b"
+      },
+      {
+        id: "predicados",
+        title: "Tableaux de Predicados",
+        subtitle: "Lógica de Primer Orden",
+        icon: "🔍",
+        subject: "logica",
+        subjectLabel: "Lógica y Estructuras Discretas",
+        tag: "P6–P9 · Predicados",
+        status: "available",
+        url: "logica/predicados.html",
+        description: "Domina cuantificadores (∀, ∃), reglas γ/δ, sustitución de constantes e interpretaciones de primer orden.",
+        storageKey: "predicados_v1",
+        color: "#ec4899"
+      },
+      {
+        id: "examen_tableaux",
+        title: "Simulador de Examen Tableaux",
+        subtitle: "Entrenamiento de Examen UNED",
+        icon: "🎯",
+        subject: "logica",
+        subjectLabel: "Lógica y Estructuras Discretas",
+        tag: "Examen · Práctica",
+        status: "available",
+        url: "logica/examen.html",
+        description: "Pon a prueba tus conocimientos de lógica y tableaux en condiciones reales de examen de años anteriores.",
+        storageKey: "examen_tableaux_v1",
+        color: "#ef4444"
+      },
+
+      /* === LÓGICA Y ESTRUCTURAS DISCRETAS — BLOQUE 2: ESTRUCTURAS DISCRETAS === */
+      {
+        id: "setquest",
+        title: "SetQuest",
+        subtitle: "Conjuntos y Operaciones",
+        icon: "🧩",
+        subject: "logica",
+        subjectLabel: "Lógica y Estructuras Discretas",
+        tag: "P10–P11 · Conjuntos",
+        status: "available",
+        url: "logica/setquest_conjuntos.html",
+        description: "Academia de 6 lecciones, Pintor de Venn, Alquimia de Leyes, Contrarreloj de Cardinales y Simulador UNED.",
+        storageKey: "setquest_uned_v1",
+        color: "#38bdf8"
+      },
+      {
+        id: "nexus",
+        title: "Nexus Relacional",
+        subtitle: "Relaciones, Cierres y Hasse",
+        icon: "🔗",
+        subject: "logica",
+        subjectLabel: "Lógica y Estructuras Discretas",
+        tag: "P12 · Relaciones",
+        status: "available",
+        url: "logica/nexus_relacional.html",
+        description: "Digrafos SVG interactivos, Circuitos de Cierre (simétrico y transitivo), Inspector de Propiedades y Podador de Hasse.",
+        storageKey: "nexus_relacional_v1",
+        color: "#a855f7"
+      },
+      {
+        id: "biyeccion",
+        title: "Biyección Blitz",
+        subtitle: "Funciones y Cardinalidad",
+        icon: "⚡",
+        subject: "logica",
+        subjectLabel: "Lógica y Estructuras Discretas",
+        tag: "P13–P14 · Funciones",
+        status: "available",
+        url: "logica/biyeccion_blitz.html",
+        description: "Cableado Biyectivo, Fábrica g∘f, Cirugía de Biyecciones (R y S) y Cardinalidad infinita con Simulador UNED.",
+        storageKey: "biyeccion_blitz_v1",
+        color: "#10b981"
+      },
+
+      /* === PRÓXIMAMENTE (cambia status a "available" al subir el HTML) === */
+      {
+        id: "combinatoria",
+        title: "Combinatoria y Conteo",
+        subtitle: "Permutaciones, Variaciones y Combinaciones",
+        icon: "🎲",
+        subject: "logica",
+        subjectLabel: "Lógica y Estructuras Discretas",
+        tag: "P15 · Combinatoria",
+        status: "upcoming",
+        url: "logica/combinatoria.html",
+        description: "Principios de adición y multiplicación, binomiales, repeticiones y puzles de conteo de examen UNED.",
+        storageKey: "combinatoria_v1",
+        color: "#f97316"
+      },
+      {
+        id: "grafos",
+        title: "Teoría de Grafos y Árboles",
+        subtitle: "Caminos, Euler, Hamilton y Árboles",
+        icon: "🕸️",
+        subject: "logica",
+        subjectLabel: "Lógica y Estructuras Discretas",
+        tag: "P16–P18 · Grafos",
+        status: "upcoming",
+        url: "logica/grafos.html",
+        description: "Grados, conexidad, grafos bipartitos, recorridos eulerianos/hamiltonianos y árboles generadores.",
+        storageKey: "grafos_v1",
+        color: "#06b6d4"
+      },
+      {
+        id: "fp_fundamentos",
+        title: "Fundamentos de Programación",
+        subtitle: "Tema 1 y 2 · Bases y Algoritmos",
+        icon: "💻",
+        subject: "fp",
+        subjectLabel: "Fundamentos de Programación",
+        tag: "Programación",
+        status: "upcoming",
+        url: "fp/fp_fundamentos.html",
+        description: "Práctica interactiva de algoritmos, tipos de datos, trazas de ejecución y cuestiones de examen.",
+        storageKey: "fp_fundamentos_v1",
+        color: "#3b82f6"
+      },
+      {
+        id: "ia_intro",
+        title: "Introducción a la IA",
+        subtitle: "Agentes, Búsqueda y Heurísticas",
+        icon: "🤖",
+        subject: "ia",
+        subjectLabel: "Introducción a la IA",
+        tag: "Inteligencia Artificial",
+        status: "upcoming",
+        url: "ia/ia_intro.html",
+        description: "Búsqueda informada y no informada (A*, BFS, DFS), juegos adversarios (Minimax/Alfa-Beta) y lógica en IA.",
+        storageKey: "ia_intro_v1",
+        color: "#8b5cf6"
+      }
+    ];
+
+    /* =========================================================================
+       ESTADO Y LECTURA INTELIGENTE DE PROGRESO DESDE localStorage
+       ========================================================================= */
+    let activeSubject = "all";
+
+    /**
+     * Lee el progreso guardado por una app en localStorage tolerando distintos
+     * nombres de campos (xp, lessonsDone/completedLessons, bestExamScore/bestScore/examBestNote10).
+     */
+    function readAppProgress(storageKey) {
+      if (!storageKey) return null;
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== "object") return null;
+
+        const xp = Number(data.xp || 0);
+
+        let lessons = 0;
+        if (Array.isArray(data.completedLessons)) lessons = data.completedLessons.length;
+        else if (Array.isArray(data.lessonsDone)) lessons = data.lessonsDone.length;
+        else if (typeof data.lessonsDone === "number") lessons = data.lessonsDone;
+
+        let bestScore = null;
+        if (typeof data.examBestNote10 === "number") bestScore = data.examBestNote10;
+        else if (typeof data.bestExamScore === "number") bestScore = data.bestExamScore;
+        else if (typeof data.bestScore === "number") bestScore = data.bestScore;
+
+        const started = xp > 0 || lessons > 0 || bestScore !== null;
+        return { started, xp, lessons, bestScore };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    /* =========================================================================
+       RENDERIZADO DEL RESUMEN, PESTAÑAS Y TARJETAS
+       ========================================================================= */
+    function renderSummary() {
+      const availableApps = APPS.filter(a => a.status === "available");
+      const activeSubjects = new Set(availableApps.map(a => a.subject));
+
+      let totalXp = 0;
+      availableApps.forEach(app => {
+        const prog = readAppProgress(app.storageKey);
+        if (prog && prog.xp > 0) totalXp += prog.xp;
+      });
+
+      document.getElementById("statAvailable").textContent = String(availableApps.length);
+      document.getElementById("statSubjects").textContent = String(activeSubjects.size);
+      document.getElementById("statTotalXp").textContent = `${totalXp.toLocaleString("es-ES")} XP`;
+    }
+
+    function renderTabs() {
+      const container = document.getElementById("subjectTabs");
+      container.innerHTML = SUBJECTS.map(subj => {
+        const count = subj.id === "all"
+          ? APPS.length
+          : APPS.filter(a => a.subject === subj.id).length;
+        const isActive = subj.id === activeSubject;
+        return `
+          <button
+            type="button"
+            class="tab-btn ${isActive ? "active" : ""}"
+            onclick="selectSubject('${subj.id}')"
+          >
+            <span>${subj.label}</span>
+            <span class="tab-count">${count}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function selectSubject(subjId) {
+      activeSubject = subjId;
+      renderTabs();
+      renderCards();
+    }
+
+    function renderCards() {
+      const grid = document.getElementById("appsGrid");
+      const list = activeSubject === "all"
+        ? APPS
+        : APPS.filter(a => a.subject === activeSubject);
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div style="font-size:2.2rem; margin-bottom:8px;">🚀</div>
+            <h3 style="margin:0 0 6px; color:var(--text-main);">Espacio listo para nuevas asignaturas</h3>
+            <p style="margin:0; font-size:0.9rem;">
+              Cuando crees una nueva app con tu Gem, añade un objeto al array <code>APPS</code> en este <code>index.html</code>.
+            </p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = list.map(app => {
+        const isAvailable = app.status === "available";
+        const prog = isAvailable ? readAppProgress(app.storageKey) : null;
+        const styleVars = `--accent:${app.color}; --accent-soft:${app.color}24; --accent-glow:${app.color}42;`;
+
+        let progressHtml = "";
+        if (isAvailable) {
+          if (prog && prog.started) {
+            const pills = [];
+            if (prog.xp > 0) pills.push(`<span class="prog-pill xp">⭐ ${prog.xp} XP</span>`);
+            if (prog.lessons > 0) pills.push(`<span class="prog-pill">📖 ${prog.lessons} lecc.</span>`);
+            if (prog.bestScore !== null) pills.push(`<span class="prog-pill score">🏆 ${prog.bestScore.toFixed(1)}/10</span>`);
+            progressHtml = `<div class="progress-box started">${pills.join("")}</div>`;
+          } else {
+            progressHtml = `
+              <div class="progress-box">
+                <span style="color:var(--text-muted);">✨ Listo para jugar</span>
+              </div>
+            `;
+          }
+        }
+
+        const innerContent = `
+          <div>
+            <div class="card-head">
+              <div class="app-icon" aria-hidden="true">${app.icon}</div>
+              <span class="status-pill ${isAvailable ? "status-ready" : "status-soon"}">
+                ${isAvailable ? "● Disponible" : "⏳ Próximamente"}
+              </span>
+            </div>
+
+            <div class="meta-tags" style="margin-top:14px;">
+              <span class="meta-tag">${app.subjectLabel}</span>
+              <span class="meta-tag block">${app.tag}</span>
+            </div>
+
+            <h2 class="app-title">${app.title}</h2>
+            <p class="app-subtitle">${app.subtitle}</p>
+            <p class="app-desc">${app.description}</p>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:4px;">
+            ${progressHtml}
+            ${isAvailable
+              ? `<span class="btn-play">Jugar ahora →</span>`
+              : `<span class="btn-disabled" aria-disabled="true">🔒 Próximamente</span>`
+            }
+          </div>
+        `;
+
+        if (isAvailable) {
+          return `<a class="app-card" href="${app.url}" style="${styleVars}">${innerContent}</a>`;
+        }
+        return `<article class="app-card upcoming" style="${styleVars}">${innerContent}</article>`;
+      }).join("");
+    }
+
+    /* =========================================================================
+       GESTIÓN DE MODALES (INSTALAR EN MÓVIL Y ESTRUCTURA GITHUB)
+       ========================================================================= */
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("open");
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("open");
+    }
+
+    function backdropClose(ev, id) {
+      if (ev.target && ev.target.id === id) closeModal(id);
+    }
+
+    window.addEventListener("keydown", (ev) => {
+      if (ev.key === "Escape") {
+        closeModal("installModal");
+        closeModal("githubModal");
+      }
+    });
+
+    /* =========================================================================
+       INICIALIZACIÓN
+       ========================================================================= */
+    window.addEventListener("DOMContentLoaded", () => {
+      renderSummary();
+      renderTabs();
+      renderCards();
+    });
+  </script>
+</body>
+</html>

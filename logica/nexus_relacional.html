@@ -1,0 +1,4060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Nexus Relacional — Relaciones | UNED Lógica y Estructuras Discretas</title>
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — CYBER-SLATE THEME (UNED TRILOGY)
+       ========================================================================== */
+    :root {
+      --bg-deep: #0b1120;
+      --bg-card: #111827;
+      --bg-card-2: #1e293b;
+      --bg-surface: #0f172a;
+      --border-subtle: rgba(148, 163, 184, 0.16);
+      --border-bright: rgba(148, 163, 184, 0.34);
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --cyan: #06b6d4;
+      --cyan-soft: rgba(6, 182, 212, 0.16);
+      --violet: #8b5cf6;
+      --violet-soft: rgba(139, 92, 246, 0.16);
+      --emerald: #10b981;
+      --emerald-soft: rgba(16, 185, 129, 0.16);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.16);
+      --rose: #f43f5e;
+      --rose-soft: rgba(244, 63, 94, 0.16);
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow-card: 0 14px 36px rgba(0, 0, 0, 0.42);
+      --nav-top: 64px;
+      --nav-bottom: 66px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 10% 8%, rgba(6, 182, 212, 0.12), transparent 36%),
+        radial-gradient(circle at 90% 15%, rgba(139, 92, 246, 0.11), transparent 36%),
+        radial-gradient(circle at 50% 92%, rgba(16, 185, 129, 0.08), transparent 40%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      height: var(--nav-top);
+      background: rgba(11, 17, 32, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.08rem;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.22), rgba(139, 92, 246, 0.24));
+      border: 1px solid rgba(6, 182, 212, 0.48);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 18px rgba(6, 182, 212, 0.22);
+      flex-shrink: 0;
+    }
+
+    .brand small {
+      display: block;
+      font-size: 0.67rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .desktop-nav {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(17, 24, 39, 0.85);
+      padding: 5px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      color: #06131f;
+      background: linear-gradient(135deg, var(--cyan), #38bdf8);
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.36);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .xp-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--amber-soft);
+      border: 1px solid rgba(245, 158, 11, 0.38);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 0.83rem;
+      font-weight: 800;
+      color: #fde68a;
+    }
+
+    .xp-lvl-badge {
+      background: var(--amber);
+      color: #0b1120;
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      display: grid;
+      place-items: center;
+      font-size: 1.05rem;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--cyan);
+      background: var(--bg-card-2);
+    }
+
+    /* Mobile Bottom Navigation */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 65;
+      height: var(--nav-bottom);
+      background: rgba(11, 17, 32, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-subtle);
+      grid-template-columns: repeat(4, 1fr);
+      padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .bnav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: var(--text-muted);
+      font-size: 0.71rem;
+      font-weight: 700;
+      border-radius: 12px;
+      transition: all 0.18s ease;
+    }
+
+    .bnav-btn svg {
+      width: 21px;
+      height: 21px;
+    }
+
+    .bnav-btn.active {
+      color: var(--cyan);
+      background: var(--cyan-soft);
+    }
+
+    /* ==========================================================================
+       LAYOUT & COMMON UI
+       ========================================================================== */
+    .app-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 20px 16px 48px;
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeSlideIn 0.26s ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: rgba(17, 24, 39, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card-soft {
+      background: rgba(15, 23, 42, 0.86);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 15px;
+    }
+
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .section-sub {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.93rem;
+    }
+
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 13px;
+      font-weight: 700;
+      font-size: 0.93rem;
+      min-height: 46px;
+      transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease;
+      text-align: center;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .btn-cyan {
+      background: linear-gradient(135deg, var(--cyan), #0284c7);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(6, 182, 212, 0.34);
+    }
+
+    .btn-violet {
+      background: linear-gradient(135deg, var(--violet), #6d28d9);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.34);
+    }
+
+    .btn-emerald {
+      background: linear-gradient(135deg, var(--emerald), #059669);
+      color: #032117;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.32);
+    }
+
+    .btn-amber {
+      background: linear-gradient(135deg, var(--amber), #d97706);
+      color: #0b1120;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-rose {
+      background: linear-gradient(135deg, var(--rose), #be123c);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(244, 63, 94, 0.3);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.11);
+      border-color: var(--border-bright);
+    }
+
+    .btn-sm {
+      padding: 8px 13px;
+      font-size: 0.84rem;
+      min-height: 38px;
+      border-radius: 10px;
+    }
+
+    /* Tags & Formulas */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-cyan { background: var(--cyan-soft); color: #67e8f9; border: 1px solid rgba(6,182,212,0.38); }
+    .tag-violet { background: var(--violet-soft); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.38); }
+    .tag-emerald { background: var(--emerald-soft); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.38); }
+    .tag-amber { background: var(--amber-soft); color: #fcd34d; border: 1px solid rgba(245,158,11,0.38); }
+    .tag-rose { background: var(--rose-soft); color: #fda4af; border: 1px solid rgba(244,63,94,0.38); }
+
+    .formula {
+      font-family: var(--font-mono);
+      background: rgba(6, 182, 212, 0.11);
+      border: 1px solid rgba(6, 182, 212, 0.28);
+      color: #cffafe;
+      padding: 2px 7px;
+      border-radius: 7px;
+      font-weight: 600;
+      font-size: 0.9em;
+      display: inline-block;
+    }
+
+    .formula-block {
+      font-family: var(--font-mono);
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid var(--border-bright);
+      color: #e2e8f0;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      word-break: break-word;
+      line-height: 1.65;
+    }
+
+    .c-cyan { color: #22d3ee; font-weight: 700; }
+    .c-violet { color: #a78bfa; font-weight: 700; }
+    .c-emerald { color: #34d399; font-weight: 700; }
+    .c-amber { color: #fbbf24; font-weight: 700; }
+    .c-rose { color: #fb7185; font-weight: 700; }
+
+    /* Progress Bar */
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--cyan), var(--violet), var(--emerald));
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ==========================================================================
+       HUB / HERO
+       ========================================================================== */
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.97), rgba(15, 31, 58, 0.92));
+      border: 1px solid rgba(6, 182, 212, 0.36);
+      border-radius: 26px;
+      padding: 26px;
+      margin-bottom: 20px;
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.48);
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -70px;
+      top: -90px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.24), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 22px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      margin: 10px 0 10px;
+      font-size: clamp(1.55rem, 3.8vw, 2.3rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-title span {
+      background: linear-gradient(90deg, var(--cyan), var(--violet), var(--emerald));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hub-module-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .hub-module-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--cyan);
+    }
+
+    /* ==========================================================================
+       SVG GRAPH CONTAINER & INTERACTIVE MATRIX
+       ========================================================================== */
+    .graph-stage {
+      width: 100%;
+      background: radial-gradient(circle at 50% 45%, rgba(30, 41, 59, 0.72), rgba(11, 17, 32, 0.96));
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .graph-stage svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      touch-action: manipulation;
+    }
+
+    .graph-node {
+      cursor: pointer;
+      transition: filter 0.15s ease;
+    }
+
+    .graph-node:hover circle {
+      stroke-width: 3.2;
+    }
+
+    .edge-cut-group {
+      cursor: pointer;
+    }
+
+    .edge-cut-group:hover .edge-vis {
+      filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+    }
+
+    @keyframes cutFlash {
+      0% { stroke: #f43f5e; stroke-width: 5; }
+      100% { stroke: #475569; stroke-width: 2; }
+    }
+
+    .just-cut {
+      animation: cutFlash 0.35s ease;
+    }
+
+    .graph-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(11, 17, 32, 0.75);
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      justify-content: center;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    /* Boolean Matrix */
+    .matrix-wrap {
+      overflow-x: auto;
+    }
+
+    .bool-matrix {
+      border-collapse: separate;
+      border-spacing: 5px;
+      margin: 0 auto;
+      font-family: var(--font-mono);
+    }
+
+    .bool-matrix th {
+      font-size: 0.84rem;
+      color: var(--cyan);
+      font-weight: 800;
+      padding: 4px 8px;
+      text-align: center;
+    }
+
+    .bool-matrix td {
+      padding: 0;
+    }
+
+    .m-cell {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(30, 41, 59, 0.75);
+      border: 1.5px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--text-dim);
+      display: grid;
+      place-items: center;
+      transition: all 0.16s ease;
+    }
+
+    .m-cell.clickable:hover {
+      border-color: var(--cyan);
+      transform: scale(1.05);
+    }
+
+    .m-cell.on {
+      background: rgba(6, 182, 212, 0.24);
+      border-color: var(--cyan);
+      color: #ecfeff;
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.28);
+    }
+
+    .m-cell.diag {
+      border-color: rgba(139, 92, 246, 0.55);
+    }
+
+    .m-cell.diag.on {
+      background: rgba(16, 185, 129, 0.26);
+      border-color: var(--emerald);
+      color: #ecfdf5;
+    }
+
+    .m-cell.err-cell {
+      background: rgba(244, 63, 94, 0.25);
+      border-color: var(--rose);
+      color: #ffe4e6;
+    }
+
+    /* ==========================================================================
+       ACADEMY LESSONS
+       ========================================================================== */
+    .lesson-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      scrollbar-width: thin;
+    }
+
+    .lesson-tab {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 13px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.86rem;
+      transition: all 0.18s ease;
+    }
+
+    .lesson-tab.active {
+      border-color: var(--cyan);
+      background: var(--cyan-soft);
+      color: #fff;
+    }
+
+    .lesson-tab.done .lt-num {
+      background: var(--emerald);
+      color: #032117;
+    }
+
+    .lt-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      display: grid;
+      place-items: center;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .lab-box {
+      background: linear-gradient(180deg, rgba(11, 17, 32, 0.94), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(6, 182, 212, 0.34);
+      border-radius: 18px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .lab-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 900;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0 0 10px;
+    }
+
+    .theory-list {
+      margin: 10px 0;
+      padding-left: 18px;
+    }
+
+    .theory-list li {
+      margin-bottom: 8px;
+      color: #cbd5e1;
+    }
+
+    .callout-tip {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid var(--amber);
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+
+    .callout-danger {
+      background: rgba(244, 63, 94, 0.1);
+      border-left: 4px solid var(--rose);
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .op-btn {
+      padding: 8px 13px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      transition: all 0.18s ease;
+      min-height: 38px;
+    }
+
+    .op-btn:hover { border-color: var(--cyan); }
+    .op-btn.active {
+      background: var(--cyan-soft);
+      border-color: var(--cyan);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+    }
+
+    .pair-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 9px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: var(--amber-soft);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fde68a;
+    }
+
+    .pair-pill.orig {
+      background: var(--cyan-soft);
+      border-color: rgba(6, 182, 212, 0.35);
+      color: #cffafe;
+    }
+
+    .pair-pill button {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(244, 63, 94, 0.25);
+      color: #fda4af;
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      font-size: 0.8rem;
+      line-height: 1;
+    }
+
+    /* Traffic light boxes */
+    .traffic-box {
+      padding: 13px 15px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.85);
+      transition: all 0.2s ease;
+    }
+
+    .traffic-box.pass {
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.12);
+    }
+
+    .traffic-box.fail {
+      border-color: var(--rose);
+      background: rgba(244, 63, 94, 0.12);
+    }
+
+    /* Quiz / Options */
+    .mini-quiz {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 18px;
+    }
+
+    .quiz-opt {
+      width: 100%;
+      text-align: left;
+      padding: 13px 15px;
+      border-radius: 12px;
+      background: rgba(17, 24, 39, 0.92);
+      border: 1.5px solid var(--border-subtle);
+      font-size: 0.93rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      transition: all 0.18s ease;
+      margin-top: 8px;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--cyan);
+      background: var(--bg-card-2);
+    }
+
+    .quiz-opt.selected { border-color: var(--cyan); background: var(--cyan-soft); }
+    .quiz-opt.correct { border-color: var(--emerald); background: var(--emerald-soft); color: #ecfdf5; }
+    .quiz-opt.wrong { border-color: var(--rose); background: var(--rose-soft); color: #fff1f2; }
+
+    .opt-letter {
+      flex: 0 0 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.83rem;
+    }
+
+    /* ==========================================================================
+       GAMES: LEVEL TILES & INSPECTOR SEALS
+       ========================================================================== */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 10px;
+      margin: 12px 0 4px;
+    }
+
+    .level-tile {
+      padding: 10px 6px;
+      border-radius: 14px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-weight: 800;
+      transition: all 0.18s ease;
+    }
+
+    .level-tile:hover { border-color: var(--cyan); transform: translateY(-2px); }
+    .level-tile.active {
+      border-color: var(--cyan);
+      background: var(--cyan-soft);
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.26);
+    }
+
+    .stars-row { font-size: 0.84rem; letter-spacing: 1px; color: var(--amber); }
+
+    /* Papers Please Stamps */
+    .seal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 13px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1.5px solid var(--border-subtle);
+      margin-bottom: 9px;
+      transition: all 0.2s ease;
+    }
+
+    .seal-row.seal-ok { border-color: var(--emerald); background: rgba(16, 185, 129, 0.13); }
+    .seal-row.seal-bad { border-color: var(--rose); background: rgba(244, 63, 94, 0.13); }
+
+    .seal-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .stamp-btn {
+      min-width: 56px;
+      height: 38px;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 0.84rem;
+      letter-spacing: 0.04em;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid var(--border-subtle);
+      color: var(--text-muted);
+      transition: all 0.16s ease;
+    }
+
+    .stamp-btn.yes.active {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: #032117;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+    }
+
+    .stamp-btn.no.active {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(244, 63, 94, 0.4);
+    }
+
+    /* Exam dots */
+    .exam-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .exam-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-subtle);
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      display: grid;
+      place-items: center;
+    }
+
+    .exam-dot.current { border-color: var(--cyan); color: #fff; box-shadow: 0 0 12px rgba(6,182,212,0.4); }
+    .exam-dot.answered { background: var(--cyan-soft); border-color: var(--cyan); color: #ecfeff; }
+    .exam-dot.blank { background: rgba(148, 163, 184, 0.16); border-color: var(--text-dim); }
+    .exam-dot.ok { background: var(--emerald-soft); border-color: var(--emerald); color: #d1fae5; }
+    .exam-dot.bad { background: var(--rose-soft); border-color: var(--rose); color: #ffe4e6; }
+
+    /* Feedback Box */
+    .feedback-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 13px;
+      font-size: 0.92rem;
+      display: none;
+    }
+
+    .feedback-box.show { display: block; animation: fadeSlideIn 0.2s ease; }
+    .feedback-box.ok { background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.45); color: #d1fae5; }
+    .feedback-box.err { background: rgba(244, 63, 94, 0.14); border: 1px solid rgba(244, 63, 94, 0.45); color: #ffe4e6; }
+    .feedback-box.info { background: rgba(6, 182, 212, 0.14); border: 1px solid rgba(6, 182, 212, 0.45); color: #cffafe; }
+
+    /* Toast & Modal */
+    .toast {
+      position: fixed;
+      top: 76px;
+      right: 16px;
+      z-index: 120;
+      background: rgba(17, 24, 39, 0.96);
+      border: 1px solid var(--amber);
+      color: #fff;
+      padding: 11px 16px;
+      border-radius: 13px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.52);
+      font-weight: 700;
+      font-size: 0.88rem;
+      transform: translateY(-16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.26s ease;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: rgba(5, 8, 18, 0.78);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.show { display: flex; }
+
+    .modal-box {
+      width: 100%;
+      max-width: 430px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-bright);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+    }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS (360px Mobile-First -> Desktop)
+       ========================================================================== */
+    @media (max-width: 880px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .bottom-nav { display: grid; }
+      .app-container {
+        padding: 14px 12px calc(var(--nav-bottom) + 24px);
+      }
+      .card, .hero-card {
+        padding: 16px;
+        border-radius: 18px;
+      }
+      .topbar { padding: 0 12px; }
+      .xp-pill { padding: 4px 9px; font-size: 0.78rem; }
+      .m-cell { width: 38px; height: 38px; font-size: 0.88rem; }
+      .toast { left: 12px; right: 12px; top: 70px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================= TOP HEADER ======================= -->
+  <header class="topbar">
+    <div class="brand" onclick="navigateTo('hub')" role="button" tabindex="0" aria-label="Ir a Inicio">
+      <div class="brand-logo" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="6" cy="17" r="3" stroke="#06b6d4" stroke-width="2.1"/>
+          <circle cx="18" cy="17" r="3" stroke="#8b5cf6" stroke-width="2.1"/>
+          <circle cx="12" cy="6" r="3" stroke="#10b981" stroke-width="2.1"/>
+          <path d="M8.5 15L10.7 8.8M15.5 15L13.3 8.8M9 17H15" stroke="#e2e8f0" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        Nexus Relacional
+        <small>UNED · Relaciones</small>
+      </div>
+    </div>
+
+    <nav class="desktop-nav" aria-label="Navegación principal">
+      <button class="nav-btn active" data-nav="hub" onclick="navigateTo('hub')">🏠 Inicio</button>
+      <button class="nav-btn" data-nav="academy" onclick="navigateTo('academy')">📖 Academia</button>
+      <button class="nav-btn" data-nav="games" onclick="navigateTo('games')">🎮 Puzles</button>
+      <button class="nav-btn" data-nav="exam" onclick="navigateTo('exam')">📝 Simulador UNED</button>
+    </nav>
+
+    <div class="top-actions">
+      <div class="xp-pill" title="Experiencia total y nivel">
+        <span class="xp-lvl-badge" id="hdrLvl">Nv. 1</span>
+        <span id="hdrXp">0 XP</span>
+      </div>
+      <button class="icon-btn" id="soundToggleBtn" onclick="toggleSound()" title="Activar/Silenciar sonido" aria-label="Sonido">🔊</button>
+    </div>
+  </header>
+
+  <!-- ======================= MAIN CONTENT ======================= -->
+  <main class="app-container">
+
+    <!-- ==================== VIEW 0: HUB ==================== -->
+    <section id="view-hub" class="view-section active">
+      <div class="hero-card">
+        <div class="hero-grid">
+          <div>
+            <span class="tag tag-cyan">Trilogía UNED · App 2 de 3</span>
+            <h1 class="hero-title">Domina las <span>Relaciones Binarias</span> y clava las P12 y P13</h1>
+            <p style="color:#cbd5e1; margin:0 0 18px; font-size:0.96rem;">
+              Visualiza pares, grafos y matrices a la vez, desmonta las trampas de <strong>antisimetría y ciclos transitivos</strong>, entrena con <strong>3 puzles táctiles</strong> y supera las <strong>12 preguntas oficiales UNED (2025–2026)</strong>.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+              <button class="btn btn-cyan" id="heroAcademyBtn" onclick="navigateTo('academy')">
+                📖 Empezar desde Cero en la Academia
+              </button>
+              <button class="btn btn-ghost" onclick="navigateTo('games')">
+                🎮 Saltar a los Puzles
+              </button>
+            </div>
+          </div>
+
+          <div class="card-soft">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <strong style="font-size:0.92rem;" id="hubRankTitle">Aprendiz de Digrafos</strong>
+              <span class="tag tag-amber" id="hubXpBadge">0 XP</span>
+            </div>
+            <div class="progress-track" style="margin-bottom:14px;">
+              <div class="progress-fill" id="hubXpBar" style="width:0%"></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; font-size:0.84rem; color:var(--text-muted); margin-bottom:6px;">
+              <span>📖 Progreso Academia</span>
+              <strong style="color:#fff;" id="hubLessonsText">0 / 6 lecciones</strong>
+            </div>
+            <div class="progress-track" style="margin-bottom:14px;">
+              <div class="progress-fill" id="hubLessonsBar" style="width:0%; background:linear-gradient(90deg, var(--emerald), var(--cyan));"></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="card-soft" style="padding:10px; text-align:center;">
+                <div style="font-size:1.12rem; font-weight:900; color:var(--amber);" id="hubTotalStars">0 / 69 ★</div>
+                <div style="font-size:0.73rem; color:var(--text-muted);">Estrellas Puzle</div>
+              </div>
+              <div class="card-soft" style="padding:10px; text-align:center;">
+                <div style="font-size:1.12rem; font-weight:900; color:var(--emerald);" id="hubBestExam">—</div>
+                <div style="font-size:0.73rem; color:var(--text-muted);">Mejor Nota UNED</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card hub-module-card" onclick="navigateTo('academy')">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="tag tag-emerald">Paso 1 · Aprende</span>
+              <span style="font-size:1.45rem;">📖</span>
+            </div>
+            <h2 style="margin:0 0 6px; font-size:1.18rem;">Academia desde Cero</h2>
+            <p style="margin:0; color:var(--text-muted); font-size:0.89rem;">
+              6 lecciones con laboratorios sincronizados: 3 caras de una relación, escáner de diagonal, semáforos de simetría, atajos transitivos, los 3 cierres y Diagramas de Hasse.
+            </p>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <span style="font-size:0.84rem; color:var(--emerald); font-weight:700;" id="cardAcademyStatus">0/6 completadas</span>
+            <span style="color:var(--cyan); font-weight:800; font-size:0.87rem;">Entrar →</span>
+          </div>
+        </div>
+
+        <div class="card hub-module-card" onclick="navigateTo('games')">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="tag tag-violet">Paso 2 · Entrena</span>
+              <span style="font-size:1.45rem;">🎮</span>
+            </div>
+            <h2 style="margin:0 0 6px; font-size:1.18rem;">3 Juegos de Puzle</h2>
+            <p style="margin:0; color:var(--text-muted); font-size:0.89rem;">
+              <strong>Circuitos de Cierre</strong> (9 niveles), <strong>Inspector de Propiedades</strong> (8 expedientes) y <strong>Podador de Hasse</strong> (6 niveles de corte láser).
+            </p>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <span style="font-size:0.84rem; color:var(--amber); font-weight:700;" id="cardGamesStatus">0 / 69 ★ ganadas</span>
+            <span style="color:var(--violet); font-weight:800; font-size:0.87rem;">Jugar →</span>
+          </div>
+        </div>
+
+        <div class="card hub-module-card" onclick="navigateTo('exam')">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="tag tag-amber">Paso 3 · Examen</span>
+              <span style="font-size:1.45rem;">📝</span>
+            </div>
+            <h2 style="margin:0 0 6px; font-size:1.18rem;">Simulador Oficial UNED</h2>
+            <p style="margin:0; color:var(--text-muted); font-size:0.89rem;">
+              12 preguntas (7 reales de 2025–2026 + 5 tipo UNED) con mini-grafos SVG explicativos y baremo oficial (+0,50 / −0,25 / 0 blanco).
+            </p>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <span style="font-size:0.84rem; color:var(--amber); font-weight:700;" id="cardExamStatus">12 preguntas oficiales</span>
+            <span style="color:var(--amber); font-weight:800; font-size:0.87rem;">Simular →</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+        <button class="btn btn-ghost btn-sm" onclick="openResetModal()" style="color:var(--text-muted);">
+          🗑️ Reiniciar progreso guardado
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 1: ACADEMIA ==================== -->
+    <section id="view-academy" class="view-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">📖 Academia de Relaciones desde Cero</h1>
+          <p class="section-sub">Experimenta en cada laboratorio SVG + Matriz y supera el mini-reto (+50 XP por lección).</p>
+        </div>
+        <span class="tag tag-emerald" id="academyProgressPill">0 / 6 Completadas</span>
+      </div>
+
+      <div class="lesson-tabs" id="lessonTabs"></div>
+      <div id="lessonContent" class="card"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: PUZLES ==================== -->
+    <section id="view-games" class="view-section">
+      <div id="games-selector">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">🎮 Arena de Puzles Relacionales</h1>
+            <p class="section-sub">Domina cierres, propiedades y Diagramas de Hasse jugando directamente sobre los grafos.</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card hub-module-card" onclick="openGame('circuits')">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="tag tag-cyan">9 Niveles</span>
+                <span style="font-size:1.5rem;">⚡</span>
+              </div>
+              <h2 style="margin:0 0 6px;">Circuitos de Cierre</h2>
+              <p style="margin:0; color:var(--text-muted); font-size:0.89rem;">
+                Toca nodo origen y destino para tender las flechas exactas que completan Rʳ, Rˢ o Rᵗ (incluye los exámenes reales de 2025 y 2026).
+              </p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+              <span class="stars-row" id="circuitsStarsSummary">0 / 27 ★</span>
+              <span class="btn btn-cyan btn-sm">Jugar</span>
+            </div>
+          </div>
+
+          <div class="card hub-module-card" onclick="openGame('inspector')">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="tag tag-violet">8 Expedientes</span>
+                <span style="font-size:1.5rem;">🕵️</span>
+              </div>
+              <h2 style="margin:0 0 6px;">Inspector de Propiedades</h2>
+              <p style="margin:0; color:var(--text-muted); font-size:0.89rem;">
+                Inspecciona pares, grafo y matriz; acciona los 4 sellos SÍ/NO y clasifica Equivalencia u Orden Parcial con informe forense de contraejemplos.
+              </p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+              <span class="stars-row" id="inspectorStarsSummary">0 / 24 ★</span>
+              <span class="btn btn-violet btn-sm">Jugar</span>
+            </div>
+          </div>
+
+          <div class="card hub-module-card" onclick="openGame('hasse')">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="tag tag-emerald">6 Niveles</span>
+                <span style="font-size:1.5rem;">✂️</span>
+              </div>
+              <h2 style="margin:0 0 6px;">Podador de Hasse</h2>
+              <p style="margin:0; color:var(--text-muted); font-size:0.89rem;">
+                Corta con el láser táctil solo los bucles reflexivos y los atajos transitivos redundantes hasta dejar el Diagrama de Hasse limpio.
+              </p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+              <span class="stars-row" id="hasseStarsSummary">0 / 18 ★</span>
+              <span class="btn btn-emerald btn-sm">Jugar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-VIEW: JUEGO 1 — CIRCUITOS DE CIERRE -->
+      <div id="game-circuits" style="display:none;">
+        <div class="section-header">
+          <div>
+            <button class="btn btn-ghost btn-sm" onclick="closeGame()" style="margin-bottom:8px;">← Volver a Puzles</button>
+            <h2 class="section-title" style="font-size:1.32rem;">⚡ Circuitos de Cierre</h2>
+          </div>
+          <span class="tag tag-amber" id="circuitsHeaderStars">0 / 27 ★</span>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Selecciona Circuito (1–3 Iniciación · 4–9 Retos y Exámenes UNED)</div>
+          <div class="level-grid" id="circuitsLevelGrid"></div>
+        </div>
+        <div class="card" id="circuitsPlayArea"></div>
+      </div>
+
+      <!-- SUB-VIEW: JUEGO 2 — INSPECTOR DE PROPIEDADES -->
+      <div id="game-inspector" style="display:none;">
+        <div class="section-header">
+          <div>
+            <button class="btn btn-ghost btn-sm" onclick="closeGame()" style="margin-bottom:8px;">← Volver a Puzles</button>
+            <h2 class="section-title" style="font-size:1.32rem;">🕵️ Inspector de Propiedades</h2>
+          </div>
+          <span class="tag tag-amber" id="inspectorHeaderStars">0 / 24 ★</span>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Expedientes (1–4 Propiedades · 5–8 Propiedades + Clasificación)</div>
+          <div class="level-grid" id="inspectorLevelGrid"></div>
+        </div>
+        <div class="card" id="inspectorPlayArea"></div>
+      </div>
+
+      <!-- SUB-VIEW: JUEGO 3 — PODADOR DE HASSE -->
+      <div id="game-hasse" style="display:none;">
+        <div class="section-header">
+          <div>
+            <button class="btn btn-ghost btn-sm" onclick="closeGame()" style="margin-bottom:8px;">← Volver a Puzles</button>
+            <h2 class="section-title" style="font-size:1.32rem;">✂️ Podador de Hasse</h2>
+          </div>
+          <span class="tag tag-amber" id="hasseHeaderStars">0 / 18 ★</span>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Niveles de Corte Láser</div>
+          <div class="level-grid" id="hasseLevelGrid"></div>
+        </div>
+        <div class="card" id="hassePlayArea"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: SIMULADOR UNED ==================== -->
+    <section id="view-exam" class="view-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">📝 Simulador Oficial UNED — Relaciones</h1>
+          <p class="section-sub">12 preguntas (7 oficiales 2025–2026 + 5 tipo UNED) · Baremo: <strong class="c-emerald">+0,50</strong> acierto · <strong class="c-rose">−0,25</strong> fallo · <strong>0,00</strong> blanco.</p>
+        </div>
+      </div>
+      <div id="examContainer"></div>
+    </section>
+
+  </main>
+
+  <!-- ======================= MOBILE BOTTOM NAV ======================= -->
+  <nav class="bottom-nav" aria-label="Navegación móvil">
+    <button class="bnav-btn active" data-nav="hub" onclick="navigateTo('hub')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>
+      Inicio
+    </button>
+    <button class="bnav-btn" data-nav="academy" onclick="navigateTo('academy')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Academia
+    </button>
+    <button class="bnav-btn" data-nav="games" onclick="navigateTo('games')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="15" cy="11" r="1" fill="currentColor"/><circle cx="17" cy="13" r="1" fill="currentColor"/></svg>
+      Puzles
+    </button>
+    <button class="bnav-btn" data-nav="exam" onclick="navigateTo('exam')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Simulador
+    </button>
+  </nav>
+
+  <!-- ======================= TOAST & RESET MODAL ======================= -->
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <div class="modal-backdrop" id="resetModal">
+    <div class="modal-box">
+      <h3 style="margin:0 0 10px; font-size:1.18rem;">¿Reiniciar progreso de Nexus Relacional?</h3>
+      <p style="margin:0 0 18px; color:var(--text-muted); font-size:0.92rem;">
+        Se eliminarán tus XP, lecciones completadas, estrellas de los 3 puzles y mejor nota del Simulador UNED guardadas en este navegador.
+      </p>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-ghost btn-sm" onclick="closeResetModal()">Cancelar</button>
+        <button class="btn btn-rose btn-sm" onclick="confirmResetProgress()">Sí, reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       APPLICATION JAVASCRIPT (Self-Contained Vanilla JS)
+       ========================================================================== -->
+  <script>
+    "use strict";
+
+    /* ========================================================================
+       1. STATE, PERSISTENCE & WEB AUDIO ENGINE
+       ======================================================================== */
+    const STORAGE_KEY = "nexus_relacional_v1";
+
+    const DEFAULT_STATE = {
+      xp: 0,
+      soundOn: true,
+      completedLessons: [],
+      circuitsStars: {},
+      inspectorStars: {},
+      hasseStars: {},
+      examBestScore6: null,
+      examBestNote10: null,
+      examAttempts: 0
+    };
+
+    let state = loadState();
+    let audioCtx = null;
+
+    function cloneSafe(o) { return JSON.parse(JSON.stringify(o)); }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return cloneSafe(DEFAULT_STATE);
+        return Object.assign(cloneSafe(DEFAULT_STATE), JSON.parse(raw));
+      } catch (e) {
+        return cloneSafe(DEFAULT_STATE);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) { /* Ignore storage quota errors */ }
+      updateGlobalUI();
+    }
+
+    function getLevelInfo(xp) {
+      const level = Math.floor(xp / 160) + 1;
+      const inLevel = xp % 160;
+      const pct = Math.round((inLevel / 160) * 100);
+      const ranks = [
+        "Aprendiz de Digrafos",
+        "Inspector de Diagonales",
+        "Arquitecto de Cierres",
+        "Podador de Hasse",
+        "Maestro Relacional",
+        "Leyenda UNED"
+      ];
+      return { level, pct, rank: ranks[Math.min(level - 1, ranks.length - 1)] };
+    }
+
+    function awardXP(amount, reason) {
+      const prevLvl = getLevelInfo(state.xp).level;
+      state.xp += amount;
+      const nextLvl = getLevelInfo(state.xp).level;
+      saveState();
+      if (nextLvl > prevLvl) {
+        playSound("levelup");
+        showToast(`🌟 ¡Nivel ${nextLvl} alcanzado! (+${amount} XP)`);
+      } else {
+        showToast(`+${amount} XP · ${reason}`);
+      }
+    }
+
+    function ensureAudio() {
+      if (!state.soundOn) return null;
+      try {
+        if (!audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (Ctx) audioCtx = new Ctx();
+        }
+        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+        return audioCtx;
+      } catch (e) { return null; }
+    }
+
+    function playSound(type) {
+      const ctx = ensureAudio();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const tone = (freq, start, dur, wave = "sine", vol = 0.07) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = wave;
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.exponentialRampToValueAtTime(vol, start + 0.014);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + dur + 0.02);
+        };
+
+        if (type === "click") tone(520, now, 0.055, "triangle", 0.045);
+        else if (type === "toggle") tone(660, now, 0.07, "sine", 0.05);
+        else if (type === "cut") { tone(780, now, 0.06, "sawtooth", 0.045); tone(320, now + 0.04, 0.09, "triangle", 0.05); }
+        else if (type === "success") {
+          tone(523.25, now, 0.11, "triangle", 0.075);
+          tone(659.25, now + 0.08, 0.13, "triangle", 0.075);
+          tone(783.99, now + 0.17, 0.22, "triangle", 0.085);
+        } else if (type === "error") {
+          tone(220, now, 0.13, "sawtooth", 0.055);
+          tone(175, now + 0.11, 0.19, "sawtooth", 0.055);
+        } else if (type === "levelup") {
+          tone(523.25, now, 0.09, "triangle", 0.08);
+          tone(659.25, now + 0.08, 0.09, "triangle", 0.08);
+          tone(783.99, now + 0.16, 0.09, "triangle", 0.08);
+          tone(1046.5, now + 0.25, 0.28, "triangle", 0.09);
+        }
+      } catch (e) { /* safe fallback */ }
+    }
+
+    function toggleSound() {
+      state.soundOn = !state.soundOn;
+      saveState();
+      if (state.soundOn) playSound("click");
+      showToast(state.soundOn ? "🔊 Sonido activado" : "🔇 Sonido silenciado");
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById("toastBox");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+    }
+
+    function openResetModal() { document.getElementById("resetModal").classList.add("show"); }
+    function closeResetModal() { document.getElementById("resetModal").classList.remove("show"); }
+    function confirmResetProgress() {
+      state = cloneSafe(DEFAULT_STATE);
+      saveState();
+      closeResetModal();
+      renderAcademy();
+      renderGamesHubStats();
+      renderExamStart();
+      showToast("Progreso reiniciado correctamente");
+    }
+
+    /* ========================================================================
+       2. MATHEMATICAL RELATION HELPERS
+       ======================================================================== */
+    function pairKey(u, v) { return `${u}:::${v}`; }
+    function parsePairKey(k) { return k.split(":::"); }
+    function pairStr(u, v) { return `(${u},${v})`; }
+
+    function formatPairs(pairs) {
+      if (!pairs.length) return "∅";
+      return "{" + pairs.map(([u, v]) => `(${u},${v})`).join(", ") + "}";
+    }
+
+    function analyzeRelation(nodes, pairs) {
+      const set = new Set(pairs.map(([u, v]) => pairKey(u, v)));
+      // Reflexive & Irreflexive
+      const missingLoops = [];
+      const presentLoops = [];
+      for (const n of nodes) {
+        if (set.has(pairKey(n, n))) presentLoops.push(n);
+        else missingLoops.push(n);
+      }
+      const reflexive = missingLoops.length === 0;
+      const irreflexive = presentLoops.length === 0;
+
+      // Symmetric
+      const missingMirrors = [];
+      for (const [u, v] of pairs) {
+        if (u !== v && !set.has(pairKey(v, u))) missingMirrors.push([u, v]);
+      }
+      const symmetric = missingMirrors.length === 0;
+
+      // Antisymmetric
+      const doublePairs = [];
+      const seenDouble = new Set();
+      for (const [u, v] of pairs) {
+        if (u !== v && set.has(pairKey(v, u))) {
+          const canon = [String(u), String(v)].sort().join("|");
+          if (!seenDouble.has(canon)) {
+            seenDouble.add(canon);
+            doublePairs.push([u, v]);
+          }
+        }
+      }
+      const antisymmetric = doublePairs.length === 0;
+
+      // Transitive
+      const missingShortcuts = [];
+      const seenShortcut = new Set();
+      for (const [a, b] of pairs) {
+        for (const [b2, c] of pairs) {
+          if (String(b) === String(b2)) {
+            const k = pairKey(a, c);
+            if (!set.has(k) && !seenShortcut.has(k)) {
+              seenShortcut.add(k);
+              missingShortcuts.push({ a, b, c });
+            }
+          }
+        }
+      }
+      const transitive = missingShortcuts.length === 0;
+
+      return {
+        reflexive, irreflexive, symmetric, antisymmetric, transitive,
+        missingLoops, presentLoops, missingMirrors, doublePairs, missingShortcuts,
+        isEquivalence: reflexive && symmetric && transitive,
+        isPartialOrder: reflexive && antisymmetric && transitive
+      };
+    }
+
+    function computeClosure(nodes, pairs, type) {
+      const set = new Set(pairs.map(([u, v]) => pairKey(u, v)));
+      const origSet = new Set(set);
+
+      if (type === "reflexive") {
+        for (const n of nodes) set.add(pairKey(n, n));
+      } else if (type === "symmetric") {
+        for (const [u, v] of pairs) set.add(pairKey(v, u));
+      } else if (type === "transitive") {
+        let changed = true;
+        while (changed) {
+          changed = false;
+          const arr = Array.from(set).map(parsePairKey);
+          for (const [a, b] of arr) {
+            for (const [b2, c] of arr) {
+              if (b === b2) {
+                const k = pairKey(a, c);
+                if (!set.has(k)) {
+                  set.add(k);
+                  changed = true;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const added = [];
+      for (const k of set) {
+        if (!origSet.has(k)) added.push(parsePairKey(k));
+      }
+      const all = Array.from(set).map(parsePairKey);
+      return { all, added };
+    }
+
+    /* ========================================================================
+       3. CRISP RESPONSIVE SVG DIRECTED GRAPH ENGINE
+       Supports:
+       - Automatic circular/polygon layout or custom hierarchical coordinates
+       - Curved bidirectional arrows so a→b and b→a NEVER overlap
+       - Outward-oriented reflexive loops (a→a) with accurate tangent arrowhead
+       - Color states: orig (cyan), added (amber), ok (emerald), err (rose), cut (dashed), hasse (emerald line)
+       - Wide 24px transparent hitboxes for effortless mobile tapping
+       ======================================================================== */
+    let svgUidCounter = 0;
+
+    function getAutoLayout(nodes, w = 440, h = 290) {
+      const n = nodes.length;
+      const cx = w / 2, cy = h / 2;
+      const pos = {};
+      if (n === 2) {
+        pos[nodes[0]] = { x: cx - 95, y: cy };
+        pos[nodes[1]] = { x: cx + 95, y: cy };
+      } else if (n === 3) {
+        const coords = [
+          { x: cx, y: 68 },
+          { x: cx - 108, y: h - 68 },
+          { x: cx + 108, y: h - 68 }
+        ];
+        nodes.forEach((id, i) => pos[id] = coords[i]);
+      } else if (n === 4) {
+        const coords = [
+          { x: cx - 104, y: 74 },
+          { x: cx + 104, y: 74 },
+          { x: cx + 104, y: h - 74 },
+          { x: cx - 104, y: h - 74 }
+        ];
+        nodes.forEach((id, i) => pos[id] = coords[i]);
+      } else {
+        const rx = Math.min(w * 0.34, 148);
+        const ry = Math.min(h * 0.34, 102);
+        nodes.forEach((id, i) => {
+          const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+          pos[id] = {
+            x: cx + rx * Math.cos(angle),
+            y: cy + ry * Math.sin(angle)
+          };
+        });
+      }
+      return pos;
+    }
+
+    const EDGE_PALETTE = {
+      orig: "#06b6d4",
+      added: "#f59e0b",
+      ok: "#10b981",
+      err: "#f43f5e",
+      violet: "#8b5cf6",
+      cut: "#475569",
+      hasse: "#10b981"
+    };
+
+    function renderDigraphSVG(container, opts) {
+      if (!container) return;
+      const uid = ++svgUidCounter;
+      const w = opts.width || 440;
+      const h = opts.height || 300;
+      const nodeR = opts.nodeR || 20;
+      const nodes = opts.nodes || [];
+      const positions = opts.positions || getAutoLayout(nodes, w, h);
+      const edges = opts.edges || []; // [{ u, v, state:'orig'|'added'|'ok'|'err'|'cut'|'hasse', curveOffset?:number, id?:string, noArrow?:boolean }]
+      const selectedNode = opts.selectedNode !== undefined ? String(opts.selectedNode) : null;
+      const errorNodes = new Set((opts.errorNodes || []).map(String));
+      const highlightNodes = new Set((opts.highlightNodes || []).map(String));
+      const onNodeClick = opts.onNodeClick || null;
+      const onEdgeClick = opts.onEdgeClick || null;
+      const hideArrows = Boolean(opts.hideArrows);
+
+      // Compute centroid for outward loop orientation
+      let centX = 0, centY = 0;
+      nodes.forEach(id => { centX += positions[id].x; centY += positions[id].y; });
+      centX /= Math.max(1, nodes.length);
+      centY /= Math.max(1, nodes.length);
+
+      // Detect bidirectional edges (among non-cut visible edges or all edges)
+      const edgePresence = new Set(edges.map(e => pairKey(e.u, e.v)));
+
+      // SVG Marker defs
+      const markerDefs = Object.entries(EDGE_PALETTE).map(([key, color]) => `
+        <marker id="arr-${uid}-${key}" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="6.8" markerHeight="6.8" orient="auto-start-reverse">
+          <path d="M 0 1.2 L 9.5 5 L 0 8.8 z" fill="${color}" />
+        </marker>
+      `).join("");
+
+      const edgesSvg = edges.map((edge, idx) => {
+        const u = String(edge.u);
+        const v = String(edge.v);
+        const p1 = positions[u];
+        const p2 = positions[v];
+        if (!p1 || !p2) return "";
+
+        const st = edge.state || "orig";
+        const color = EDGE_PALETTE[st] || EDGE_PALETTE.orig;
+        const isCut = st === "cut";
+        const isHasse = st === "hasse" || hideArrows || edge.noArrow;
+        const strokeWidth = isCut ? 2 : (st === "err" || st === "added" || st === "hasse" ? 3 : 2.5);
+        const dashAttr = isCut ? `stroke-dasharray="5 5" opacity="0.45"` : (st === "err" ? `stroke-dasharray="6 3"` : "");
+        const markerAttr = (!isHasse && !isCut) ? `marker-end="url(#arr-${uid}-${st})"` : "";
+        const justCutCls = edge.justCut ? "just-cut" : "";
+
+        let pathD = "";
+
+        if (u === v) {
+          // Reflexive loop oriented away from centroid (or to the right if on vertical centerline)
+          let ang = Math.atan2(p1.y - centY, p1.x - centX);
+          if (Math.hypot(p1.x - centX, p1.y - centY) < 12) ang = -Math.PI / 2;
+          if (edge.loopAngle !== undefined) ang = edge.loopAngle;
+
+          const spread = 0.56;
+          const sx = p1.x + nodeR * Math.cos(ang - spread);
+          const sy = p1.y + nodeR * Math.sin(ang - spread);
+          const ex = p1.x + (nodeR + 2) * Math.cos(ang + spread);
+          const ey = p1.y + (nodeR + 2) * Math.sin(ang + spread);
+          const loopDist = nodeR * 2.55;
+          const cp1x = p1.x + loopDist * Math.cos(ang - spread * 1.15);
+          const cp1y = p1.y + loopDist * Math.sin(ang - spread * 1.15);
+          const cp2x = p1.x + loopDist * Math.cos(ang + spread * 1.15);
+          const cp2y = p1.y + loopDist * Math.sin(ang + spread * 1.15);
+          pathD = `M ${sx.toFixed(1)} ${sy.toFixed(1)} C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${ex.toFixed(1)} ${ey.toFixed(1)}`;
+        } else {
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
+          const dist = Math.hypot(dx, dy) || 1;
+          const ux = dx / dist;
+          const uy = dy / dist;
+          // Perpendicular unit vector (right side of travel direction)
+          const nx = -uy;
+          const ny = ux;
+
+          const hasReverse = edgePresence.has(pairKey(v, u));
+          let bend = edge.curveOffset !== undefined ? edge.curveOffset : (hasReverse ? 28 : 0);
+
+          if (Math.abs(bend) > 0.5) {
+            const mx = (p1.x + p2.x) / 2 + nx * bend;
+            const my = (p1.y + p2.y) / 2 + ny * bend;
+
+            // Compute trimmed start & end along tangents to quadratic control point
+            const d1x = mx - p1.x, d1y = my - p1.y;
+            const l1 = Math.hypot(d1x, d1y) || 1;
+            const sx = p1.x + (d1x / l1) * (nodeR + 2);
+            const sy = p1.y + (d1y / l1) * (nodeR + 2);
+
+            const d2x = p2.x - mx, d2y = p2.y - my;
+            const l2 = Math.hypot(d2x, d2y) || 1;
+            const endPad = isHasse ? nodeR + 2 : nodeR + 5;
+            const ex = p2.x - (d2x / l2) * endPad;
+            const ey = p2.y - (d2y / l2) * endPad;
+
+            pathD = `M ${sx.toFixed(1)} ${sy.toFixed(1)} Q ${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`;
+          } else {
+            const sx = p1.x + ux * (nodeR + 2);
+            const sy = p1.y + uy * (nodeR + 2);
+            const endPad = isHasse ? nodeR + 2 : nodeR + 5;
+            const ex = p2.x - ux * endPad;
+            const ey = p2.y - uy * endPad;
+            pathD = `M ${sx.toFixed(1)} ${sy.toFixed(1)} L ${ex.toFixed(1)} ${ey.toFixed(1)}`;
+          }
+        }
+
+        const edgeAttr = onEdgeClick ? `data-edge-idx="${idx}" class="edge-cut-group"` : "";
+        return `
+          <g ${edgeAttr}>
+            ${onEdgeClick ? `<path d="${pathD}" fill="none" stroke="transparent" stroke-width="24" stroke-linecap="round"/>` : ""}
+            <path class="edge-vis ${justCutCls}" d="${pathD}" fill="none" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" ${dashAttr} ${markerAttr}/>
+          </g>
+        `;
+      }).join("");
+
+      const nodesSvg = nodes.map(rawId => {
+        const id = String(rawId);
+        const p = positions[id];
+        const isSel = selectedNode === id;
+        const isErr = errorNodes.has(id);
+        const isHi = highlightNodes.has(id);
+
+        let fill = "#111827";
+        let stroke = "#06b6d4";
+        let strokeW = 2.4;
+        if (isSel) { fill = "#1e3a5f"; stroke = "#f59e0b"; strokeW = 3.5; }
+        else if (isErr) { fill = "#3b1122"; stroke = "#f43f5e"; strokeW = 3.2; }
+        else if (isHi) { fill = "#0f3329"; stroke = "#10b981"; strokeW = 3.2; }
+
+        const fontSize = id.length >= 4 ? 11 : (id.length === 3 ? 12 : 14.5);
+
+        return `
+          <g class="${onNodeClick ? "graph-node" : ""}" data-node-id="${id}">
+            ${isSel ? `<circle cx="${p.x}" cy="${p.y}" r="${nodeR + 6}" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 3" opacity="0.85"/>` : ""}
+            <circle cx="${p.x}" cy="${p.y}" r="${nodeR}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}"/>
+            <text x="${p.x}" y="${p.y + 1}" text-anchor="middle" dominant-baseline="central" fill="#f8fafc" font-family="JetBrains Mono, monospace" font-weight="800" font-size="${fontSize}">${id}</text>
+          </g>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        <svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Grafo dirigido de relación">
+          <defs>${markerDefs}</defs>
+          ${edgesSvg}
+          ${nodesSvg}
+        </svg>
+      `;
+
+      if (onNodeClick) {
+        container.querySelectorAll("[data-node-id]").forEach(g => {
+          g.addEventListener("click", (e) => {
+            e.stopPropagation();
+            onNodeClick(g.getAttribute("data-node-id"));
+          });
+        });
+      }
+
+      if (onEdgeClick) {
+        container.querySelectorAll("[data-edge-idx]").forEach(g => {
+          g.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const i = Number(g.getAttribute("data-edge-idx"));
+            onEdgeClick(edges[i], i);
+          });
+        });
+      }
+    }
+
+    function renderBooleanMatrixHTML(nodes, pairs, options = {}) {
+      const set = new Set(pairs.map(([u, v]) => pairKey(u, v)));
+      const errSet = new Set((options.errorPairs || []).map(([u, v]) => pairKey(u, v)));
+      const clickable = Boolean(options.onClickFnName);
+      const highlightDiag = Boolean(options.highlightDiag);
+
+      const headerCols = nodes.map(n => `<th>${n}</th>`).join("");
+      const rows = nodes.map(r => {
+        const cells = nodes.map(c => {
+          const on = set.has(pairKey(r, c));
+          const isDiag = String(r) === String(c);
+          const isErr = errSet.has(pairKey(r, c));
+          const cls = [
+            "m-cell",
+            clickable ? "clickable" : "",
+            on ? "on" : "",
+            (highlightDiag && isDiag) ? "diag" : "",
+            isErr ? "err-cell" : ""
+          ].filter(Boolean).join(" ");
+          const clickAttr = clickable ? `onclick="${options.onClickFnName}('${r}','${c}')"` : "";
+          return `<td><button type="button" class="${cls}" ${clickAttr} ${clickable ? "" : "disabled"}>${on ? "1" : "0"}</button></td>`;
+        }).join("");
+        return `<tr><th>${r}</th>${cells}</tr>`;
+      }).join("");
+
+      return `
+        <div class="matrix-wrap">
+          <table class="bool-matrix" aria-label="Matriz booleana de la relación">
+            <thead><tr><th></th>${headerCols}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    /* ========================================================================
+       4. NAVIGATION & GLOBAL UI SYNC
+       ======================================================================== */
+    function sumStars(obj) {
+      return Object.values(obj || {}).reduce((acc, v) => acc + Number(v || 0), 0);
+    }
+
+    function navigateTo(view) {
+      document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
+      const el = document.getElementById(`view-${view}`);
+      if (el) el.classList.add("active");
+
+      document.querySelectorAll("[data-nav]").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-nav") === view);
+      });
+
+      if (view === "academy") renderAcademy();
+      else if (view === "games") { closeGame(true); renderGamesHubStats(); }
+      else if (view === "exam" && !examRuntime.active) renderExamStart();
+
+      updateGlobalUI();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      playSound("click");
+    }
+
+    function updateGlobalUI() {
+      const lvl = getLevelInfo(state.xp);
+      document.getElementById("hdrLvl").textContent = `Nv. ${lvl.level}`;
+      document.getElementById("hdrXp").textContent = `${state.xp} XP`;
+      document.getElementById("soundToggleBtn").textContent = state.soundOn ? "🔊" : "🔇";
+
+      const lessonsDone = state.completedLessons.length;
+      const s1 = sumStars(state.circuitsStars);
+      const s2 = sumStars(state.inspectorStars);
+      const s3 = sumStars(state.hasseStars);
+      const totalS = s1 + s2 + s3;
+
+      document.getElementById("hubRankTitle").textContent = lvl.rank;
+      document.getElementById("hubXpBadge").textContent = `${state.xp} XP`;
+      document.getElementById("hubXpBar").style.width = `${lvl.pct}%`;
+
+      document.getElementById("hubLessonsText").textContent = `${lessonsDone} / 6 lecciones`;
+      document.getElementById("hubLessonsBar").style.width = `${Math.round((lessonsDone / 6) * 100)}%`;
+      document.getElementById("hubTotalStars").textContent = `${totalS} / 69 ★`;
+      document.getElementById("hubBestExam").textContent =
+        state.examBestNote10 !== null ? `${state.examBestNote10.toFixed(2)} / 10` : "—";
+
+      const heroBtn = document.getElementById("heroAcademyBtn");
+      if (lessonsDone === 0) heroBtn.textContent = "📖 Empezar desde Cero en la Academia";
+      else if (lessonsDone < 6) heroBtn.textContent = `📖 Continuar Academia (Lección ${lessonsDone + 1}/6)`;
+      else heroBtn.textContent = "✅ Repasar Academia (6/6 Completada)";
+
+      document.getElementById("cardAcademyStatus").textContent = `${lessonsDone}/6 completadas`;
+      document.getElementById("cardGamesStatus").textContent = `${totalS} / 69 ★ ganadas`;
+      document.getElementById("cardExamStatus").textContent =
+        state.examBestNote10 !== null ? `Mejor nota: ${state.examBestNote10.toFixed(2)}/10` : "12 preguntas oficiales";
+
+      document.getElementById("academyProgressPill").textContent = `${lessonsDone} / 6 Completadas`;
+      renderGamesHubStats();
+    }
+
+    function renderGamesHubStats() {
+      const s1 = sumStars(state.circuitsStars);
+      const s2 = sumStars(state.inspectorStars);
+      const s3 = sumStars(state.hasseStars);
+      const setTxt = (id, t) => { const el = document.getElementById(id); if (el) el.textContent = t; };
+      setTxt("circuitsStarsSummary", `${s1} / 27 ★`);
+      setTxt("inspectorStarsSummary", `${s2} / 24 ★`);
+      setTxt("hasseStarsSummary", `${s3} / 18 ★`);
+      setTxt("circuitsHeaderStars", `${s1} / 27 ★`);
+      setTxt("inspectorHeaderStars", `${s2} / 24 ★`);
+      setTxt("hasseHeaderStars", `${s3} / 18 ★`);
+    }
+
+    /* ========================================================================
+       5. MODULE 2 — ACADEMIA DESDE CERO (6 INTERACTIVE LESSONS)
+       ======================================================================== */
+    let currentLessonId = 1;
+
+    const LESSONS_META = [
+      { id: 1, short: "Las 3 Caras", title: "Lección 1 — ¿Qué es una Relación? Las 3 Caras (Pares, Grafo y Matriz)" },
+      { id: 2, short: "Reflexiva", title: "Lección 2 — Reflexiva e Irreflexiva: El Truco de la Diagonal" },
+      { id: 3, short: "Simétrica vs Anti", title: "Lección 3 — Simétrica vs. Antisimétrica (¡NO son contrarias!)" },
+      { id: 4, short: "Transitiva", title: "Lección 4 — Transitiva: La Regla del Atajo (y la Trampa del Ciclo)" },
+      { id: 5, short: "Los 3 Cierres", title: "Lección 5 — Los 3 Cierres (Rʳ, Rˢ, Rᵗ): Receta Directa de Examen" },
+      { id: 6, short: "Orden y Hasse", title: "Lección 6 — Orden Parcial, Equivalencia y Diagramas de Hasse" }
+    ];
+
+    const LESSON_QUIZZES = {
+      1: {
+        q: "En una relación R sobre A = {1,2,3,4}, ¿qué significan exactamente el par (2,4), la flecha 2→4 y la celda (fila 2, columna 4) = 1?",
+        opts: [
+          "Son tres formas distintas de expresar exactamente el mismo hecho: 2 está relacionado con 4.",
+          "El par (2,4) equivale a la flecha 4→2 y a la columna 2 fila 4.",
+          "La matriz solo guarda bucles, no pares entre elementos distintos."
+        ],
+        correct: 0,
+        exp: "¡Exacto! En la matriz booleana, la FILA siempre es el origen (primer elemento del par) y la COLUMNA es el destino (segundo elemento): (2,4) ↔ 2→4 ↔ M[2,4]=1."
+      },
+      2: {
+        q: "[Trampa UNED 2026 Mod A] En A = {1,2,3,4}, sea R = {(1,1), (1,3), (2,2), (3,3), (4,2)}. ¿Es R reflexiva?",
+        opts: [
+          "Sí, porque casi todos los elementos tienen bucle.",
+          "No, porque falta el par (4,4) en la diagonal principal.",
+          "Es irreflexiva porque le falta un bucle."
+        ],
+        correct: 1,
+        exp: "Reflexiva exige (x,x) para TODOS los elementos de A. Como 4 ∈ A pero (4,4) ∉ R, NO es reflexiva. Tampoco es irreflexiva porque sí tiene (1,1), (2,2) y (3,3)."
+      },
+      3: {
+        q: "Sea A = {1,2,3} y R = {(1,1), (2,2), (1,2)}. ¿Cuál afirmación es verdadera?",
+        opts: [
+          "Es simétrica y antisimétrica.",
+          "NO es simétrica (falta (2,1)), pero SÍ es antisimétrica (no hay flechas dobles entre nodos distintos).",
+          "NO es antisimétrica porque contiene los bucles (1,1) y (2,2)."
+        ],
+        correct: 1,
+        exp: "Los bucles (x,x) NUNCA rompen la antisimetría. Como no existe ningún par de nodos distintos con flecha de ida y vuelta, es antisimétrica."
+      },
+      4: {
+        q: "En R = {(2,5), (3,5), (4,3), (4,4), (5,3)}, el ciclo 3→5 y 5→3 demuestra que R NO es transitiva porque faltan:",
+        opts: [
+          "Los bucles (3,3) y (5,5) (además de (2,3) y (4,5)).",
+          "Solo el bucle (4,4).",
+          "Ningún par: los ciclos de 2 ya son transitivos."
+        ],
+        correct: 0,
+        exp: "Si 3→5 y 5→3, el atajo de 3→5→3 exige (3,3), y el atajo de 5→3→5 exige (5,5). ¡Trampa estrella de UNED Septiembre 2026!"
+      },
+      5: {
+        q: "En A = {1,2,3,4,5}, R = {(1,1),(1,4),(2,2),(2,3),(4,4),(5,2)}. ¿Qué pares nuevos añade su CIERRE SIMÉTRICO Rˢ?",
+        opts: [
+          "(3,3) y (5,5)",
+          "(4,1), (3,2) y (2,5)",
+          "(4,1), (3,2), (2,5), (3,3) y (5,5)"
+        ],
+        correct: 1,
+        exp: "El cierre simétrico SOLO añade los espejos que faltan: (4,1), (3,2) y (2,5). ¡Nunca añade bucles como (3,3) o (5,5) — eso sería el cierre reflexivo!"
+      },
+      6: {
+        q: "[UNED 2025 Mod C/D] En B = {2, 4, 8, 16} con la relación de divisibilidad (a|b), ¿cómo es su Diagrama de Hasse?",
+        opts: [
+          "Un grafo completo con todas las flechas posibles.",
+          "Una cadena lineal 2 — 4 — 8 — 16 (sin bucles ni atajos como 2→8 o 2→16).",
+          "Un rombo porque 4 y 8 son incomparables."
+        ],
+        correct: 1,
+        exp: "Como 2|4|8|16, es un orden total. Al eliminar los 4 bucles y los 3 atajos transitivos (2,8), (2,16), (4,16), queda exactamente la cadena lineal 2 — 4 — 8 — 16."
+      }
+    };
+
+    function renderAcademy() {
+      const tabsEl = document.getElementById("lessonTabs");
+      tabsEl.innerHTML = LESSONS_META.map(l => {
+        const done = state.completedLessons.includes(l.id);
+        return `
+          <button class="lesson-tab ${l.id === currentLessonId ? "active" : ""} ${done ? "done" : ""}" onclick="selectLesson(${l.id})">
+            <span class="lt-num">${done ? "✓" : l.id}</span>
+            <span>${l.short}</span>
+          </button>
+        `;
+      }).join("");
+
+      const container = document.getElementById("lessonContent");
+      const meta = LESSONS_META.find(l => l.id === currentLessonId);
+      const isDone = state.completedLessons.includes(currentLessonId);
+
+      let bodyHtml = "";
+      if (currentLessonId === 1) bodyHtml = buildLesson1HTML();
+      if (currentLessonId === 2) bodyHtml = buildLesson2HTML();
+      if (currentLessonId === 3) bodyHtml = buildLesson3HTML();
+      if (currentLessonId === 4) bodyHtml = buildLesson4HTML();
+      if (currentLessonId === 5) bodyHtml = buildLesson5HTML();
+      if (currentLessonId === 6) bodyHtml = buildLesson6HTML();
+
+      const q = LESSON_QUIZZES[currentLessonId];
+      const quizHtml = `
+        <div class="mini-quiz">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <strong style="color:var(--emerald); font-size:0.95rem;">🎯 Mini-Reto de Comprobación · Lección ${currentLessonId}</strong>
+            ${isDone ? '<span class="tag tag-emerald">✓ Completada (+50 XP)</span>' : '<span class="tag tag-amber">Recompensa: +50 XP</span>'}
+          </div>
+          <p style="margin:0 0 8px; font-weight:700;">${q.q}</p>
+          <div id="lessonQuizOpts">
+            ${q.opts.map((opt, idx) => `
+              <button class="quiz-opt" onclick="answerLessonQuiz(${currentLessonId}, ${idx})">
+                <span class="opt-letter">${String.fromCharCode(97 + idx)}</span>
+                <span>${opt}</span>
+              </button>
+            `).join("")}
+          </div>
+          <div id="lessonQuizFb" class="feedback-box"></div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" ${currentLessonId === 1 ? "disabled" : ""} onclick="selectLesson(${currentLessonId - 1})">← Anterior</button>
+          ${currentLessonId < 6
+            ? `<button class="btn btn-cyan btn-sm" onclick="selectLesson(${currentLessonId + 1})">Siguiente Lección →</button>`
+            : `<button class="btn btn-emerald btn-sm" onclick="navigateTo('games')">🎮 ¡Ir a los 3 Juegos de Puzle!</button>`
+          }
+        </div>
+      `;
+
+      container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <h2 style="margin:0; font-size:1.3rem;">${meta.title}</h2>
+          <span class="tag tag-cyan">Lección ${currentLessonId} de 6</span>
+        </div>
+        ${bodyHtml}
+        ${quizHtml}
+      `;
+
+      if (currentLessonId === 1) initLesson1Lab();
+      if (currentLessonId === 2) initLesson2Lab();
+      if (currentLessonId === 3) initLesson3Lab();
+      if (currentLessonId === 4) initLesson4Lab();
+      if (currentLessonId === 5) initLesson5Lab();
+      if (currentLessonId === 6) initLesson6Lab();
+    }
+
+    function selectLesson(id) {
+      if (id < 1 || id > 6) return;
+      currentLessonId = id;
+      renderAcademy();
+      playSound("click");
+    }
+
+    function answerLessonQuiz(lessonId, chosenIdx) {
+      const q = LESSON_QUIZZES[lessonId];
+      const btns = document.querySelectorAll("#lessonQuizOpts .quiz-opt");
+      const fb = document.getElementById("lessonQuizFb");
+      btns.forEach((b, i) => {
+        b.classList.remove("correct", "wrong");
+        if (i === q.correct) b.classList.add("correct");
+        else if (i === chosenIdx) b.classList.add("wrong");
+      });
+
+      if (chosenIdx === q.correct) {
+        playSound("success");
+        fb.className = "feedback-box show ok";
+        fb.innerHTML = `<strong>✅ ¡Correcto!</strong> ${q.exp}`;
+        if (!state.completedLessons.includes(lessonId)) {
+          state.completedLessons.push(lessonId);
+          awardXP(50, `Lección ${lessonId} completada`);
+          const tabs = document.querySelectorAll("#lessonTabs .lesson-tab");
+          if (tabs[lessonId - 1]) {
+            tabs[lessonId - 1].classList.add("done");
+            tabs[lessonId - 1].querySelector(".lt-num").textContent = "✓";
+          }
+        }
+      } else {
+        playSound("error");
+        fb.className = "feedback-box show err";
+        fb.innerHTML = `<strong>❌ Revisa esto:</strong> ${q.exp}`;
+      }
+    }
+
+    /* --- LESSON 1 LAB: TRIPLE SYNC --- */
+    const l1State = {
+      nodes: ["1", "2", "3", "4"],
+      pairs: new Set(["1:::1", "1:::3", "2:::2", "3:::3", "4:::2"]),
+      selectedNode: null
+    };
+
+    function buildLesson1HTML() {
+      return `
+        <p>Una <strong>relación binaria</strong> <span class="formula">R</span> sobre un conjunto <span class="formula">A</span> no es más que un subconjunto de pares ordenados del producto cartesiano: <span class="formula">R ⊆ A × A</span>. Por ejemplo, "ser amigo de", "ser menor o igual que (≤)" o "dividir a (a|b)".</p>
+        <ul class="theory-list">
+          <li><strong>Cara 1 — Pares ordenados:</strong> Listado de conexiones <span class="formula">(a, b) ∈ R</span>. ¡Ojo! El orden importa: <span class="formula">(2,4) ≠ (4,2)</span>.</li>
+          <li><strong>Cara 2 — Digrafo (Grafo dirigido):</strong> Cada elemento de A es un nodo y cada par <span class="formula">(a,b)</span> es una flecha <span class="formula">a → b</span>. Un par <span class="formula">(a,a)</span> es un <strong>bucle</strong>.</li>
+          <li><strong>Cara 3 — Matriz booleana M:</strong> Ponemos un <span class="formula">1</span> en la <strong>fila a, columna b</strong> si <span class="formula">(a,b) ∈ R</span>, y un <span class="formula">0</span> en caso contrario.</li>
+        </ul>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Laboratorio Triple Sincronizado (A = {1, 2, 3, 4})</div>
+          <p style="margin:0 0 10px; font-size:0.88rem; color:var(--text-muted);">
+            Pulsa cualquier <strong>celda de la matriz</strong> O toca <strong>nodo origen → nodo destino</strong> en el grafo (toca el mismo dos veces para bucle):
+          </p>
+          <div class="chip-row" style="margin-bottom:12px;">
+            <button class="op-btn" onclick="l1Preset('uned')">📌 Ejemplo UNED</button>
+            <button class="op-btn" onclick="l1Preset('identity')">🔁 Identidad</button>
+            <button class="op-btn" onclick="l1Preset('clear')">🧹 Limpiar</button>
+          </div>
+          <div class="grid-2" style="align-items:center;">
+            <div>
+              <div class="graph-stage" id="l1GraphBox"></div>
+              <div id="l1NodeHint" style="font-size:0.8rem; color:var(--amber); text-align:center; margin-top:6px; min-height:20px;"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div id="l1MatrixBox"></div>
+              <div>
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:4px;">Conjunto de pares ordenados R:</div>
+                <div class="formula-block" id="l1PairsBox"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initLesson1Lab() { l1State.selectedNode = null; renderLesson1Lab(); }
+
+    function l1Preset(kind) {
+      l1State.selectedNode = null;
+      if (kind === "clear") l1State.pairs = new Set();
+      else if (kind === "identity") l1State.pairs = new Set(["1:::1", "2:::2", "3:::3", "4:::4"]);
+      else l1State.pairs = new Set(["1:::1", "1:::3", "2:::2", "3:::3", "4:::2"]);
+      playSound("click");
+      renderLesson1Lab();
+    }
+
+    window.l1ToggleCell = function(r, c) {
+      const k = pairKey(r, c);
+      if (l1State.pairs.has(k)) l1State.pairs.delete(k);
+      else l1State.pairs.add(k);
+      l1State.selectedNode = null;
+      playSound("toggle");
+      renderLesson1Lab();
+    };
+
+    function renderLesson1Lab() {
+      const pairs = Array.from(l1State.pairs).map(parsePairKey).sort((a, b) => a[0].localeCompare(b[0]) || a[1].localeCompare(b[1]));
+      const gBox = document.getElementById("l1GraphBox");
+      if (!gBox) return;
+
+      renderDigraphSVG(gBox, {
+        nodes: l1State.nodes,
+        edges: pairs.map(([u, v]) => ({ u, v, state: "orig" })),
+        selectedNode: l1State.selectedNode,
+        onNodeClick: (id) => {
+          if (l1State.selectedNode === null) {
+            l1State.selectedNode = id;
+            playSound("click");
+            renderLesson1Lab();
+          } else {
+            window.l1ToggleCell(l1State.selectedNode, id);
+          }
+        }
+      });
+
+      document.getElementById("l1NodeHint").textContent = l1State.selectedNode
+        ? `Origen seleccionado: ${l1State.selectedNode} — toca el nodo destino (o ${l1State.selectedNode} otra vez para bucle)`
+        : "Toca un nodo para iniciar una flecha o pulsa la matriz";
+
+      document.getElementById("l1MatrixBox").innerHTML = renderBooleanMatrixHTML(l1State.nodes, pairs, {
+        onClickFnName: "l1ToggleCell",
+        highlightDiag: true
+      });
+      document.getElementById("l1PairsBox").textContent = `R = ${formatPairs(pairs)}`;
+    }
+
+    /* --- LESSON 2 LAB: DIAGONAL SCANNER --- */
+    const l2State = {
+      nodes: ["1", "2", "3", "4"],
+      pairs: new Set(["1:::1", "1:::3", "2:::2", "3:::3", "4:::2"]) // UNED 2026 Mod A!
+    };
+
+    function buildLesson2HTML() {
+      return `
+        <p>Las propiedades <strong>reflexiva</strong> e <strong>irreflexiva</strong> dependen ÚNICAMENTE de la <strong>diagonal principal</strong> de la matriz (los bucles <span class="formula">(x,x)</span> en el grafo):</p>
+        <ul class="theory-list">
+          <li><strong>Reflexiva:</strong> TODOS los elementos de A tienen bucle: <span class="formula">∀x ∈ A, (x,x) ∈ R</span>. Toda la diagonal de la matriz son <strong>1s</strong>.</li>
+          <li><strong>Irreflexiva:</strong> NINGÚN elemento de A tiene bucle: <span class="formula">∀x ∈ A, (x,x) ∉ R</span>. Toda la diagonal de la matriz son <strong>0s</strong>.</li>
+          <li><strong>¡Ni una ni otra!</strong> Si unos elementos tienen bucle y otros no, la relación NO es reflexiva NI irreflexiva.</li>
+        </ul>
+        <div class="callout-danger">
+          <strong>🔥 Trampa Real UNED 2026 Mod A:</strong> Te dan <span class="formula">A = {1,2,3,4}</span> y <span class="formula">R = {(1,1),(1,3),(2,2),(3,3),(4,2)}</span>. Mucha gente ve tres bucles y marca "Reflexiva", pero <strong>falta (4,4)</strong>. ¡Basta que falte UNO para no ser reflexiva!
+        </div>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Escáner de Diagonal en Tiempo Real</div>
+          <p style="margin:0 0 10px; font-size:0.88rem; color:var(--text-muted);">
+            Toca un nodo en el grafo (o la diagonal de la matriz) para activar/desactivar su bucle:
+          </p>
+          <div class="chip-row" style="margin-bottom:12px;">
+            <button class="op-btn" onclick="l2Preset('uned')">🔥 Trampa 2026 Mod A</button>
+            <button class="op-btn" onclick="l2Preset('all')">✅ Todos los bucles</button>
+            <button class="op-btn" onclick="l2Preset('none')">🚫 Ningún bucle</button>
+          </div>
+          <div class="grid-2" style="align-items:center;">
+            <div class="graph-stage" id="l2GraphBox"></div>
+            <div>
+              <div id="l2MatrixBox" style="margin-bottom:12px;"></div>
+              <div id="l2ScannerBox"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initLesson2Lab() { renderLesson2Lab(); }
+
+    function l2Preset(kind) {
+      l2State.pairs = new Set(["1:::3", "4:::2"]);
+      if (kind === "uned") ["1", "2", "3"].forEach(n => l2State.pairs.add(pairKey(n, n)));
+      if (kind === "all") ["1", "2", "3", "4"].forEach(n => l2State.pairs.add(pairKey(n, n)));
+      playSound("click");
+      renderLesson2Lab();
+    }
+
+    window.l2ToggleCell = function(r, c) {
+      const k = pairKey(r, c);
+      if (l2State.pairs.has(k)) l2State.pairs.delete(k);
+      else l2State.pairs.add(k);
+      playSound("toggle");
+      renderLesson2Lab();
+    };
+
+    function renderLesson2Lab() {
+      const pairs = Array.from(l2State.pairs).map(parsePairKey);
+      const info = analyzeRelation(l2State.nodes, pairs);
+      const gBox = document.getElementById("l2GraphBox");
+      if (!gBox) return;
+
+      renderDigraphSVG(gBox, {
+        nodes: l2State.nodes,
+        edges: pairs.map(([u, v]) => ({ u, v, state: u === v ? "ok" : "orig" })),
+        errorNodes: info.reflexive ? [] : info.missingLoops,
+        onNodeClick: (id) => window.l2ToggleCell(id, id)
+      });
+
+      document.getElementById("l2MatrixBox").innerHTML = renderBooleanMatrixHTML(l2State.nodes, pairs, {
+        onClickFnName: "l2ToggleCell",
+        highlightDiag: true,
+        errorPairs: info.reflexive ? [] : info.missingLoops.map(n => [n, n])
+      });
+
+      let statusCls = "fail", statusTitle = "⚠️ NI Reflexiva NI Irreflexiva", detail = "";
+      if (info.reflexive) {
+        statusCls = "pass";
+        statusTitle = "✅ REFLEXIVA (Diagonal completa de 1s)";
+        detail = "Todos los nodos {1,2,3,4} tienen su bucle (x,x).";
+      } else if (info.irreflexive) {
+        statusCls = "pass";
+        statusTitle = "🟣 IRREFLEXIVA (Diagonal vacía de 0s)";
+        detail = "Ningún nodo tiene bucle sobre sí mismo.";
+      } else {
+        detail = `Faltan bucles para ser Reflexiva: <strong>${info.missingLoops.map(n => `(${n},${n})`).join(", ")}</strong>. Y sobran bucles para ser Irreflexiva: <strong>${info.presentLoops.map(n => `(${n},${n})`).join(", ")}</strong>.`;
+      }
+
+      document.getElementById("l2ScannerBox").innerHTML = `
+        <div class="traffic-box ${statusCls}">
+          <div style="font-weight:900; margin-bottom:4px;">${statusTitle}</div>
+          <div style="font-size:0.86rem; color:#cbd5e1;">${detail}</div>
+        </div>
+      `;
+    }
+
+    /* --- LESSON 3 LAB: SYMMETRIC vs ANTISYMMETRIC --- */
+    const l3State = {
+      nodes: ["1", "2", "3"],
+      pairs: new Set(["1:::1", "2:::2"]),
+      selectedNode: null
+    };
+
+    function buildLesson3HTML() {
+      return `
+        <p>El error nº1 en exámenes de la UNED es pensar que <em>"si no es simétrica, entonces es antisimétrica"</em>. <strong>¡FALSO!</strong> Una relación puede ser <strong>ambas a la vez</strong>, solo una, o <strong>ninguna de las dos</strong>.</p>
+        <ul class="theory-list">
+          <li><strong>Simétrica:</strong> Si existe <span class="formula">a → b</span>, entonces DEBE existir la flecha espejo <span class="formula">b → a</span>. (En matriz: simétrica respecto a la diagonal, <span class="formula">M = Mᵀ</span>).</li>
+          <li><strong>Antisimétrica:</strong> Si existe <span class="formula">a → b</span> y <span class="formula">b → a</span>, entonces necesariamente <span class="formula">a = b</span>. Regla visual infalible: <strong>¡PROHIBIDAS las flechas dobles entre nodos distintos!</strong></li>
+          <li><strong>Regla de oro con bucles:</strong> Los bucles <span class="formula">(x,x)</span> <em>NO molestan</em> ni a la simetría ni a la antisimetría.</li>
+        </ul>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Semáforos en Vivo: Simétrica vs. Antisimétrica</div>
+          <p style="margin:0 0 10px; font-size:0.88rem; color:var(--text-muted);">
+            Prueba los 4 casos rápidos o toca nodos en el grafo para añadir/quitar flechas y observar ambos semáforos:
+          </p>
+          <div class="chip-row" style="margin-bottom:12px;">
+            <button class="op-btn" onclick="l3Preset('both')">✨ Solo bucles (¡Ambas!)</button>
+            <button class="op-btn" onclick="l3Preset('sym')">🔁 Doble flecha (Simétrica)</button>
+            <button class="op-btn" onclick="l3Preset('anti')">➡️ Solo ida (Antisimétrica)</button>
+            <button class="op-btn" onclick="l3Preset('none')">🔀 Mezcla (Ninguna)</button>
+          </div>
+          <div class="grid-2" style="align-items:center;">
+            <div>
+              <div class="graph-stage" id="l3GraphBox"></div>
+              <div id="l3Hint" style="font-size:0.8rem; color:var(--amber); text-align:center; margin-top:6px;"></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;" id="l3LightsBox"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initLesson3Lab() { l3State.selectedNode = null; renderLesson3Lab(); }
+
+    function l3Preset(kind) {
+      l3State.selectedNode = null;
+      if (kind === "both") l3State.pairs = new Set(["1:::1", "2:::2", "3:::3"]);
+      else if (kind === "sym") l3State.pairs = new Set(["1:::2", "2:::1", "3:::3"]);
+      else if (kind === "anti") l3State.pairs = new Set(["1:::2", "2:::3", "1:::1"]);
+      else l3State.pairs = new Set(["1:::2", "2:::1", "2:::3"]);
+      playSound("click");
+      renderLesson3Lab();
+    }
+
+    function renderLesson3Lab() {
+      const pairs = Array.from(l3State.pairs).map(parsePairKey);
+      const info = analyzeRelation(l3State.nodes, pairs);
+      const gBox = document.getElementById("l3GraphBox");
+      if (!gBox) return;
+
+      const doubleKeys = new Set();
+      info.doublePairs.forEach(([u, v]) => { doubleKeys.add(pairKey(u, v)); doubleKeys.add(pairKey(v, u)); });
+
+      renderDigraphSVG(gBox, {
+        nodes: l3State.nodes,
+        edges: pairs.map(([u, v]) => ({
+          u, v,
+          state: doubleKeys.has(pairKey(u, v)) ? "violet" : "orig"
+        })),
+        selectedNode: l3State.selectedNode,
+        onNodeClick: (id) => {
+          if (l3State.selectedNode === null) {
+            l3State.selectedNode = id;
+            playSound("click");
+          } else {
+            const k = pairKey(l3State.selectedNode, id);
+            if (l3State.pairs.has(k)) l3State.pairs.delete(k);
+            else l3State.pairs.add(k);
+            l3State.selectedNode = null;
+            playSound("toggle");
+          }
+          renderLesson3Lab();
+        }
+      });
+
+      document.getElementById("l3Hint").textContent = l3State.selectedNode
+        ? `Origen: ${l3State.selectedNode} → toca el nodo destino`
+        : `Pares actuales: ${formatPairs(pairs)}`;
+
+      document.getElementById("l3LightsBox").innerHTML = `
+        <div class="traffic-box ${info.symmetric ? "pass" : "fail"}">
+          <div style="font-weight:900; margin-bottom:4px;">${info.symmetric ? "🟢 SIMÉTRICA: SÍ" : "🔴 SIMÉTRICA: NO"}</div>
+          <div style="font-size:0.86rem; color:#cbd5e1;">
+            ${info.symmetric
+              ? "Cada flecha entre nodos distintos tiene su espejo de vuelta."
+              : `Faltan espejos: hay ${info.missingMirrors.map(([u, v]) => `(${u},${v}) sin (${v},${u})`).join("; ")}.`}
+          </div>
+        </div>
+        <div class="traffic-box ${info.antisymmetric ? "pass" : "fail"}">
+          <div style="font-weight:900; margin-bottom:4px;">${info.antisymmetric ? "🟢 ANTISIMÉTRICA: SÍ" : "🔴 ANTISIMÉTRICA: NO"}</div>
+          <div style="font-size:0.86rem; color:#cbd5e1;">
+            ${info.antisymmetric
+              ? "No existe ninguna doble flecha entre nodos distintos (los bucles no la rompen)."
+              : `Rota por doble flecha entre nodos distintos: ${info.doublePairs.map(([u, v]) => `${u} ↔ ${v}`).join(", ")}.`}
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- LESSON 4 LAB: TRANSITIVE SHORTCUT SCANNER (UNED 2026 SEPT) --- */
+    const L4_BASE_PAIRS = [["2","5"], ["3","5"], ["4","3"], ["4","4"], ["5","3"]];
+    const l4State = {
+      nodes: ["1", "2", "3", "4", "5", "6"],
+      added: [],
+      activeWitness: null
+    };
+
+    function buildLesson4HTML() {
+      return `
+        <p>La propiedad <strong>transitiva</strong> es la <strong>Regla del Atajo</strong>: siempre que puedas ir en 2 pasos <span class="formula">a → b</span> y <span class="formula">b → c</span>, tiene que existir el vuelo directo <span class="formula">a → c</span>.</p>
+        <div class="callout-danger">
+          <strong>🔥 Trampa Estrella UNED Septiembre 2026:</strong> ¡Atención cuando <span class="formula">a = c</span>! Si tienes un ciclo de dos nodos <span class="formula">3 → 5</span> y <span class="formula">5 → 3</span>, la regla dice:
+          <div style="margin-top:6px;">
+            • <span class="formula">3 → 5 → 3</span> exige el bucle <span class="formula">(3,3)</span>.<br>
+            • <span class="formula">5 → 3 → 5</span> exige el bucle <span class="formula">(5,5)</span>.
+          </div>
+        </div>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Escáner de Atajos — Relación Real UNED Sept 2026</div>
+          <p style="margin:0 0 10px; font-size:0.88rem; color:var(--text-muted);">
+            <span class="formula">R = {(2,5), (3,5), (4,3), (4,4), (5,3)}</span> sobre <span class="formula">X = {1,2,3,4,5,6}</span>. Escanea un camino roto y añade el atajo hasta completar la transitividad:
+          </p>
+          <div class="grid-2" style="align-items:center;">
+            <div class="graph-stage" id="l4GraphBox"></div>
+            <div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+                <button class="btn btn-cyan btn-sm" onclick="l4ScanNext()">🔍 Escanear Atajo</button>
+                <button class="btn btn-amber btn-sm" id="l4AddBtn" onclick="l4ApplyShortcut()" disabled>⚡ Añadir Atajo</button>
+                <button class="btn btn-ghost btn-sm" onclick="l4Reset()">↺ Reiniciar</button>
+              </div>
+              <div id="l4StatusBox" class="card-soft" style="font-size:0.9rem;"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initLesson4Lab() { l4State.added = []; l4State.activeWitness = null; renderLesson4Lab(); }
+    function l4Reset() { l4State.added = []; l4State.activeWitness = null; playSound("click"); renderLesson4Lab(); }
+
+    function l4ScanNext() {
+      const all = [...L4_BASE_PAIRS, ...l4State.added];
+      const info = analyzeRelation(l4State.nodes, all);
+      if (info.missingShortcuts.length === 0) {
+        l4State.activeWitness = null;
+        playSound("success");
+      } else {
+        l4State.activeWitness = info.missingShortcuts[0];
+        playSound("toggle");
+      }
+      renderLesson4Lab();
+    }
+
+    function l4ApplyShortcut() {
+      if (!l4State.activeWitness) return;
+      const { a, c } = l4State.activeWitness;
+      l4State.added.push([a, c]);
+      l4State.activeWitness = null;
+      playSound("success");
+      renderLesson4Lab();
+    }
+
+    function renderLesson4Lab() {
+      const all = [...L4_BASE_PAIRS, ...l4State.added];
+      const info = analyzeRelation(l4State.nodes, all);
+      const gBox = document.getElementById("l4GraphBox");
+      if (!gBox) return;
+
+      const edges = [
+        ...L4_BASE_PAIRS.map(([u, v]) => ({ u, v, state: "orig" })),
+        ...l4State.added.map(([u, v]) => ({ u, v, state: "ok" }))
+      ];
+      if (l4State.activeWitness) {
+        edges.push({ u: l4State.activeWitness.a, v: l4State.activeWitness.c, state: "err" });
+      }
+
+      renderDigraphSVG(gBox, {
+        nodes: l4State.nodes,
+        edges,
+        highlightNodes: l4State.activeWitness ? [l4State.activeWitness.a, l4State.activeWitness.b, l4State.activeWitness.c] : []
+      });
+
+      const addBtn = document.getElementById("l4AddBtn");
+      if (addBtn) addBtn.disabled = !l4State.activeWitness;
+
+      const box = document.getElementById("l4StatusBox");
+      if (info.transitive) {
+        box.innerHTML = `
+          <div class="c-emerald" style="margin-bottom:6px;">✅ ¡100% TRANSITIVA!</div>
+          Has añadido los 4 atajos exactos del examen UNED Sept 2026:
+          <div style="margin-top:6px;"><span class="formula">${formatPairs(l4State.added)}</span></div>
+        `;
+      } else if (l4State.activeWitness) {
+        const { a, b, c } = l4State.activeWitness;
+        box.innerHTML = `
+          <div class="c-rose" style="margin-bottom:6px;">⚠️ Camino sin atajo detectado:</div>
+          Existe <span class="formula">${a} → ${b}</span> y <span class="formula">${b} → ${c}</span>, pero falta la flecha directa <span class="formula">(${a},${c})</span> (mostrada en rojo discontinuo).
+          <div style="margin-top:8px; color:var(--text-muted); font-size:0.84rem;">Pulsa <strong>"Añadir Atajo"</strong> para cerrar este paso.</div>
+        `;
+      } else {
+        box.innerHTML = `
+          Quedan <strong>${info.missingShortcuts.length}</strong> atajo(s) por cerrar.<br>
+          Atajos añadidos: <span class="formula">${formatPairs(l4State.added)}</span><br>
+          <span style="color:var(--text-muted); font-size:0.84rem;">Pulsa <strong>"Escanear Atajo"</strong> para inspeccionar el siguiente camino.</span>
+        `;
+      }
+    }
+
+    /* --- LESSON 5 LAB: THE 3 CLOSURES (UNED 2025 MOD C/D) --- */
+    const L5_NODES = ["1", "2", "3", "4", "5"];
+    const L5_ORIG = [["1","1"], ["1","4"], ["2","2"], ["2","3"], ["4","4"], ["5","2"]];
+    let l5Mode = "orig";
+
+    function buildLesson5HTML() {
+      return `
+        <p>El <strong>cierre</strong> de una relación R respecto a una propiedad es la relación <em>más pequeña que contiene a R</em> y cumple esa propiedad. En el examen se reduce a 3 recetas directas:</p>
+        <ul class="theory-list">
+          <li><strong>Cierre Reflexivo (<span class="formula">Rʳ</span>):</strong> Añade solo los bucles <span class="formula">(x,x)</span> que falten en la diagonal.</li>
+          <li><strong>Cierre Simétrico (<span class="formula">Rˢ</span>):</strong> Por cada <span class="formula">(a,b) ∈ R</span>, añade su espejo <span class="formula">(b,a)</span> si no estaba. <em>Nunca añade bucles.</em></li>
+          <li><strong>Cierre Transitivo (<span class="formula">Rᵗ</span>):</strong> Añade el atajo <span class="formula">(a,c)</span> para todo camino de 2 o más pasos <span class="formula">a → ... → c</span> (¡incluyendo bucles si hay ciclos!).</li>
+        </ul>
+        <div class="callout-tip">
+          <strong>⭐ Trampa UNED 2026 Mod B:</strong> ¿Qué pasa si R <strong>ya cumple</strong> la propiedad? Entonces no hay que añadir nada: <span class="formula">Rᵗ = R</span>. ¡No inventes pares extra!
+        </div>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Simulador de los 3 Cierres — UNED 2025 Mod C/D</div>
+          <p style="margin:0 0 10px; font-size:0.88rem; color:var(--text-muted);">
+            <span class="formula">A = {1,2,3,4,5}</span>, <span class="formula">R = {(1,1),(1,4),(2,2),(2,3),(4,4),(5,2)}</span>. Compara las 4 vistas:
+          </p>
+          <div class="chip-row" id="l5Btns" style="margin-bottom:14px;">
+            <button class="op-btn active" onclick="setL5Mode('orig')">Ver R original</button>
+            <button class="op-btn" onclick="setL5Mode('reflexive')">Aplicar Cierre Reflexivo Rʳ</button>
+            <button class="op-btn" onclick="setL5Mode('symmetric')">Aplicar Cierre Simétrico Rˢ</button>
+            <button class="op-btn" onclick="setL5Mode('transitive')">Aplicar Cierre Transitivo Rᵗ</button>
+          </div>
+          <div class="grid-2" style="align-items:center;">
+            <div>
+              <div class="graph-stage" id="l5GraphBox"></div>
+              <div class="graph-legend">
+                <span><i class="legend-dot" style="background:var(--cyan);"></i>Original R</span>
+                <span><i class="legend-dot" style="background:var(--amber);"></i>Pares nuevos añadidos</span>
+              </div>
+            </div>
+            <div id="l5InfoBox" class="card-soft"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initLesson5Lab() { l5Mode = "orig"; renderLesson5Lab(); }
+    function setL5Mode(m) {
+      l5Mode = m;
+      const modes = ["orig", "reflexive", "symmetric", "transitive"];
+      document.querySelectorAll("#l5Btns .op-btn").forEach((b, i) => b.classList.toggle("active", modes[i] === m));
+      playSound("toggle");
+      renderLesson5Lab();
+    }
+
+    function renderLesson5Lab() {
+      const gBox = document.getElementById("l5GraphBox");
+      if (!gBox) return;
+
+      let added = [];
+      let title = "Relación Original R";
+      let expl = "Esta relación NO es reflexiva (faltan (3,3) y (5,5)), NO es simétrica (faltan (4,1),(3,2),(2,5)) y NO es transitiva (5→2→3 sin 5→3).";
+
+      if (l5Mode !== "orig") {
+        const res = computeClosure(L5_NODES, L5_ORIG, l5Mode);
+        added = res.added;
+        if (l5Mode === "reflexive") {
+          title = "Cierre Reflexivo Rʳ";
+          expl = "Añadimos los únicos 2 bucles que faltaban en la diagonal: (3,3) y (5,5).";
+        } else if (l5Mode === "symmetric") {
+          title = "Cierre Simétrico Rˢ (¡Pregunta real UNED 2025 Mod C/D!)";
+          expl = "Añadimos los 3 espejos de las flechas no-bucles: (4,1), (3,2) y (2,5). Observa cómo NO se añaden bucles.";
+        } else if (l5Mode === "transitive") {
+          title = "Cierre Transitivo Rᵗ";
+          expl = "El único camino de 2 pasos sin atajo directo es 5 → 2 → 3, así que solo hace falta añadir (5,3).";
+        }
+      }
+
+      const edges = [
+        ...L5_ORIG.map(([u, v]) => ({ u, v, state: "orig" })),
+        ...added.map(([u, v]) => ({ u, v, state: "added" }))
+      ];
+
+      renderDigraphSVG(gBox, { nodes: L5_NODES, edges });
+
+      document.getElementById("l5InfoBox").innerHTML = `
+        <strong class="c-cyan" style="display:block; margin-bottom:6px;">${title}</strong>
+        <p style="margin:0 0 10px; font-size:0.89rem; color:#cbd5e1;">${expl}</p>
+        <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:4px;">Pares nuevos añadidos (${added.length}):</div>
+        <div class="formula-block" style="color:${added.length ? "#fde68a" : "#94a3b8"};">${formatPairs(added)}</div>
+      `;
+    }
+
+    /* --- LESSON 6 LAB: HASSE STEP-BY-STEP --- */
+    let l6Preset = "chain"; // "chain" | "diamond"
+    let l6Step = 0; // 0: complete, 1: no loops, 2: Hasse
+
+    function buildLesson6HTML() {
+      return `
+        <p>Las propiedades se combinan para formar las dos grandes familias de relaciones en Matemáticas Discretas:</p>
+        <div class="grid-2" style="margin:12px 0;">
+          <div class="card-soft" style="border-color:rgba(139,92,246,0.4);">
+            <strong class="c-violet">🟣 Relación de Equivalencia</strong>
+            <div style="margin:6px 0;"><span class="formula">Reflexiva + Simétrica + Transitiva</span></div>
+            <div style="font-size:0.86rem; color:var(--text-muted);">Parte el conjunto en "islas" o <strong>clases de equivalencia</strong> disjuntas (ej. tener la misma paridad).</div>
+          </div>
+          <div class="card-soft" style="border-color:rgba(16,185,129,0.4);">
+            <strong class="c-emerald">🟢 Relación de Orden Parcial</strong>
+            <div style="margin:6px 0;"><span class="formula">Reflexiva + Antisimétrica + Transitiva</span></div>
+            <div style="font-size:0.86rem; color:var(--text-muted);">Establece una jerarquía (ej. ≤, divisibilidad a|b, inclusión ⊆). Si TODOS los pares son comparables, es un <strong>Orden Total</strong>.</div>
+          </div>
+        </div>
+        <p><strong>Regla de 3 pasos del Diagrama de Hasse (cierre de cobertura):</strong></p>
+        <ol class="theory-list">
+          <li><strong>Quita todos los bucles reflexivos</strong> <span class="formula">(x,x)</span> (se dan por sabidos).</li>
+          <li><strong>Quita las aristas transitivas redundantes</strong> (si existe <span class="formula">a → b → c</span>, borra el salto <span class="formula">a → c</span>).</li>
+          <li><strong>Orienta hacia arriba sin puntas de flecha</strong> (los elementos menores abajo y los mayores arriba).</li>
+        </ol>
+
+        <div class="lab-box">
+          <div class="lab-title">🔬 Constructor de Diagrama de Hasse Paso a Paso</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; margin-bottom:12px;">
+            <div class="chip-row" id="l6DatasetBtns">
+              <button class="op-btn active" onclick="setL6Dataset('chain')">UNED: Divisibilidad en {2,4,8,16}</button>
+              <button class="op-btn" onclick="setL6Dataset('diamond')">Rombo: Divisibilidad en {1,2,3,6}</button>
+            </div>
+            <div class="chip-row" id="l6StepBtns">
+              <button class="op-btn active" onclick="setL6Step(0)">Paso 0: Completa</button>
+              <button class="op-btn" onclick="setL6Step(1)">Paso 1: Sin bucles</button>
+              <button class="op-btn" onclick="setL6Step(2)">Paso 2: Hasse</button>
+            </div>
+          </div>
+          <div class="grid-2" style="align-items:center;">
+            <div class="graph-stage" id="l6GraphBox"></div>
+            <div id="l6DescBox" class="card-soft"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initLesson6Lab() { l6Preset = "chain"; l6Step = 0; renderLesson6Lab(); }
+
+    function setL6Dataset(ds) {
+      l6Preset = ds;
+      l6Step = 0;
+      document.querySelectorAll("#l6DatasetBtns .op-btn").forEach((b, i) => b.classList.toggle("active", (i === 0 ? "chain" : "diamond") === ds));
+      document.querySelectorAll("#l6StepBtns .op-btn").forEach((b, i) => b.classList.toggle("active", i === 0));
+      playSound("click");
+      renderLesson6Lab();
+    }
+
+    function setL6Step(s) {
+      l6Step = s;
+      document.querySelectorAll("#l6StepBtns .op-btn").forEach((b, i) => b.classList.toggle("active", i === s));
+      playSound(s === 2 ? "success" : "toggle");
+      renderLesson6Lab();
+    }
+
+    function renderLesson6Lab() {
+      const gBox = document.getElementById("l6GraphBox");
+      if (!gBox) return;
+
+      const isChain = l6Preset === "chain";
+      const nodes = isChain ? ["2", "4", "8", "16"] : ["1", "2", "3", "6"];
+      const positions = isChain
+        ? { "16": { x: 220, y: 46 }, "8": { x: 220, y: 120 }, "4": { x: 220, y: 194 }, "2": { x: 220, y: 268 } }
+        : { "6": { x: 220, y: 54 }, "2": { x: 125, y: 158 }, "3": { x: 315, y: 158 }, "1": { x: 220, y: 262 } };
+
+      const loops = nodes.map(n => ({ u: n, v: n, loopAngle: isChain ? 0 : undefined }));
+      const covers = isChain
+        ? [{ u: "2", v: "4" }, { u: "4", v: "8" }, { u: "8", v: "16" }]
+        : [{ u: "1", v: "2" }, { u: "1", v: "3" }, { u: "2", v: "6" }, { u: "3", v: "6" }];
+      const jumps = isChain
+        ? [{ u: "2", v: "8", curveOffset: -64 }, { u: "4", v: "16", curveOffset: 64 }, { u: "2", v: "16", curveOffset: -115 }]
+        : [{ u: "1", v: "6", curveOffset: 0 }];
+
+      let edges = [];
+      let desc = "";
+      if (l6Step === 0) {
+        edges = [
+          ...loops.map(e => ({ ...e, state: "violet" })),
+          ...jumps.map(e => ({ ...e, state: "added" })),
+          ...covers.map(e => ({ ...e, state: "orig" }))
+        ];
+        desc = `<strong>Paso 0 — Relación de orden completa:</strong> Incluye los ${loops.length} bucles reflexivos (violeta), las ${covers.length} coberturas directas (cian) y ${jumps.length} atajo(s) transitivo(s) (ámbar).`;
+      } else if (l6Step === 1) {
+        edges = [
+          ...jumps.map(e => ({ ...e, state: "added" })),
+          ...covers.map(e => ({ ...e, state: "orig" }))
+        ];
+        desc = `<strong>Paso 1 — Bucles eliminados:</strong> Al ser orden parcial sabemos que todo elemento se relaciona consigo mismo, así que borramos los ${loops.length} bucles. Aún quedan los atajos redundantes en ámbar.`;
+      } else {
+        edges = covers.map(e => ({ ...e, state: "hasse", noArrow: true }));
+        desc = isChain
+          ? `<strong>Paso 2 — ¡Diagrama de Hasse listo!</strong> Quitamos (2,8), (4,16) y (2,16). Queda la cadena lineal <span class="formula">2 — 4 — 8 — 16</span> (Orden Total, pregunta real UNED 2025 Mod C/D).`
+          : `<strong>Paso 2 — ¡Diagrama de Hasse listo!</strong> Quitamos (1,6) porque ya existe el camino 1→2→6 (y 1→3→6). Queda un rombo: es Orden Parcial pero NO Total porque <strong>2 y 3 son incomparables</strong>.`;
+      }
+
+      renderDigraphSVG(gBox, { nodes, positions, edges, height: 315, hideArrows: l6Step === 2 });
+      document.getElementById("l6DescBox").innerHTML = desc;
+    }
+
+    /* ========================================================================
+       6. MODULE 3 — 3 INTERACTIVE PUZZLE GAMES
+       ======================================================================== */
+    function openGame(gameId) {
+      document.getElementById("games-selector").style.display = "none";
+      ["circuits", "inspector", "hasse"].forEach(id => {
+        document.getElementById(`game-${id}`).style.display = id === gameId ? "block" : "none";
+      });
+      if (gameId === "circuits") initCircuitsGame();
+      if (gameId === "inspector") initInspectorGame();
+      if (gameId === "hasse") initHasseGame();
+      playSound("click");
+    }
+
+    function closeGame(silent = false) {
+      const sel = document.getElementById("games-selector");
+      if (sel) sel.style.display = "block";
+      ["circuits", "inspector", "hasse"].forEach(id => {
+        const el = document.getElementById(`game-${id}`);
+        if (el) el.style.display = "none";
+      });
+      renderGamesHubStats();
+      if (!silent) playSound("click");
+    }
+
+    /* ------------------------------------------------------------------------
+       GAME 1: CIRCUITOS DE CIERRE (9 LEVELS)
+       ------------------------------------------------------------------------ */
+    const CIRCUITS_LEVELS = [
+      {
+        id: 1, badge: "Iniciación · Rʳ", type: "reflexive", title: "Cierre Reflexivo Básico",
+        nodes: ["1", "2", "3"], orig: [["1","1"], ["1","2"], ["2","3"]]
+      },
+      {
+        id: 2, badge: "Iniciación · Rˢ", type: "symmetric", title: "Espejos Básicos",
+        nodes: ["1", "2", "3"], orig: [["1","2"], ["2","3"], ["3","3"]]
+      },
+      {
+        id: 3, badge: "Iniciación · Rᵗ", type: "transitive", title: "El Primer Atajo",
+        nodes: ["1", "2", "3"], orig: [["1","2"], ["2","3"]]
+      },
+      {
+        id: 4, badge: "UNED 2025 Mod C/D · Rˢ", type: "symmetric", title: "Cierre Simétrico Oficial",
+        nodes: ["1", "2", "3", "4", "5"], orig: [["1","1"], ["1","4"], ["2","2"], ["2","3"], ["4","4"], ["5","2"]]
+      },
+      {
+        id: 5, badge: "UNED 2025 Sept · Rˢ", type: "symmetric", title: "Estrella Simétrica",
+        nodes: ["a", "b", "c", "d"], orig: [["a","b"], ["a","c"], ["a","d"], ["b","c"]]
+      },
+      {
+        id: 6, badge: "UNED 2026 Mod B · Trampa Rᵗ", type: "transitive", title: "Alerta: ¿Falta algún atajo?",
+        nodes: ["a", "b", "c"], orig: [["a","b"], ["b","c"], ["a","c"], ["c","c"]]
+      },
+      {
+        id: 7, badge: "Cadena 4 nodos · Rᵗ", type: "transitive", title: "Cascada Transitiva",
+        nodes: ["1", "2", "3", "4"], orig: [["1","2"], ["2","3"], ["3","4"]]
+      },
+      {
+        id: 8, badge: "Trampa del Ciclo · Rᵗ", type: "transitive", title: "Ciclo + Salida",
+        nodes: ["1", "2", "3"], orig: [["1","2"], ["2","1"], ["2","3"]]
+      },
+      {
+        id: 9, badge: "👑 Jefe Final · UNED 2026 Sept · Rᵗ", type: "transitive", title: "Cierre Transitivo Oficial",
+        nodes: ["1", "2", "3", "4", "5", "6"], orig: [["2","5"], ["3","5"], ["4","3"], ["4","4"], ["5","3"]]
+      }
+    ];
+
+    const CLOSURE_LABEL = {
+      reflexive: "Cierre Reflexivo (Rʳ)",
+      symmetric: "Cierre Simétrico (Rˢ)",
+      transitive: "Cierre Transitivo (Rᵗ)"
+    };
+
+    let circCurLvl = 1;
+    let circAdded = new Set();
+    let circSelNode = null;
+    let circAttempts = 0;
+    let circSolved = false;
+    let circErrEdges = [];
+
+    function initCircuitsGame() {
+      renderCircuitsGrid();
+      loadCircuitLevel(circCurLvl);
+    }
+
+    function renderCircuitsGrid() {
+      const grid = document.getElementById("circuitsLevelGrid");
+      grid.innerHTML = CIRCUITS_LEVELS.map(lv => {
+        const s = state.circuitsStars[lv.id] || 0;
+        const typeTag = lv.type === "reflexive" ? "Rʳ" : (lv.type === "symmetric" ? "Rˢ" : "Rᵗ");
+        return `
+          <button class="level-tile ${lv.id === circCurLvl ? "active" : ""}" onclick="loadCircuitLevel(${lv.id})">
+            <span style="font-size:0.72rem; color:var(--cyan);">${typeTag}</span>
+            <span style="font-size:1.1rem;">${lv.id}</span>
+            <span class="stars-row">${"★".repeat(s)}${"☆".repeat(3 - s)}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function loadCircuitLevel(id) {
+      circCurLvl = id;
+      circAdded = new Set();
+      circSelNode = null;
+      circAttempts = 0;
+      circSolved = false;
+      circErrEdges = [];
+      renderCircuitsGrid();
+      renderCircuitPlayArea();
+    }
+
+    function renderCircuitPlayArea() {
+      const lv = CIRCUITS_LEVELS.find(l => l.id === circCurLvl);
+      const area = document.getElementById("circuitsPlayArea");
+      const addedArr = Array.from(circAdded).map(parsePairKey);
+
+      area.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div>
+            <span class="tag tag-cyan">${lv.badge}</span>
+            <h3 style="margin:6px 0 0; font-size:1.22rem;">Nivel ${lv.id}: ${lv.title}</h3>
+          </div>
+          <span class="tag tag-amber" style="font-size:0.84rem; padding:6px 12px;">🎯 Objetivo: ${CLOSURE_LABEL[lv.type]}</span>
+        </div>
+
+        <div class="formula-block" style="margin-bottom:14px;">
+          <strong>A</strong> = {${lv.nodes.join(", ")}} &nbsp;·&nbsp; <strong>R</strong> = ${formatPairs(lv.orig)}
+        </div>
+
+        <div class="grid-2" style="align-items:start;">
+          <div>
+            <div class="graph-stage" id="circuitGraphBox"></div>
+            <div class="graph-legend">
+              <span><i class="legend-dot" style="background:var(--cyan);"></i>Fijas de R</span>
+              <span><i class="legend-dot" style="background:var(--amber);"></i>Tus flechas</span>
+              ${circSolved ? `<span><i class="legend-dot" style="background:var(--emerald);"></i>Energizado</span>` : ""}
+            </div>
+            <div style="text-align:center; font-size:0.82rem; color:var(--amber); margin-top:7px; min-height:20px;">
+              ${circSelNode
+                ? `⚡ Origen: <strong>${circSelNode}</strong> — toca nodo destino (o ${circSelNode} de nuevo para bucle)`
+                : "👆 Toca un nodo origen y luego un nodo destino para añadir/quitar flecha"}
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div class="card-soft">
+              <div style="font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">
+                Pares añadidos por ti (${addedArr.length})
+              </div>
+              <div class="chip-row" id="circuitAddedPills">
+                ${addedArr.length === 0
+                  ? `<span style="color:var(--text-dim); font-size:0.86rem;">Ningún par añadido aún.</span>`
+                  : addedArr.map(([u, v]) => `
+                    <span class="pair-pill">
+                      (${u},${v})
+                      ${circSolved ? "" : `<button type="button" onclick="removeCircuitPair('${u}','${v}')" aria-label="Quitar (${u},${v})">×</button>`}
+                    </span>
+                  `).join("")}
+              </div>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:9px;">
+              <button class="btn btn-amber" style="flex:1;" onclick="validateCircuit()" ${circSolved ? "disabled" : ""}>⚡ Energizar Circuito</button>
+              <button class="btn btn-ghost btn-sm" onclick="clearCircuitAdded()" ${circSolved ? "disabled" : ""}>🧹 Limpiar añadidos</button>
+            </div>
+
+            <div id="circuitFb" class="feedback-box"></div>
+          </div>
+        </div>
+      `;
+
+      const edges = [
+        ...lv.orig.map(([u, v]) => ({ u, v, state: circSolved ? "ok" : "orig" })),
+        ...addedArr.map(([u, v]) => ({ u, v, state: circSolved ? "ok" : "added" })),
+        ...circErrEdges.map(([u, v]) => ({ u, v, state: "err" }))
+      ];
+
+      renderDigraphSVG(document.getElementById("circuitGraphBox"), {
+        nodes: lv.nodes,
+        edges,
+        selectedNode: circSelNode,
+        onNodeClick: circSolved ? null : handleCircuitNodeClick
+      });
+    }
+
+    function handleCircuitNodeClick(nodeId) {
+      const lv = CIRCUITS_LEVELS.find(l => l.id === circCurLvl);
+      const origSet = new Set(lv.orig.map(([u, v]) => pairKey(u, v)));
+      circErrEdges = [];
+
+      if (circSelNode === null) {
+        circSelNode = nodeId;
+        playSound("click");
+        renderCircuitPlayArea();
+        return;
+      }
+
+      const u = circSelNode;
+      const v = nodeId;
+      const k = pairKey(u, v);
+      circSelNode = null;
+
+      if (origSet.has(k)) {
+        playSound("error");
+        showToast(`(${u},${v}) ya es una flecha fija de R`);
+      } else if (circAdded.has(k)) {
+        circAdded.delete(k);
+        playSound("click");
+      } else {
+        circAdded.add(k);
+        playSound("toggle");
+      }
+      renderCircuitPlayArea();
+    }
+
+    function removeCircuitPair(u, v) {
+      circAdded.delete(pairKey(u, v));
+      circErrEdges = [];
+      playSound("click");
+      renderCircuitPlayArea();
+    }
+
+    function clearCircuitAdded() {
+      circAdded.clear();
+      circSelNode = null;
+      circErrEdges = [];
+      playSound("click");
+      renderCircuitPlayArea();
+    }
+
+    function validateCircuit() {
+      const lv = CIRCUITS_LEVELS.find(l => l.id === circCurLvl);
+      const expected = computeClosure(lv.nodes, lv.orig, lv.type);
+      const expSet = new Set(expected.added.map(([u, v]) => pairKey(u, v)));
+
+      const missing = expected.added.filter(([u, v]) => !circAdded.has(pairKey(u, v)));
+      const extra = Array.from(circAdded).map(parsePairKey).filter(([u, v]) => !expSet.has(pairKey(u, v)));
+
+      circAttempts++;
+
+      if (missing.length === 0 && extra.length === 0) {
+        circSolved = true;
+        circErrEdges = [];
+        playSound("success");
+        const stars = circAttempts === 1 ? 3 : (circAttempts === 2 ? 2 : 1);
+        const prev = state.circuitsStars[lv.id] || 0;
+        if (stars > prev) {
+          state.circuitsStars[lv.id] = stars;
+          awardXP(prev === 0 ? 50 : 15, `Circuito Nivel ${lv.id}`);
+        } else {
+          saveState();
+        }
+        renderCircuitsGrid();
+        renderCircuitPlayArea();
+
+        const fb = document.getElementById("circuitFb");
+        const nextBtn = lv.id < CIRCUITS_LEVELS.length
+          ? `<button class="btn btn-emerald btn-sm" style="margin-top:10px;" onclick="loadCircuitLevel(${lv.id + 1})">Siguiente Circuito (${lv.id + 1}) →</button>`
+          : `<button class="btn btn-violet btn-sm" style="margin-top:10px;" onclick="openGame('inspector')">🕵️ ¡Todos los circuitos energizados! Ir al Inspector</button>`;
+
+        fb.className = "feedback-box show ok";
+        fb.innerHTML = `
+          <strong>⚡ ¡Circuito Energizado! ${"★".repeat(stars)}${"☆".repeat(3 - stars)}</strong><br>
+          ${expected.added.length === 0
+            ? "¡Bien visto! R ya era transitiva, así que el cierre es exactamente la propia R (0 pares añadidos)."
+            : `Pares exactos añadidos: <span class="formula">${formatPairs(expected.added)}</span>.`}
+          <br>${nextBtn}
+        `;
+      } else {
+        playSound("error");
+        circErrEdges = extra;
+        renderCircuitPlayArea();
+
+        const msgs = [];
+        if (extra.length > 0) {
+          const [eu, ev] = extra[0];
+          if (lv.type === "symmetric" && eu === ev) {
+            msgs.push(`Sobra <strong>(${eu},${ev})</strong>: el cierre simétrico NO añade bucles.`);
+          } else if (lv.type === "reflexive" && eu !== ev) {
+            msgs.push(`Sobra <strong>(${eu},${ev})</strong>: el cierre reflexivo SOLO añade bucles (x,x).`);
+          } else {
+            msgs.push(`Sobran ${extra.length} par(es) innecesario(s), por ejemplo <strong>(${eu},${ev})</strong>.`);
+          }
+        }
+        if (missing.length > 0) {
+          const [mu, mv] = missing[0];
+          if (lv.type === "reflexive") {
+            msgs.push(`Te falta el bucle <strong>(${mu},${mv})</strong> en la diagonal.`);
+          } else if (lv.type === "symmetric") {
+            msgs.push(`Te falta el espejo <strong>(${mu},${mv})</strong> de (${mv},${mu}).`);
+          } else {
+            // Find a witness intermediate node b for (mu, mv)
+            const fullCur = [...lv.orig, ...Array.from(circAdded).map(parsePairKey)];
+            const infoCur = analyzeRelation(lv.nodes, fullCur);
+            const w = infoCur.missingShortcuts[0];
+            if (w) {
+              msgs.push(`Falta el atajo <strong>(${w.a},${w.c})</strong> por el camino <strong>${w.a} → ${w.b} → ${w.c}</strong>.`);
+            } else {
+              msgs.push(`Te faltan ${missing.length} par(es) transitivo(s), por ejemplo <strong>(${mu},${mv})</strong>.`);
+            }
+          }
+        }
+
+        const fb = document.getElementById("circuitFb");
+        fb.className = "feedback-box show err";
+        fb.innerHTML = `<strong>⚠️ Cortocircuito detectado:</strong><br>• ${msgs.join("<br>• ")}`;
+      }
+    }
+
+    /* ------------------------------------------------------------------------
+       GAME 2: INSPECTOR DE PROPIEDADES (8 DOSSIERS)
+       ------------------------------------------------------------------------ */
+    const INSPECTOR_DOSSIERS = [
+      {
+        id: 1, badge: "Expediente #1 · Fundamentos", title: "La Relación Identidad",
+        nodes: ["1", "2", "3"], pairs: [["1","1"], ["2","2"], ["3","3"]],
+        askClass: false, note: "La identidad cumple las 4 propiedades a la vez (¡es tanto Equivalencia como Orden Parcial!)."
+      },
+      {
+        id: 2, badge: "UNED 2026 Mod A · P12", title: "Trampa de la Diagonal Incompleta",
+        nodes: ["1", "2", "3", "4"], pairs: [["1","1"], ["1","3"], ["2","2"], ["3","3"], ["4","2"]],
+        askClass: false, note: "Falta (4,4) para reflexiva y (3,1)/(2,4) para simétrica; pero NO tiene flechas dobles (antisimétrica) y todo camino de 2 pasos ya tiene atajo (transitiva)."
+      },
+      {
+        id: 3, badge: "UNED 2025 Mod A/B · P12", title: "El Expediente de 5 Nodos",
+        nodes: ["1", "2", "3", "4", "5"], pairs: [["1","1"], ["1","4"], ["2","2"], ["2","3"], ["4","4"], ["5","2"]],
+        askClass: false, note: "Única propiedad cumplida: Antisimétrica. Falla transitiva en 5→2→3 sin (5,3)."
+      },
+      {
+        id: 4, badge: "Expediente #4 · Trampa del Ciclo", title: "Doble Flecha sin Bucles",
+        nodes: ["1", "2", "3"], pairs: [["1","2"], ["2","1"]],
+        askClass: false, note: "Es simétrica, pero el ciclo 1→2→1 rompe la transitividad al no existir (1,1) ni (2,2)."
+      },
+      {
+        id: 5, badge: "Expediente #5 · Clasificación", title: "Dos Islas Conectadas",
+        nodes: ["1", "2", "3", "4"], pairs: [["1","1"], ["2","2"], ["1","2"], ["2","1"], ["3","3"], ["4","4"], ["3","4"], ["4","3"]],
+        askClass: true, expectedClass: "equiv", note: "Reflexiva + Simétrica + Transitiva ⇒ Relación de Equivalencia con 2 clases: {1,2} y {3,4}."
+      },
+      {
+        id: 6, badge: "Expediente #6 · Clasificación", title: "Divisibilidad en {1, 2, 3, 6}",
+        nodes: ["1", "2", "3", "6"], pairs: [["1","1"], ["2","2"], ["3","3"], ["6","6"], ["1","2"], ["1","3"], ["1","6"], ["2","6"], ["3","6"]],
+        askClass: true, expectedClass: "order", note: "Reflexiva + Antisimétrica + Transitiva ⇒ Orden Parcial (no total porque 2 y 3 son incomparables)."
+      },
+      {
+        id: 7, badge: "Expediente #7 · Clasificación", title: "Trampa Mixta",
+        nodes: ["1", "2", "3"], pairs: [["1","1"], ["2","2"], ["3","3"], ["1","2"], ["2","1"], ["2","3"]],
+        askClass: true, expectedClass: "none", note: "Solo es reflexiva: falta (3,2) para simétrica, 1↔2 rompe antisimétrica y falta (1,3) para transitiva."
+      },
+      {
+        id: 8, badge: "Expediente #8 · Clasificación", title: "Divisibilidad en {2, 4, 8}",
+        nodes: ["2", "4", "8"], pairs: [["2","2"], ["4","4"], ["8","8"], ["2","4"], ["4","8"], ["2","8"]],
+        askClass: true, expectedClass: "order", note: "Reflexiva + Antisimétrica + Transitiva ⇒ Orden Parcial (y además Orden Total)."
+      }
+    ];
+
+    let inspCurId = 1;
+    let inspSeals = { reflexive: null, symmetric: null, antisymmetric: null, transitive: null, cls: null };
+    let inspChecked = false;
+    let inspTab = "graph"; // "graph" | "matrix"
+    let inspAttempts = 0;
+
+    function initInspectorGame() {
+      renderInspectorGrid();
+      loadInspectorDossier(inspCurId);
+    }
+
+    function renderInspectorGrid() {
+      const grid = document.getElementById("inspectorLevelGrid");
+      grid.innerHTML = INSPECTOR_DOSSIERS.map(d => {
+        const s = state.inspectorStars[d.id] || 0;
+        return `
+          <button class="level-tile ${d.id === inspCurId ? "active" : ""}" onclick="loadInspectorDossier(${d.id})">
+            <span style="font-size:0.7rem; color:var(--violet);">${d.askClass ? "EXP+CL" : "EXP"}</span>
+            <span style="font-size:1.1rem;">#${d.id}</span>
+            <span class="stars-row">${"★".repeat(s)}${"☆".repeat(3 - s)}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function loadInspectorDossier(id) {
+      inspCurId = id;
+      inspSeals = { reflexive: null, symmetric: null, antisymmetric: null, transitive: null, cls: null };
+      inspChecked = false;
+      inspAttempts = 0;
+      renderInspectorGrid();
+      renderInspectorPlayArea();
+    }
+
+    function setInspSeal(prop, val) {
+      if (inspChecked && inspAllCorrect()) return;
+      inspSeals[prop] = val;
+      inspChecked = false;
+      playSound("toggle");
+      renderInspectorPlayArea();
+    }
+
+    function setInspViewTab(t) {
+      inspTab = t;
+      playSound("click");
+      renderInspectorPlayArea();
+    }
+
+    function inspAllCorrect() {
+      const d = INSPECTOR_DOSSIERS.find(x => x.id === inspCurId);
+      const info = analyzeRelation(d.nodes, d.pairs);
+      const baseOk =
+        inspSeals.reflexive === info.reflexive &&
+        inspSeals.symmetric === info.symmetric &&
+        inspSeals.antisymmetric === info.antisymmetric &&
+        inspSeals.transitive === info.transitive;
+      if (!d.askClass) return baseOk;
+      return baseOk && inspSeals.cls === d.expectedClass;
+    }
+
+    function renderInspectorPlayArea() {
+      const d = INSPECTOR_DOSSIERS.find(x => x.id === inspCurId);
+      const info = analyzeRelation(d.nodes, d.pairs);
+      const area = document.getElementById("inspectorPlayArea");
+
+      const propsList = [
+        { key: "reflexive", label: "Reflexiva", truth: info.reflexive },
+        { key: "symmetric", label: "Simétrica", truth: info.symmetric },
+        { key: "antisymmetric", label: "Antisimétrica", truth: info.antisymmetric },
+        { key: "transitive", label: "Transitiva", truth: info.transitive }
+      ];
+
+      const sealsHtml = propsList.map(p => {
+        const val = inspSeals[p.key];
+        let rowCls = "";
+        if (inspChecked) rowCls = val === p.truth ? "seal-ok" : "seal-bad";
+        return `
+          <div class="seal-row ${rowCls}">
+            <strong>${p.label}</strong>
+            <div class="seal-btns">
+              <button class="stamp-btn yes ${val === true ? "active" : ""}" onclick="setInspSeal('${p.key}', true)">SÍ</button>
+              <button class="stamp-btn no ${val === false ? "active" : ""}" onclick="setInspSeal('${p.key}', false)">NO</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const classHtml = d.askClass ? `
+        <div class="card-soft ${inspChecked ? (inspSeals.cls === d.expectedClass ? "seal-ok" : "seal-bad") : ""}" style="margin-top:10px; border:1.5px solid ${inspChecked ? (inspSeals.cls === d.expectedClass ? "var(--emerald)" : "var(--rose)") : "var(--border-subtle)"};">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--violet); text-transform:uppercase; margin-bottom:8px;">Clasificación Especial</div>
+          <div class="chip-row">
+            <button class="op-btn ${inspSeals.cls === "order" ? "active" : ""}" onclick="setInspSeal('cls', 'order')">Orden Parcial</button>
+            <button class="op-btn ${inspSeals.cls === "equiv" ? "active" : ""}" onclick="setInspSeal('cls', 'equiv')">Equivalencia</button>
+            <button class="op-btn ${inspSeals.cls === "none" ? "active" : ""}" onclick="setInspSeal('cls', 'none')">Ninguna de las dos</button>
+          </div>
+        </div>
+      ` : "";
+
+      const readyToSubmit =
+        inspSeals.reflexive !== null && inspSeals.symmetric !== null &&
+        inspSeals.antisymmetric !== null && inspSeals.transitive !== null &&
+        (!d.askClass || inspSeals.cls !== null);
+
+      area.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div>
+            <span class="tag tag-violet">${d.badge}</span>
+            <h3 style="margin:6px 0 0; font-size:1.22rem;">${d.title}</h3>
+          </div>
+          <div class="chip-row">
+            <button class="op-btn ${inspTab === "graph" ? "active" : ""}" onclick="setInspViewTab('graph')">🕸️ Grafo SVG</button>
+            <button class="op-btn ${inspTab === "matrix" ? "active" : ""}" onclick="setInspViewTab('matrix')">🔢 Matriz</button>
+          </div>
+        </div>
+
+        <div class="formula-block" style="margin-bottom:14px;">
+          <strong>A</strong> = {${d.nodes.join(", ")}} &nbsp;·&nbsp; <strong>R</strong> = ${formatPairs(d.pairs)}
+        </div>
+
+        <div class="grid-2" style="align-items:start;">
+          <div>
+            ${inspTab === "graph"
+              ? `<div class="graph-stage" id="inspGraphBox"></div>`
+              : `<div class="card-soft">${renderBooleanMatrixHTML(d.nodes, d.pairs, { highlightDiag: true })}</div>`
+            }
+          </div>
+          <div>
+            ${sealsHtml}
+            ${classHtml}
+            <div style="margin-top:14px;">
+              <button class="btn btn-violet" style="width:100%;" onclick="submitInspectorDossier()" ${!readyToSubmit ? "disabled" : ""}>
+                📋 Emitir Dictamen
+              </button>
+            </div>
+            <div id="inspFb" class="feedback-box"></div>
+          </div>
+        </div>
+      `;
+
+      // Render Graph with forensic highlights if checked
+      if (inspTab === "graph") {
+        const edges = d.pairs.map(([u, v]) => ({ u, v, state: "orig" }));
+        const errNodes = [];
+        if (inspChecked) {
+          if (!info.reflexive) info.missingLoops.forEach(n => errNodes.push(n));
+          if (!info.antisymmetric) {
+            const dk = new Set();
+            info.doublePairs.forEach(([u, v]) => { dk.add(pairKey(u, v)); dk.add(pairKey(v, u)); });
+            edges.forEach(e => { if (dk.has(pairKey(e.u, e.v))) e.state = "err"; });
+          }
+          if (!info.transitive && info.missingShortcuts.length) {
+            const w = info.missingShortcuts[0];
+            edges.push({ u: w.a, v: w.c, state: "err" });
+          }
+        }
+        renderDigraphSVG(document.getElementById("inspGraphBox"), {
+          nodes: d.nodes,
+          edges,
+          errorNodes: errNodes
+        });
+      }
+
+      if (inspChecked) renderInspectorReport(d, info);
+    }
+
+    function submitInspectorDossier() {
+      const d = INSPECTOR_DOSSIERS.find(x => x.id === inspCurId);
+      inspChecked = true;
+      inspAttempts++;
+      const allOk = inspAllCorrect();
+
+      if (allOk) {
+        playSound("success");
+        const stars = inspAttempts === 1 ? 3 : (inspAttempts === 2 ? 2 : 1);
+        const prev = state.inspectorStars[d.id] || 0;
+        if (stars > prev) {
+          state.inspectorStars[d.id] = stars;
+          awardXP(prev === 0 ? 50 : 15, `Expediente #${d.id} resuelto`);
+        } else {
+          saveState();
+        }
+        renderInspectorGrid();
+      } else {
+        playSound("error");
+      }
+      renderInspectorPlayArea();
+    }
+
+    function renderInspectorReport(d, info) {
+      const fb = document.getElementById("inspFb");
+      if (!fb) return;
+      const allOk = inspAllCorrect();
+
+      const forensics = [
+        `• <strong>Reflexiva (${info.reflexive ? "SÍ" : "NO"}):</strong> ${info.reflexive ? "Todos los nodos tienen bucle." : `Falta(n) bucle(s): ${info.missingLoops.map(n => `(${n},${n})`).join(", ")}.`}`,
+        `• <strong>Simétrica (${info.symmetric ? "SÍ" : "NO"}):</strong> ${info.symmetric ? "Toda flecha tiene su espejo." : `Contraejemplo: está (${info.missingMirrors[0][0]},${info.missingMirrors[0][1]}) pero falta (${info.missingMirrors[0][1]},${info.missingMirrors[0][0]}).`}`,
+        `• <strong>Antisimétrica (${info.antisymmetric ? "SÍ" : "NO"}):</strong> ${info.antisymmetric ? "No hay dobles flechas entre nodos distintos." : `Contraejemplo: doble flecha ${info.doublePairs[0][0]} ↔ ${info.doublePairs[0][1]}.`}`,
+        `• <strong>Transitiva (${info.transitive ? "SÍ" : "NO"}):</strong> ${info.transitive ? "Todo camino de 2 pasos tiene atajo directo." : `Contraejemplo: camino ${info.missingShortcuts[0].a}→${info.missingShortcuts[0].b}→${info.missingShortcuts[0].c} sin (${info.missingShortcuts[0].a},${info.missingShortcuts[0].c}).`}`
+      ];
+
+      const nextBtn = allOk
+        ? (d.id < INSPECTOR_DOSSIERS.length
+          ? `<div style="margin-top:10px;"><button class="btn btn-emerald btn-sm" onclick="loadInspectorDossier(${d.id + 1})">Siguiente Expediente (#${d.id + 1}) →</button></div>`
+          : `<div style="margin-top:10px;"><button class="btn btn-emerald btn-sm" onclick="openGame('hasse')">✂️ ¡Expedientes completados! Ir al Podador de Hasse</button></div>`)
+        : "";
+
+      fb.className = `feedback-box show ${allOk ? "ok" : "err"}`;
+      fb.innerHTML = `
+        <strong>${allOk ? "✅ ¡Dictamen Perfecto!" : "❌ Hay sellos incorrectos — Revisa el Informe Forense:"}</strong>
+        <div style="margin-top:8px; font-size:0.86rem; line-height:1.6;">${forensics.join("<br>")}</div>
+        <div style="margin-top:8px; font-size:0.85rem; color:#fde68a;">💡 ${d.note}</div>
+        ${nextBtn}
+      `;
+    }
+
+    /* ------------------------------------------------------------------------
+       GAME 3: PODADOR DE HASSE (6 LASER-CUTTING LEVELS)
+       ------------------------------------------------------------------------ */
+    const HASSE_LEVELS = [
+      {
+        id: 1, badge: "Nivel 1 · Iniciación", title: "Orden ≤ en {1, 2, 3}",
+        nodes: ["1", "2", "3"],
+        positions: { "3": { x: 220, y: 58 }, "2": { x: 220, y: 158 }, "1": { x: 220, y: 258 } },
+        edges: [
+          { u: "1", v: "1", kind: "loop", loopAngle: 0 },
+          { u: "2", v: "2", kind: "loop", loopAngle: 0 },
+          { u: "3", v: "3", kind: "loop", loopAngle: 0 },
+          { u: "1", v: "2", kind: "cover" },
+          { u: "2", v: "3", kind: "cover" },
+          { u: "1", v: "3", kind: "jump", via: "2", curveOffset: -78 }
+        ]
+      },
+      {
+        id: 2, badge: "UNED 2025 Mod C/D · P13", title: "Divisibilidad en {2, 4, 8, 16}",
+        nodes: ["2", "4", "8", "16"],
+        positions: { "16": { x: 220, y: 46 }, "8": { x: 220, y: 122 }, "4": { x: 220, y: 198 }, "2": { x: 220, y: 274 } },
+        edges: [
+          { u: "2", v: "2", kind: "loop", loopAngle: 0 },
+          { u: "4", v: "4", kind: "loop", loopAngle: 0 },
+          { u: "8", v: "8", kind: "loop", loopAngle: 0 },
+          { u: "16", v: "16", kind: "loop", loopAngle: 0 },
+          { u: "2", v: "4", kind: "cover" },
+          { u: "4", v: "8", kind: "cover" },
+          { u: "8", v: "16", kind: "cover" },
+          { u: "2", v: "8", kind: "jump", via: "4", curveOffset: -66 },
+          { u: "4", v: "16", kind: "jump", via: "8", curveOffset: 76 },
+          { u: "2", v: "16", kind: "jump", via: "4 y 8", curveOffset: -124 }
+        ]
+      },
+      {
+        id: 3, badge: "Nivel 3 · Rombo", title: "Divisibilidad en {1, 2, 3, 6}",
+        nodes: ["1", "2", "3", "6"],
+        positions: { "6": { x: 220, y: 54 }, "2": { x: 118, y: 158 }, "3": { x: 322, y: 158 }, "1": { x: 220, y: 262 } },
+        edges: [
+          { u: "1", v: "1", kind: "loop", loopAngle: Math.PI / 2 },
+          { u: "2", v: "2", kind: "loop", loopAngle: Math.PI },
+          { u: "3", v: "3", kind: "loop", loopAngle: 0 },
+          { u: "6", v: "6", kind: "loop", loopAngle: -Math.PI / 2 },
+          { u: "1", v: "2", kind: "cover" },
+          { u: "1", v: "3", kind: "cover" },
+          { u: "2", v: "6", kind: "cover" },
+          { u: "3", v: "6", kind: "cover" },
+          { u: "1", v: "6", kind: "jump", via: "2 (y 3)", curveOffset: 0 }
+        ]
+      },
+      {
+        id: 4, badge: "Nivel 4 · Conjuntos", title: "Inclusión ⊆ en P({a,b})",
+        nodes: ["∅", "{a}", "{b}", "{a,b}"],
+        positions: { "{a,b}": { x: 220, y: 54 }, "{a}": { x: 115, y: 158 }, "{b}": { x: 325, y: 158 }, "∅": { x: 220, y: 262 } },
+        edges: [
+          { u: "∅", v: "∅", kind: "loop", loopAngle: Math.PI / 2 },
+          { u: "{a}", v: "{a}", kind: "loop", loopAngle: Math.PI },
+          { u: "{b}", v: "{b}", kind: "loop", loopAngle: 0 },
+          { u: "{a,b}", v: "{a,b}", kind: "loop", loopAngle: -Math.PI / 2 },
+          { u: "∅", v: "{a}", kind: "cover" },
+          { u: "∅", v: "{b}", kind: "cover" },
+          { u: "{a}", v: "{a,b}", kind: "cover" },
+          { u: "{b}", v: "{a,b}", kind: "cover" },
+          { u: "∅", v: "{a,b}", kind: "jump", via: "{a} (y {b})", curveOffset: 0 }
+        ]
+      },
+      {
+        id: 5, badge: "Nivel 5 · Avanzado", title: "Divisibilidad en {1, 2, 4, 6, 12}",
+        nodes: ["1", "2", "4", "6", "12"],
+        positions: {
+          "12": { x: 220, y: 48 },
+          "4": { x: 122, y: 132 },
+          "6": { x: 318, y: 132 },
+          "2": { x: 220, y: 214 },
+          "1": { x: 220, y: 292 }
+        },
+        edges: [
+          { u: "1", v: "1", kind: "loop", loopAngle: 0 },
+          { u: "2", v: "2", kind: "loop", loopAngle: 0.35 },
+          { u: "4", v: "4", kind: "loop", loopAngle: Math.PI },
+          { u: "6", v: "6", kind: "loop", loopAngle: 0 },
+          { u: "12", v: "12", kind: "loop", loopAngle: -Math.PI / 2 },
+          { u: "1", v: "2", kind: "cover" },
+          { u: "2", v: "4", kind: "cover" },
+          { u: "2", v: "6", kind: "cover" },
+          { u: "4", v: "12", kind: "cover" },
+          { u: "6", v: "12", kind: "cover" },
+          { u: "1", v: "4", kind: "jump", via: "2", curveOffset: -64 },
+          { u: "1", v: "6", kind: "jump", via: "2", curveOffset: 64 },
+          { u: "2", v: "12", kind: "jump", via: "4 (y 6)", curveOffset: 0 },
+          { u: "1", v: "12", kind: "jump", via: "2 y 4", curveOffset: -158 }
+        ]
+      },
+      {
+        id: 6, badge: "👑 Maestro · 6 Nodos", title: "Divisibilidad en {1, 2, 3, 4, 6, 12}",
+        nodes: ["1", "2", "3", "4", "6", "12"],
+        positions: {
+          "12": { x: 220, y: 48 },
+          "4": { x: 118, y: 134 },
+          "6": { x: 318, y: 134 },
+          "2": { x: 132, y: 228 },
+          "3": { x: 312, y: 228 },
+          "1": { x: 220, y: 312 }
+        },
+        edges: [
+          { u: "1", v: "1", kind: "loop", loopAngle: Math.PI / 2 },
+          { u: "2", v: "2", kind: "loop", loopAngle: Math.PI },
+          { u: "3", v: "3", kind: "loop", loopAngle: 0 },
+          { u: "4", v: "4", kind: "loop", loopAngle: Math.PI },
+          { u: "6", v: "6", kind: "loop", loopAngle: 0 },
+          { u: "12", v: "12", kind: "loop", loopAngle: -Math.PI / 2 },
+          // 7 covers
+          { u: "1", v: "2", kind: "cover" },
+          { u: "1", v: "3", kind: "cover" },
+          { u: "2", v: "4", kind: "cover" },
+          { u: "2", v: "6", kind: "cover" },
+          { u: "3", v: "6", kind: "cover" },
+          { u: "4", v: "12", kind: "cover" },
+          { u: "6", v: "12", kind: "cover" },
+          // 5 transitive jumps
+          { u: "1", v: "4", kind: "jump", via: "2", curveOffset: -74 },
+          { u: "1", v: "6", kind: "jump", via: "3 (y 2)", curveOffset: 78 },
+          { u: "2", v: "12", kind: "jump", via: "4 (y 6)", curveOffset: 24 },
+          { u: "3", v: "12", kind: "jump", via: "6", curveOffset: 84 },
+          { u: "1", v: "12", kind: "jump", via: "2 y 4", curveOffset: -138 }
+        ]
+      }
+    ];
+
+    let hasseCurLvl = 1;
+    let hasseCutIndices = new Set();
+    let hasseLastCut = -1;
+    let hasseSolved = false;
+    let hasseAttempts = 0;
+
+    function initHasseGame() {
+      renderHasseGrid();
+      loadHasseLevel(hasseCurLvl);
+    }
+
+    function renderHasseGrid() {
+      const grid = document.getElementById("hasseLevelGrid");
+      grid.innerHTML = HASSE_LEVELS.map(lv => {
+        const s = state.hasseStars[lv.id] || 0;
+        return `
+          <button class="level-tile ${lv.id === hasseCurLvl ? "active" : ""}" onclick="loadHasseLevel(${lv.id})">
+            <span style="font-size:0.7rem; color:var(--emerald);">HASSE</span>
+            <span style="font-size:1.1rem;">${lv.id}</span>
+            <span class="stars-row">${"★".repeat(s)}${"☆".repeat(3 - s)}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function loadHasseLevel(id) {
+      hasseCurLvl = id;
+      hasseCutIndices = new Set();
+      hasseLastCut = -1;
+      hasseSolved = false;
+      hasseAttempts = 0;
+      renderHasseGrid();
+      renderHassePlayArea();
+    }
+
+    function renderHassePlayArea() {
+      const lv = HASSE_LEVELS.find(l => l.id === hasseCurLvl);
+      const area = document.getElementById("hassePlayArea");
+      const remaining = lv.edges.length - hasseCutIndices.size;
+
+      area.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <div>
+            <span class="tag tag-emerald">${lv.badge}</span>
+            <h3 style="margin:6px 0 0; font-size:1.22rem;">Nivel ${lv.id}: ${lv.title}</h3>
+          </div>
+          <span class="tag tag-cyan">Aristas activas: ${remaining} / ${lv.edges.length}</span>
+        </div>
+
+        <p style="margin:0 0 12px; color:var(--text-muted); font-size:0.9rem;">
+          ✂️ <strong>Toca cualquier arista o bucle</strong> para cortarlo con el láser (vuélvelo a tocar para restaurarlo). Deja solo las coberturas directas.
+        </p>
+
+        <div class="graph-stage" id="hasseGraphBox" style="max-width:540px; margin:0 auto;"></div>
+        <div class="graph-legend" style="max-width:540px; margin:0 auto 14px; border-radius:0 0 14px 14px;">
+          <span><i class="legend-dot" style="background:var(--cyan);"></i>Activa</span>
+          <span><i class="legend-dot" style="background:#475569;"></i>Cortada</span>
+          <span><i class="legend-dot" style="background:var(--emerald);"></i>Hasse Validado</span>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+          <button class="btn btn-emerald" onclick="validateHasse()" ${hasseSolved ? "disabled" : ""}>✂️ Validar Diagrama de Hasse</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetHasseCuts()" ${hasseSolved ? "disabled" : ""}>↺ Restaurar todo</button>
+        </div>
+        <div id="hasseFb" class="feedback-box"></div>
+      `;
+
+      const svgEdges = lv.edges.map((e, idx) => {
+        const isCut = hasseCutIndices.has(idx);
+        if (hasseSolved) {
+          if (isCut) return null;
+          return { ...e, state: "hasse", noArrow: true };
+        }
+        return {
+          ...e,
+          state: isCut ? "cut" : "orig",
+          justCut: idx === hasseLastCut && isCut
+        };
+      }).filter(Boolean);
+
+      renderDigraphSVG(document.getElementById("hasseGraphBox"), {
+        nodes: lv.nodes,
+        positions: lv.positions,
+        edges: svgEdges,
+        height: lv.id >= 5 ? 360 : 320,
+        hideArrows: hasseSolved,
+        onEdgeClick: hasseSolved ? null : (edgeObj, mappedIdx) => {
+          // Since when !hasseSolved svgEdges has exact 1:1 index with lv.edges
+          if (hasseCutIndices.has(mappedIdx)) {
+            hasseCutIndices.delete(mappedIdx);
+            hasseLastCut = -1;
+            playSound("toggle");
+          } else {
+            hasseCutIndices.add(mappedIdx);
+            hasseLastCut = mappedIdx;
+            playSound("cut");
+          }
+          renderHassePlayArea();
+        }
+      });
+    }
+
+    function resetHasseCuts() {
+      hasseCutIndices.clear();
+      hasseLastCut = -1;
+      playSound("click");
+      renderHassePlayArea();
+    }
+
+    function validateHasse() {
+      const lv = HASSE_LEVELS.find(l => l.id === hasseCurLvl);
+      hasseAttempts++;
+
+      const uncutLoops = [];
+      const uncutJumps = [];
+      const cutCovers = [];
+
+      lv.edges.forEach((e, idx) => {
+        const isCut = hasseCutIndices.has(idx);
+        if (e.kind === "loop" && !isCut) uncutLoops.push(e);
+        if (e.kind === "jump" && !isCut) uncutJumps.push(e);
+        if (e.kind === "cover" && isCut) cutCovers.push(e);
+      });
+
+      if (uncutLoops.length === 0 && uncutJumps.length === 0 && cutCovers.length === 0) {
+        hasseSolved = true;
+        playSound("success");
+        const stars = hasseAttempts === 1 ? 3 : (hasseAttempts === 2 ? 2 : 1);
+        const prev = state.hasseStars[lv.id] || 0;
+        if (stars > prev) {
+          state.hasseStars[lv.id] = stars;
+          awardXP(prev === 0 ? 55 : 15, `Hasse Nivel ${lv.id}`);
+        } else {
+          saveState();
+        }
+        renderHasseGrid();
+        renderHassePlayArea();
+
+        const fb = document.getElementById("hasseFb");
+        const nextBtn = lv.id < HASSE_LEVELS.length
+          ? `<button class="btn btn-emerald btn-sm" style="margin-top:10px;" onclick="loadHasseLevel(${lv.id + 1})">Siguiente Nivel (${lv.id + 1}) →</button>`
+          : `<button class="btn btn-amber btn-sm" style="margin-top:10px;" onclick="navigateTo('exam')">📝 ¡Maestro de Hasse! Ir al Simulador UNED</button>`;
+
+        fb.className = "feedback-box show ok";
+        fb.innerHTML = `
+          <strong>✨ ¡Diagrama de Hasse Perfecto! ${"★".repeat(stars)}${"☆".repeat(3 - stars)}</strong><br>
+          Has eliminado exactamente todos los bucles y atajos redundantes dejando las coberturas limpias.<br>
+          ${nextBtn}
+        `;
+      } else {
+        playSound("error");
+        const errs = [];
+        if (uncutLoops.length > 0) {
+          errs.push(`Queda(n) ${uncutLoops.length} <strong>bucle(s) reflexivo(s)</strong> sin cortar (ej. (${uncutLoops[0].u},${uncutLoops[0].v})).`);
+        }
+        if (uncutJumps.length > 0) {
+          const j = uncutJumps[0];
+          errs.push(`Queda el <strong>atajo transitivo redundante (${j.u},${j.v})</strong> porque ya puedes llegar pasando por <strong>${j.via}</strong>.`);
+        }
+        if (cutCovers.length > 0) {
+          const c = cutCovers[0];
+          errs.push(`¡Cuidado! Cortaste la <strong>cobertura necesaria (${c.u},${c.v})</strong> — vuélvela a tocar para restaurarla.`);
+        }
+        const fb = document.getElementById("hasseFb");
+        fb.className = "feedback-box show err";
+        fb.innerHTML = `<strong>✂️ Ajusta tus cortes:</strong><br>• ${errs.join("<br>• ")}`;
+      }
+    }
+
+    /* ========================================================================
+       7. MODULE 4 — SIMULADOR OFICIAL UNED (12 QUESTIONS + MINI-GRAPHS)
+       ======================================================================== */
+    const UNED_EXAM_QUESTIONS = [
+      {
+        id: 1, tag: "UNED 2025 Mod A/B · P12",
+        q: "Sea A = {1, 2, 3, 4, 5} y R = {(1,1), (1,4), (2,2), (2,3), (4,4), (5,2)}. ¿Qué propiedad cumple R?",
+        opts: ["Simétrica", "Antisimétrica", "Transitiva"],
+        correct: 1,
+        exp: "No existe ninguna doble flecha entre nodos distintos (los bucles no la rompen) ⇒ Antisimétrica. Falla simétrica ((1,4) sin (4,1)) y falla transitiva (5→2→3 sin (5,3)).",
+        graph: { nodes: ["1","2","3","4","5"], orig: [["1","1"],["1","4"],["2","2"],["2","3"],["4","4"],["5","2"]] }
+      },
+      {
+        id: 2, tag: "UNED 2025 Mod C/D · P12",
+        q: "Sobre A = {1, 2, 3, 4, 5} y R = {(1,1), (1,4), (2,2), (2,3), (4,4), (5,2)}, ¿cuál es su cierre simétrico Rˢ?",
+        opts: [
+          "{(1,1), (1,4), (2,2), (2,3), (2,5), (3,2), (4,1), (4,4), (5,2)}",
+          "{(1,1), (1,4), (2,2), (2,3), (2,5), (3,2), (3,3), (4,1), (4,4), (5,2), (5,5)}",
+          "{(1,1), (1,4), (2,2), (2,3), (4,4), (5,2), (5,3)}"
+        ],
+        correct: 0,
+        exp: "El cierre simétrico añade SOLO los espejos (4,1), (3,2) y (2,5). La opción (b) añade bucles (3,3),(5,5) indebidamente y la (c) es el cierre transitivo.",
+        graph: { nodes: ["1","2","3","4","5"], orig: [["1","1"],["1","4"],["2","2"],["2","3"],["4","4"],["5","2"]], added: [["4","1"],["3","2"],["2","5"]] }
+      },
+      {
+        id: 3, tag: "UNED 2025 Mod C/D · P13",
+        q: "Sea B = {2, 4, 8, 16} con la relación de divisibilidad (a|b). Sobre su Diagrama de Hasse, indique la afirmación correcta:",
+        opts: [
+          "Es un grafo completo donde todos los nodos están unidos entre sí.",
+          "Tiene una estructura lineal 2 — 4 — 8 — 16.",
+          "El 8 está relacionado directamente con 2 y con 4 en el diagrama."
+        ],
+        correct: 1,
+        exp: "Como 2|4|8|16, al quitar bucles y aristas transitivas (2,8), (2,16), (4,16) queda exactamente la cadena lineal 2 — 4 — 8 — 16.",
+        graph: {
+          nodes: ["2","4","8","16"],
+          positions: { "16":{x:220,y:40}, "8":{x:220,y:105}, "4":{x:220,y:170}, "2":{x:220,y:235} },
+          hasse: [["2","4"],["4","8"],["8","16"]]
+        }
+      },
+      {
+        id: 4, tag: "UNED 2025 Sept · P13",
+        q: "Sea A = {a, b, c, d} y R = {(a,b), (a,c), (a,d), (b,c)}. ¿Cuál es el cierre simétrico Rˢ de R?",
+        opts: [
+          "{(a,b), (b,a), (a,c), (c,a), (a,d), (d,a), (b,c), (c,b)}",
+          "{(a,a), (b,b), (c,c), (d,d), (a,b), (b,a), (a,c), (c,a), (a,d), (d,a), (b,c), (c,b)}",
+          "{(a,b), (b,a), (a,c), (c,a), (a,d), (d,a), (b,c)}"
+        ],
+        correct: 0,
+        exp: "Se añaden exactamente los 4 espejos: (b,a), (c,a), (d,a) y (c,b). Sin bucles extra y sin olvidar (c,b).",
+        graph: { nodes: ["a","b","c","d"], orig: [["a","b"],["a","c"],["a","d"],["b","c"]], added: [["b","a"],["c","a"],["d","a"],["c","b"]] }
+      },
+      {
+        id: 5, tag: "UNED 2026 Mod A · P12",
+        q: "Sea A = {1, 2, 3, 4} y R = {(1,1), (1,3), (2,2), (3,3), (4,2)}. Indique qué propiedad cumple R:",
+        opts: ["Simétrica", "Reflexiva", "Antisimétrica"],
+        correct: 2,
+        exp: "NO es reflexiva porque falta (4,4), y NO es simétrica porque falta (3,1) y (2,4). SÍ es antisimétrica al no haber dobles flechas entre nodos distintos.",
+        graph: { nodes: ["1","2","3","4"], orig: [["1","1"],["1","3"],["2","2"],["3","3"],["4","2"]], errNodes: ["4"] }
+      },
+      {
+        id: 6, tag: "UNED 2026 Mod B · P12",
+        q: "Sea A = {a, b, c} y R = {(a,b), (b,c), (a,c), (c,c)}. ¿Cuál es el cierre transitivo Rᵗ de R?",
+        opts: [
+          "R (la propia relación, ya es transitiva)",
+          "R ∪ {(c,b)}",
+          "R ∪ {(a,a)}"
+        ],
+        correct: 0,
+        exp: "Todos los caminos de 2 pasos (a→b→c, b→c→c, a→c→c, c→c→c) ya tienen su atajo en R. Por tanto R ya es transitiva y Rᵗ = R.",
+        graph: { nodes: ["a","b","c"], orig: [["a","b"],["b","c"],["a","c"],["c","c"]] }
+      },
+      {
+        id: 7, tag: "UNED 2026 Sept · P12",
+        q: "Sea X = {1, 2, 3, 4, 5, 6} y R = {(2,5), (3,5), (4,3), (4,4), (5,3)}. ¿Cuál es el cierre transitivo Rᵗ?",
+        opts: [
+          "R ∪ {(2,3), (4,3)}",
+          "R ∪ {(2,3), (3,3), (4,5), (5,5)}",
+          "R ∪ {(2,3), (3,3), (4,3)}"
+        ],
+        correct: 1,
+        exp: "2→5→3 añade (2,3); 4→3→5 añade (4,5); y el ciclo 3→5→3 y 5→3→5 exige los bucles (3,3) y (5,5).",
+        graph: { nodes: ["1","2","3","4","5","6"], orig: [["2","5"],["3","5"],["4","3"],["4","4"],["5","3"]], added: [["2","3"],["3","3"],["4","5"],["5","5"]] }
+      },
+      {
+        id: 8, tag: "Tipo UNED · Matrices",
+        q: "En la matriz booleana M de una relación R en un conjunto finito A, ¿qué garantiza que R sea reflexiva y simétrica a la vez?",
+        opts: [
+          "Todos los elementos de la diagonal son 1 y M es igual a su traspuesta Mᵀ.",
+          "La diagonal es toda de 0s y M = Mᵀ.",
+          "No tiene ningún par con Mᵢⱼ = Mⱼᵢ = 1."
+        ],
+        correct: 0,
+        exp: "Diagonal llena de 1s equivale a Reflexiva; M = Mᵀ (Mᵢⱼ = Mⱼᵢ) equivale a Simétrica.",
+        graph: { nodes: ["1","2","3"], orig: [["1","1"],["2","2"],["3","3"],["1","2"],["2","1"]] }
+      },
+      {
+        id: 9, tag: "Tipo UNED · Orden Parcial",
+        q: "Sea B = {1, 2, 3, 6} con la relación de divisibilidad a|b. Señale la afirmación correcta:",
+        opts: [
+          "Es un orden total porque todo elemento divide al 6.",
+          "Es un orden parcial pero no total porque 2 y 3 no son comparables.",
+          "Es una relación de equivalencia."
+        ],
+        correct: 1,
+        exp: "Cumple reflexiva, antisimétrica y transitiva (orden parcial), pero ni 2|3 ni 3|2, por lo que no es orden total.",
+        graph: {
+          nodes: ["1","2","3","6"],
+          positions: { "6":{x:220,y:45}, "2":{x:130,y:135}, "3":{x:310,y:135}, "1":{x:220,y:225} },
+          hasse: [["1","2"],["1","3"],["2","6"],["3","6"]]
+        }
+      },
+      {
+        id: 10, tag: "Tipo UNED · Equivalencia",
+        q: "Sea A = {1, 2, 3, 4} y R = {(1,1), (2,2), (3,3), (4,4), (1,2), (2,1), (3,4), (4,3)}. ¿Qué tipo de relación es R?",
+        opts: [
+          "Relación de orden parcial.",
+          "Relación de equivalencia con 2 clases: {1,2} y {3,4}.",
+          "Relación antisimétrica no transitiva."
+        ],
+        correct: 1,
+        exp: "Es reflexiva, simétrica y transitiva: particiona A en dos islas completas (clases de equivalencia) {1,2} y {3,4}.",
+        graph: { nodes: ["1","2","3","4"], orig: [["1","1"],["2","2"],["3","3"],["4","4"],["1","2"],["2","1"],["3","4"],["4","3"]] }
+      },
+      {
+        id: 11, tag: "Tipo UNED · Cierre Reflexivo",
+        q: "En A = {1, 2, 3, 4}, sea R = {(1,1), (1,2), (3,4)}. ¿Cuál es su cierre reflexivo Rʳ?",
+        opts: [
+          "R ∪ {(2,2), (3,3), (4,4)}",
+          "R ∪ {(2,1), (4,3)}",
+          "R ∪ {(2,2), (3,3)}"
+        ],
+        correct: 0,
+        exp: "Para completar la diagonal de A={1,2,3,4} faltan exactamente los bucles (2,2), (3,3) y (4,4).",
+        graph: { nodes: ["1","2","3","4"], orig: [["1","1"],["1","2"],["3","4"]], added: [["2","2"],["3","3"],["4","4"]] }
+      },
+      {
+        id: 12, tag: "Tipo UNED · Composición",
+        q: "Dadas R = {(1,2), (2,3), (3,1)} y S = {(2,a), (3,b), (1,c)}, ¿cuál es la composición S ∘ R (aplicar primero R y luego S)?",
+        opts: [
+          "{(1,a), (2,b), (3,c)}",
+          "{(1,b), (2,c), (3,a)}",
+          "{(2,1), (3,2), (1,3)}"
+        ],
+        correct: 0,
+        exp: "Seguimos cada cadena: 1 →(R) 2 →(S) a ⇒ (1,a); 2 →(R) 3 →(S) b ⇒ (2,b); 3 →(R) 1 →(S) c ⇒ (3,c).",
+        graph: {
+          nodes: ["1","2","3","a","b","c"],
+          positions: { "1":{x:75,y:58}, "2":{x:75,y:135}, "3":{x:75,y:212}, "a":{x:345,y:58}, "b":{x:345,y:135}, "c":{x:345,y:212} },
+          added: [["1","a"],["2","b"],["3","c"]]
+        }
+      }
+    ];
+
+    const examRuntime = {
+      active: false,
+      mode: "train",
+      idx: 0,
+      answers: {},
+      finished: false
+    };
+
+    function renderMiniExamGraph(el, g) {
+      if (!el || !g) return;
+      const edges = [
+        ...(g.orig || []).map(([u, v]) => ({ u, v, state: "orig" })),
+        ...(g.added || []).map(([u, v]) => ({ u, v, state: "added" })),
+        ...(g.hasse || []).map(([u, v]) => ({ u, v, state: "hasse", noArrow: true }))
+      ];
+      renderDigraphSVG(el, {
+        nodes: g.nodes,
+        positions: g.positions || null,
+        edges,
+        errorNodes: g.errNodes || [],
+        width: 420,
+        height: 265,
+        nodeR: 18,
+        hideArrows: Boolean(g.hasse)
+      });
+    }
+
+    function renderExamStart() {
+      examRuntime.active = false;
+      const box = document.getElementById("examContainer");
+      box.innerHTML = `
+        <div class="grid-2">
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; gap:14px;">
+            <div>
+              <span class="tag tag-emerald">Recomendado para aprender</span>
+              <h2 style="margin:10px 0 8px;">🎓 Modo Entrenamiento</h2>
+              <p style="color:var(--text-muted); margin:0; font-size:0.92rem;">
+                Responde las 12 preguntas con <strong>corrección inmediata</strong>, explicación paso a paso y un <strong>mini-grafo SVG explicativo</strong> de cada respuesta.
+              </p>
+            </div>
+            <button class="btn btn-cyan" onclick="startExam('train')">Empezar Modo Entrenamiento</button>
+          </div>
+
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; gap:14px;">
+            <div>
+              <span class="tag tag-amber">Baremo oficial UNED</span>
+              <h2 style="margin:10px 0 8px;">⏱️ Modo Examen Real UNED</h2>
+              <p style="color:var(--text-muted); margin:0; font-size:0.92rem;">
+                Navega libremente, usa <strong>"Dejar en blanco"</strong> para evitar la penalización de <strong>−0,25</strong> y recibe al final tu nota sobre <strong>6,00</strong> y equivalente sobre <strong>10,00</strong>.
+              </p>
+            </div>
+            <button class="btn btn-amber" onclick="startExam('real')">Empezar Examen Real</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function startExam(mode) {
+      examRuntime.active = true;
+      examRuntime.mode = mode;
+      examRuntime.idx = 0;
+      examRuntime.answers = {};
+      examRuntime.finished = false;
+      renderExamQuestion();
+      playSound("click");
+    }
+
+    function renderExamQuestion() {
+      const box = document.getElementById("examContainer");
+      const q = UNED_EXAM_QUESTIONS[examRuntime.idx];
+      const chosen = examRuntime.answers[q.id];
+      const isTrainRevealed = examRuntime.mode === "train" && chosen !== undefined;
+
+      const dotsHtml = UNED_EXAM_QUESTIONS.map((item, i) => {
+        const ans = examRuntime.answers[item.id];
+        let cls = i === examRuntime.idx ? "current" : "";
+        if (examRuntime.mode === "train" && ans !== undefined) {
+          cls += ans === "blank" ? " blank" : (ans === item.correct ? " ok" : " bad");
+        } else if (ans !== undefined) {
+          cls += ans === "blank" ? " blank" : " answered";
+        }
+        return `<button class="exam-dot ${cls}" onclick="jumpExamQ(${i})">${i + 1}</button>`;
+      }).join("");
+
+      const optsHtml = q.opts.map((opt, idx) => {
+        let cls = "";
+        if (isTrainRevealed) {
+          if (idx === q.correct) cls = "correct";
+          else if (idx === chosen) cls = "wrong";
+        } else if (chosen === idx) {
+          cls = "selected";
+        }
+        return `
+          <button class="quiz-opt ${cls}" ${isTrainRevealed ? "disabled" : ""} onclick="selectExamOpt(${q.id}, ${idx})">
+            <span class="opt-letter">${String.fromCharCode(97 + idx)}</span>
+            <span>${opt}</span>
+          </button>
+        `;
+      }).join("");
+
+      let trainFbHtml = "";
+      if (isTrainRevealed) {
+        const isOk = chosen === q.correct;
+        const isBlank = chosen === "blank";
+        trainFbHtml = `
+          <div class="feedback-box show ${isBlank ? "info" : (isOk ? "ok" : "err")}">
+            <div class="grid-2" style="align-items:center;">
+              <div>
+                <strong>${isBlank ? "⚪ En blanco (0,00 pts)" : (isOk ? "✅ ¡Correcto! (+0,50 pts)" : "❌ Incorrecto (−0,25 pts)")}</strong>
+                <p style="margin:6px 0 0; font-size:0.9rem;">${q.exp}</p>
+              </div>
+              <div class="graph-stage" id="trainMiniGraph"></div>
+            </div>
+          </div>
+        `;
+      }
+
+      const answeredCount = Object.keys(examRuntime.answers).length;
+
+      box.innerHTML = `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+            <span class="tag ${examRuntime.mode === "train" ? "tag-emerald" : "tag-amber"}">
+              ${examRuntime.mode === "train" ? "🎓 Entrenamiento" : "⏱️ Examen Real"} · Pregunta ${examRuntime.idx + 1} / 12
+            </span>
+            <button class="btn btn-ghost btn-sm" onclick="renderExamStart()">Salir</button>
+          </div>
+
+          <div class="exam-dots">${dotsHtml}</div>
+
+          <div style="margin-bottom:8px;"><span class="tag tag-cyan">${q.tag}</span></div>
+          <h3 style="margin:6px 0 14px; font-size:1.08rem; line-height:1.45;">${q.q}</h3>
+
+          <div>${optsHtml}</div>
+
+          <div style="margin-top:12px;">
+            <button class="btn btn-ghost btn-sm" style="${chosen === "blank" ? "border-color:var(--amber); color:var(--amber);" : ""}" ${isTrainRevealed ? "disabled" : ""} onclick="selectExamOpt(${q.id}, 'blank')">
+              ⚪ Dejar en blanco (0,00 pts)
+            </button>
+          </div>
+
+          ${trainFbHtml}
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:20px; padding-top:14px; border-top:1px solid var(--border-subtle);">
+            <button class="btn btn-ghost btn-sm" ${examRuntime.idx === 0 ? "disabled" : ""} onclick="jumpExamQ(${examRuntime.idx - 1})">← Anterior</button>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              ${examRuntime.idx < 11
+                ? `<button class="btn btn-cyan btn-sm" onclick="jumpExamQ(${examRuntime.idx + 1})">Siguiente →</button>`
+                : `<button class="btn btn-emerald btn-sm" onclick="finishExam()">🏁 Entregar y Corregir (${answeredCount}/12)</button>`
+              }
+              ${examRuntime.mode === "real" && examRuntime.idx < 11
+                ? `<button class="btn btn-amber btn-sm" onclick="finishExam()">🏁 Entregar ya</button>`
+                : ""
+              }
+            </div>
+          </div>
+        </div>
+      `;
+
+      if (isTrainRevealed) {
+        renderMiniExamGraph(document.getElementById("trainMiniGraph"), q.graph);
+      }
+    }
+
+    function jumpExamQ(i) {
+      if (i < 0 || i >= UNED_EXAM_QUESTIONS.length) return;
+      examRuntime.idx = i;
+      renderExamQuestion();
+      playSound("click");
+    }
+
+    function selectExamOpt(qId, val) {
+      examRuntime.answers[qId] = val;
+      if (examRuntime.mode === "train") {
+        const q = UNED_EXAM_QUESTIONS.find(x => x.id === qId);
+        if (val === "blank") playSound("click");
+        else playSound(val === q.correct ? "success" : "error");
+      } else {
+        playSound("toggle");
+      }
+      renderExamQuestion();
+    }
+
+    function finishExam() {
+      examRuntime.finished = true;
+      let okCount = 0, badCount = 0, blankCount = 0;
+
+      UNED_EXAM_QUESTIONS.forEach(q => {
+        const ans = examRuntime.answers[q.id];
+        if (ans === undefined || ans === "blank") blankCount++;
+        else if (ans === q.correct) okCount++;
+        else badCount++;
+      });
+
+      const rawScore = okCount * 0.5 - badCount * 0.25;
+      const maxRaw = 6.0;
+      const note10 = Math.max(0, (rawScore / maxRaw) * 10);
+
+      state.examAttempts++;
+      if (state.examBestNote10 === null || note10 > state.examBestNote10) {
+        state.examBestNote10 = note10;
+        state.examBestScore6 = rawScore;
+      }
+      awardXP(Math.max(25, okCount * 10), "Simulador UNED Relaciones");
+      playSound(note10 >= 5 ? "levelup" : "click");
+
+      const reviewHtml = UNED_EXAM_QUESTIONS.map((q, i) => {
+        const ans = examRuntime.answers[q.id];
+        const isBlank = ans === undefined || ans === "blank";
+        const isOk = !isBlank && ans === q.correct;
+        const badge = isBlank
+          ? `<span class="tag" style="background:rgba(148,163,184,0.18); color:#cbd5e1;">Blanco (0,00)</span>`
+          : (isOk ? `<span class="tag tag-emerald">Acierto (+0,50)</span>` : `<span class="tag tag-rose">Fallo (−0,25)</span>`);
+
+        return `
+          <div class="card-soft" style="margin-bottom:12px; border-left:4px solid ${isBlank ? "var(--text-dim)" : (isOk ? "var(--emerald)" : "var(--rose)")};">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+              <strong>#${i + 1} · ${q.tag}</strong>
+              ${badge}
+            </div>
+            <div class="grid-2" style="align-items:center;">
+              <div>
+                <div style="font-size:0.92rem; margin-bottom:8px;">${q.q}</div>
+                ${!isBlank && !isOk ? `<div class="c-rose" style="font-size:0.86rem;">Tu respuesta: (${String.fromCharCode(97 + ans)}) ${q.opts[ans]}</div>` : ""}
+                <div class="c-emerald" style="font-size:0.86rem;">Correcta: (${String.fromCharCode(97 + q.correct)}) ${q.opts[q.correct]}</div>
+                <div style="color:var(--text-muted); font-size:0.85rem; margin-top:5px;">${q.exp}</div>
+              </div>
+              <div class="graph-stage" id="revMiniGraph-${q.id}"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const box = document.getElementById("examContainer");
+      box.innerHTML = `
+        <div class="card" style="margin-bottom:18px; text-align:center;">
+          <span class="tag ${note10 >= 5 ? "tag-emerald" : "tag-rose"}">${note10 >= 5 ? "🎉 ¡Aprobado!" : "📚 Sigue entrenando"}</span>
+          <h2 style="margin:10px 0 4px; font-size:2.1rem; color:${note10 >= 5 ? "var(--emerald)" : "var(--rose)"};">
+            ${note10.toFixed(2)} / 10
+          </h2>
+          <p style="color:var(--text-muted); margin:0 0 16px;">
+            Puntuación oficial UNED: <strong style="color:#fff;">${rawScore.toFixed(2)} / 6,00 pts</strong>
+          </p>
+
+          <div class="grid-3" style="max-width:540px; margin:0 auto 18px;">
+            <div class="card-soft">
+              <div class="c-emerald" style="font-size:1.3rem;">${okCount}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Aciertos (+${(okCount * 0.5).toFixed(2)})</div>
+            </div>
+            <div class="card-soft">
+              <div class="c-rose" style="font-size:1.3rem;">${badCount}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Fallos (−${(badCount * 0.25).toFixed(2)})</div>
+            </div>
+            <div class="card-soft">
+              <div style="font-size:1.3rem; font-weight:800; color:#cbd5e1;">${blankCount}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">En blanco (0,00)</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-cyan" onclick="startExam('${examRuntime.mode}')">🔁 Repetir</button>
+            <button class="btn btn-ghost" onclick="renderExamStart()">Cambiar Modo</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 14px;">📋 Revisión Detallada con Grafos SVG (12 Preguntas)</h3>
+          ${reviewHtml}
+        </div>
+      `;
+
+      UNED_EXAM_QUESTIONS.forEach(q => {
+        renderMiniExamGraph(document.getElementById(`revMiniGraph-${q.id}`), q.graph);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ========================================================================
+       8. INITIALIZATION
+       ======================================================================== */
+    window.addEventListener("DOMContentLoaded", () => {
+      updateGlobalUI();
+      renderExamStart();
+    });
+  </script>
+</body>
+</html>

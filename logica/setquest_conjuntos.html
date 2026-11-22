@@ -1,0 +1,4082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SetQuest — Conjuntos | UNED Lógica y Estructuras Discretas</title>
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & RESET (Gaming-Académico Oscuro)
+       ========================================================================== */
+    :root {
+      --bg-deep: #0b1020;
+      --bg-card: #141c33;
+      --bg-card-hover: #1b2645;
+      --bg-surface: #0f162a;
+      --border-subtle: rgba(148, 163, 184, 0.16);
+      --border-bright: rgba(148, 163, 184, 0.32);
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --set-a: #38bdf8;       /* Cian neón */
+      --set-b: #f472b6;       /* Fucsia neón */
+      --set-c: #fbbf24;       /* Ámbar neón */
+      --success: #34d399;     /* Esmeralda */
+      --error: #fb7185;       /* Rojo coral */
+      --gold: #facc15;        /* Estrellas / XP */
+      --purple: #a78bfa;      /* Acento secundario */
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.38);
+      --nav-height-top: 66px;
+      --nav-height-bottom: 68px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 12% 10%, rgba(56, 189, 248, 0.11), transparent 36%),
+        radial-gradient(circle at 88% 18%, rgba(244, 114, 182, 0.10), transparent 36%),
+        radial-gradient(circle at 50% 90%, rgba(251, 191, 36, 0.07), transparent 40%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+    }
+
+    /* ==========================================================================
+       HEADER & NAVIGATION (Desktop Top Bar + Mobile Bottom Bar)
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: var(--nav-height-top);
+      background: rgba(11, 16, 32, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.22), rgba(244,114,182,0.22));
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.22);
+    }
+
+    .brand small {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--set-a);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .desktop-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(20, 28, 51, 0.75);
+      padding: 5px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      color: #0b1020;
+      background: linear-gradient(135deg, var(--set-a), #60a5fa);
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .xp-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(250, 204, 21, 0.12);
+      border: 1px solid rgba(250, 204, 21, 0.32);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .xp-lvl-badge {
+      background: var(--gold);
+      color: #0b1020;
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      display: grid;
+      place-items: center;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--set-a);
+      background: var(--bg-card-hover);
+    }
+
+    /* Mobile Bottom Navigation */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+      height: var(--nav-height-bottom);
+      background: rgba(11, 16, 32, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-subtle);
+      grid-template-columns: repeat(4, 1fr);
+      padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .bnav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .bnav-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .bnav-btn.active {
+      color: var(--set-a);
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    /* ==========================================================================
+       MAIN CONTAINER & COMMON UI COMPONENTS
+       ========================================================================== */
+    .app-container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 22px 18px 48px;
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeSlideIn 0.28s ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: rgba(20, 28, 51, 0.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card-soft {
+      background: rgba(15, 22, 42, 0.78);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-sub {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 13px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease;
+      min-height: 46px;
+      text-align: center;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--set-a), #2563eb);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.32);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 8px 26px rgba(56, 189, 248, 0.48);
+    }
+
+    .btn-pink {
+      background: linear-gradient(135deg, var(--set-b), #db2777);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(244, 114, 182, 0.3);
+    }
+
+    .btn-amber {
+      background: linear-gradient(135deg, var(--set-c), #d97706);
+      color: #0b1020;
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.28);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success), #059669);
+      color: #06221a;
+      box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.11);
+      border-color: var(--border-bright);
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      min-height: 38px;
+      border-radius: 10px;
+    }
+
+    /* Typography badges & Math formulas */
+    .formula {
+      font-family: var(--font-mono);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.26);
+      color: #e0f2fe;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .formula-big {
+      font-family: var(--font-mono);
+      font-size: clamp(1.15rem, 3.2vw, 1.65rem);
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(56,189,248,0.16), rgba(244,114,182,0.14));
+      border: 1px solid rgba(56, 189, 248, 0.38);
+      padding: 12px 20px;
+      border-radius: 14px;
+      display: inline-block;
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.15);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-a { background: rgba(56,189,248,0.16); color: var(--set-a); border: 1px solid rgba(56,189,248,0.35); }
+    .tag-b { background: rgba(244,114,182,0.16); color: var(--set-b); border: 1px solid rgba(244,114,182,0.35); }
+    .tag-c { background: rgba(251,191,36,0.16); color: var(--set-c); border: 1px solid rgba(251,191,36,0.35); }
+    .tag-ok { background: rgba(52,211,153,0.16); color: var(--success); border: 1px solid rgba(52,211,153,0.35); }
+    .tag-err { background: rgba(251,113,133,0.16); color: var(--error); border: 1px solid rgba(251,113,133,0.35); }
+    .tag-gold { background: rgba(250,204,21,0.16); color: var(--gold); border: 1px solid rgba(250,204,21,0.35); }
+
+    .c-a { color: var(--set-a); font-weight: 700; }
+    .c-b { color: var(--set-b); font-weight: 700; }
+    .c-c { color: var(--set-c); font-weight: 700; }
+    .c-ok { color: var(--success); font-weight: 700; }
+    .c-err { color: var(--error); font-weight: 700; }
+
+    /* Progress Bar */
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--set-a), var(--set-b), var(--set-c));
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Grids */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+
+    /* ==========================================================================
+       HUB / HOME SCREEN
+       ========================================================================== */
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(20, 28, 51, 0.96), rgba(16, 32, 66, 0.92));
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 26px;
+      padding: 28px;
+      margin-bottom: 22px;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -60px;
+      top: -80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.22), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 24px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      margin: 10px 0 10px;
+      font-size: clamp(1.65rem, 3.8vw, 2.35rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-title span {
+      background: linear-gradient(90deg, var(--set-a), var(--set-b), var(--set-c));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .stat-box {
+      background: rgba(11, 16, 32, 0.65);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .hub-module-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .hub-module-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--set-a);
+    }
+
+    /* ==========================================================================
+       ACADEMY (6 INTERACTIVE LESSONS)
+       ========================================================================== */
+    .lesson-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+      scrollbar-width: thin;
+    }
+
+    .lesson-tab {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 13px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+    }
+
+    .lesson-tab.active {
+      border-color: var(--set-a);
+      background: rgba(56, 189, 248, 0.16);
+      color: #fff;
+    }
+
+    .lesson-tab.done .lt-num {
+      background: var(--success);
+      color: #06221a;
+    }
+
+    .lt-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      display: grid;
+      place-items: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .lab-box {
+      background: linear-gradient(180deg, rgba(11, 16, 32, 0.92), rgba(15, 22, 42, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 18px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+
+    .lab-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--set-a);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0 0 12px;
+    }
+
+    .theory-list {
+      margin: 10px 0;
+      padding-left: 18px;
+    }
+
+    .theory-list li {
+      margin-bottom: 8px;
+      color: #cbd5e1;
+    }
+
+    .callout-tip {
+      background: rgba(251, 191, 36, 0.1);
+      border-left: 4px solid var(--set-c);
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin: 14px 0;
+      font-size: 0.94rem;
+    }
+
+    .callout-danger {
+      background: rgba(251, 113, 133, 0.1);
+      border-left: 4px solid var(--error);
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin: 14px 0;
+      font-size: 0.94rem;
+    }
+
+    /* Interactive Chips & Tables */
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .elem-chip {
+      min-width: 48px;
+      height: 48px;
+      padding: 0 14px;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid var(--border-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+      transition: all 0.18s ease;
+    }
+
+    .elem-chip:hover {
+      border-color: var(--set-a);
+      transform: translateY(-2px);
+    }
+
+    .elem-chip.selected {
+      background: rgba(56, 189, 248, 0.24);
+      border-color: var(--set-a);
+      color: #fff;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+    }
+
+    .elem-chip.correct {
+      background: rgba(52, 211, 153, 0.24);
+      border-color: var(--success);
+      color: #d1fae5;
+    }
+
+    .elem-chip.wrong {
+      background: rgba(251, 113, 133, 0.24);
+      border-color: var(--error);
+      color: #ffe4e6;
+    }
+
+    .op-btn {
+      padding: 9px 13px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      transition: all 0.18s ease;
+    }
+
+    .op-btn:hover {
+      border-color: var(--set-a);
+    }
+
+    .op-btn.active {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: var(--set-a);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.28);
+    }
+
+    .mirror-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+
+    .mirror-table th, .mirror-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .mirror-table th {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Canvas Venn Wrapper */
+    .venn-stage {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      aspect-ratio: 16 / 11;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #0a0f1f;
+      border: 1px solid var(--border-bright);
+      touch-action: manipulation;
+    }
+
+    .venn-stage canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    /* Mini Quiz inside Lesson */
+    .mini-quiz {
+      background: rgba(52, 211, 153, 0.07);
+      border: 1px solid rgba(52, 211, 153, 0.28);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 18px;
+    }
+
+    .quiz-opt {
+      width: 100%;
+      text-align: left;
+      padding: 13px 16px;
+      border-radius: 12px;
+      background: rgba(20, 28, 51, 0.9);
+      border: 1.5px solid var(--border-subtle);
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.18s ease;
+      margin-top: 8px;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--set-a);
+      background: var(--bg-card-hover);
+    }
+
+    .quiz-opt.selected {
+      border-color: var(--set-a);
+      background: rgba(56, 189, 248, 0.16);
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--success);
+      background: rgba(52, 211, 153, 0.18);
+      color: #ecfdf5;
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--error);
+      background: rgba(251, 113, 133, 0.18);
+      color: #fff1f2;
+    }
+
+    .opt-letter {
+      flex: 0 0 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.84rem;
+    }
+
+    /* ==========================================================================
+       GAMES HUB & GAME SPECIFIC STYLES
+       ========================================================================== */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .level-tile {
+      padding: 10px 6px;
+      border-radius: 14px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-weight: 800;
+      transition: all 0.18s ease;
+    }
+
+    .level-tile:hover {
+      border-color: var(--set-a);
+      transform: translateY(-2px);
+    }
+
+    .level-tile.active {
+      border-color: var(--set-a);
+      background: rgba(56, 189, 248, 0.18);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    }
+
+    .stars-row {
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      color: var(--gold);
+    }
+
+    /* Alchemy Cards */
+    .alchemy-card {
+      background: linear-gradient(160deg, rgba(27, 38, 69, 0.95), rgba(15, 22, 42, 0.96));
+      border: 1.5px solid rgba(167, 139, 250, 0.35);
+      border-radius: 16px;
+      padding: 15px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .alchemy-card:hover:not(:disabled) {
+      transform: translateY(-3px);
+      border-color: var(--set-b);
+      box-shadow: 0 10px 24px rgba(244, 114, 182, 0.22);
+    }
+
+    .alchemy-card.shake {
+      animation: shake 0.36s ease;
+      border-color: var(--error);
+    }
+
+    .alchemy-card.flash-ok {
+      border-color: var(--success);
+      background: rgba(52, 211, 153, 0.2);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+    }
+
+    .alchemy-step {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.9rem;
+    }
+
+    /* Arcade Timer & HUD */
+    .arcade-hud {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(11, 16, 32, 0.72);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+
+    .timer-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .timer-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--success), var(--set-c), var(--error));
+      transition: width 0.1s linear;
+    }
+
+    /* Power Set & Cartesian Grid */
+    .subset-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .subset-badge {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      padding: 6px 10px;
+      border-radius: 9px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      color: #e0f2fe;
+    }
+
+    .cartesian-table {
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .cart-cell {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 8px 4px;
+      text-align: center;
+      border-radius: 8px;
+      background: rgba(244, 114, 182, 0.12);
+      border: 1px solid rgba(244, 114, 182, 0.28);
+      color: #fce7f3;
+    }
+
+    /* Sliders */
+    .ie-slider-row {
+      display: grid;
+      grid-template-columns: 115px 1fr 44px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--set-a);
+      cursor: pointer;
+    }
+
+    /* Exam Navigation Dots */
+    .exam-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .exam-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-subtle);
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      display: grid;
+      place-items: center;
+    }
+
+    .exam-dot.current { border-color: var(--set-a); color: #fff; box-shadow: 0 0 12px rgba(56,189,248,0.35); }
+    .exam-dot.answered { background: rgba(56, 189, 248, 0.2); border-color: var(--set-a); color: #e0f2fe; }
+    .exam-dot.blank { background: rgba(148, 163, 184, 0.14); border-color: var(--text-dim); }
+    .exam-dot.ok { background: rgba(52, 211, 153, 0.22); border-color: var(--success); color: #d1fae5; }
+    .exam-dot.bad { background: rgba(251, 113, 133, 0.22); border-color: var(--error); color: #ffe4e6; }
+
+    /* Feedback Box */
+    .feedback-box {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 13px;
+      font-size: 0.93rem;
+      display: none;
+    }
+
+    .feedback-box.show { display: block; animation: fadeSlideIn 0.2s ease; }
+    .feedback-box.ok { background: rgba(52, 211, 153, 0.14); border: 1px solid rgba(52, 211, 153, 0.45); color: #d1fae5; }
+    .feedback-box.err { background: rgba(251, 113, 133, 0.14); border: 1px solid rgba(251, 113, 133, 0.45); color: #ffe4e6; }
+    .feedback-box.info { background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.45); color: #e0f2fe; }
+
+    /* Toast & Custom Modal */
+    .toast {
+      position: fixed;
+      top: 80px;
+      right: 18px;
+      z-index: 120;
+      background: rgba(20, 28, 51, 0.96);
+      border: 1px solid var(--gold);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      font-weight: 700;
+      font-size: 0.9rem;
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.28s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: rgba(5, 8, 18, 0.78);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.show { display: flex; }
+
+    .modal-box {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-bright);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS (Mobile-First Polish)
+       ========================================================================== */
+    @media (max-width: 860px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+      .bottom-nav { display: grid; }
+      .app-container {
+        padding: 14px 12px calc(var(--nav-height-bottom) + 24px);
+      }
+      .card, .hero-card {
+        padding: 16px;
+        border-radius: 18px;
+      }
+      .topbar {
+        padding: 0 12px;
+      }
+      .brand span-text { font-size: 1rem; }
+      .xp-pill { padding: 5px 10px; font-size: 0.8rem; }
+      .toast {
+        left: 14px;
+        right: 14px;
+        top: 74px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================= TOP HEADER ======================= -->
+  <header class="topbar">
+    <div class="brand" onclick="navigateTo('hub')" role="button" tabindex="0" aria-label="Ir al inicio">
+      <div class="brand-logo" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="9" cy="12" r="6" stroke="#38bdf8" stroke-width="2.2" fill="rgba(56,189,248,0.18)"/>
+          <circle cx="15" cy="12" r="6" stroke="#f472b6" stroke-width="2.2" fill="rgba(244,114,182,0.18)"/>
+        </svg>
+      </div>
+      <div>
+        SetQuest
+        <small>UNED · Conjuntos</small>
+      </div>
+    </div>
+
+    <nav class="desktop-nav" aria-label="Navegación principal">
+      <button class="nav-btn active" data-nav="hub" onclick="navigateTo('hub')">🏠 Inicio</button>
+      <button class="nav-btn" data-nav="academy" onclick="navigateTo('academy')">📖 Academia</button>
+      <button class="nav-btn" data-nav="games" onclick="navigateTo('games')">🎮 Puzles</button>
+      <button class="nav-btn" data-nav="exam" onclick="navigateTo('exam')">📝 Examen UNED</button>
+    </nav>
+
+    <div class="top-actions">
+      <div class="xp-pill" id="headerXpPill" title="Experiencia total y nivel">
+        <span class="xp-lvl-badge" id="hdrLvl">Nv. 1</span>
+        <span id="hdrXp">0 XP</span>
+      </div>
+      <button class="icon-btn" id="soundToggleBtn" onclick="toggleSound()" title="Activar/Silenciar sonido" aria-label="Sonido">
+        🔊
+      </button>
+    </div>
+  </header>
+
+  <!-- ======================= MAIN CONTENT ======================= -->
+  <main class="app-container">
+
+    <!-- ==================== VIEW 0: HUB / INICIO ==================== -->
+    <section id="view-hub" class="view-section active">
+      <div class="hero-card">
+        <div class="hero-grid">
+          <div>
+            <span class="tag tag-a">Lógica y Estructuras Discretas · UNED</span>
+            <h1 class="hero-title">Domina los <span>Conjuntos</span> desde cero y clava las P10 y P11</h1>
+            <p style="color:#cbd5e1; margin: 0 0 18px; font-size:0.98rem;">
+              Empieza por la <strong>Academia interactiva</strong> para entender cada símbolo sin memorizar a ciegas, entrena con <strong>3 juegos de puzle</strong> y ponte a prueba con las <strong>13 preguntas reales de 2025 y 2026</strong>.
+            </p>
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+              <button class="btn btn-primary" id="heroAcademyBtn" onclick="navigateTo('academy')">
+                📖 Empezar Academia desde Cero
+              </button>
+              <button class="btn btn-ghost" onclick="navigateTo('games')">
+                🎮 Ir directo a los Puzles
+              </button>
+            </div>
+          </div>
+
+          <div class="stat-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-weight:800; font-size:0.92rem;" id="hubRankTitle">Iniciado de Cantor</span>
+              <span class="tag tag-gold" id="hubXpBadge">0 XP</span>
+            </div>
+            <div class="progress-track" style="margin-bottom:14px;">
+              <div class="progress-fill" id="hubXpBar" style="width:0%"></div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; font-size:0.86rem; color:var(--text-muted); margin-bottom:6px;">
+              <span>📖 Progreso Academia</span>
+              <strong style="color:#fff;" id="hubLessonsText">0 / 6 lecciones</strong>
+            </div>
+            <div class="progress-track" style="margin-bottom:14px;">
+              <div class="progress-fill" id="hubLessonsBar" style="width:0%; background:linear-gradient(90deg, var(--success), var(--set-a));"></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px;">
+              <div class="card-soft" style="padding:10px; text-align:center;">
+                <div style="font-size:1.15rem; font-weight:800; color:var(--gold);" id="hubTotalStars">0 / 54 ★</div>
+                <div style="font-size:0.74rem; color:var(--text-muted);">Estrellas Puzle</div>
+              </div>
+              <div class="card-soft" style="padding:10px; text-align:center;">
+                <div style="font-size:1.15rem; font-weight:800; color:var(--success);" id="hubBestExam">—</div>
+                <div style="font-size:0.74rem; color:var(--text-muted);">Mejor Nota UNED</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <!-- Card Academia -->
+        <div class="card hub-module-card" onclick="navigateTo('academy')">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="tag tag-ok">Paso 1 · Recomendado</span>
+              <span style="font-size:1.4rem;">📖</span>
+            </div>
+            <h2 style="margin:0 0 6px; font-size:1.2rem;">Academia desde Cero</h2>
+            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">
+              6 lecciones claras con laboratorios interactivos: ∈ vs ⊆, Diagramas de Venn en vivo, De Morgan, 3 conjuntos, Conjunto Potencia P(A) e Inclusión-Exclusión.
+            </p>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <span style="font-size:0.84rem; color:var(--success); font-weight:700;" id="cardAcademyStatus">0/6 completadas</span>
+            <span style="color:var(--set-a); font-weight:700; font-size:0.88rem;">Abrir →</span>
+          </div>
+        </div>
+
+        <!-- Card Juegos -->
+        <div class="card hub-module-card" onclick="navigateTo('games')">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="tag tag-b">Paso 2 · Práctica</span>
+              <span style="font-size:1.4rem;">🎮</span>
+            </div>
+            <h2 style="margin:0 0 6px; font-size:1.2rem;">3 Juegos de Puzle</h2>
+            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">
+              <strong>Pintor de Venn</strong> (10 niveles táctiles), <strong>Alquimia de Leyes</strong> (8 puzles de cartas) y <strong>Contrarreloj de Cardinales</strong> (arcade con combos).
+            </p>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <span style="font-size:0.84rem; color:var(--gold); font-weight:700;" id="cardGamesStatus">Récord Arcade: 0</span>
+            <span style="color:var(--set-b); font-weight:700; font-size:0.88rem;">Jugar →</span>
+          </div>
+        </div>
+
+        <!-- Card Simulador UNED -->
+        <div class="card hub-module-card" onclick="navigateTo('exam')">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span class="tag tag-c">Paso 3 · Examen Real</span>
+              <span style="font-size:1.4rem;">📝</span>
+            </div>
+            <h2 style="margin:0 0 6px; font-size:1.2rem;">Simulador Oficial UNED</h2>
+            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">
+              Las 13 preguntas reales de 2025 y 2026 con puntuación oficial (+0,50 / -0,25 / 0 blanco), en Modo Entrenamiento guiado o Modo Examen Real.
+            </p>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+            <span style="font-size:0.84rem; color:var(--set-c); font-weight:700;" id="cardExamStatus">13 preguntas oficiales</span>
+            <span style="color:var(--set-c); font-weight:700; font-size:0.88rem;">Simular →</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+        <button class="btn btn-ghost btn-sm" onclick="openResetModal()" style="color:var(--text-muted);">
+          🗑️ Reiniciar progreso guardado
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 1: ACADEMIA DESDE CERO ==================== -->
+    <section id="view-academy" class="view-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">📖 Academia de Conjuntos desde Cero</h1>
+          <p class="section-sub">Aprende cada concepto tocando el laboratorio interactivo y supera el mini-reto (+50 XP por lección).</p>
+        </div>
+        <span class="tag tag-ok" id="academyProgressPill">0 / 6 Completadas</span>
+      </div>
+
+      <div class="lesson-tabs" id="lessonTabs"></div>
+      <div id="lessonContent" class="card"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: JUEGOS DE PUZLE ==================== -->
+    <section id="view-games" class="view-section">
+      <!-- Selector de los 3 juegos -->
+      <div id="games-selector">
+        <div class="section-header">
+          <div>
+            <h1 class="section-title">🎮 Arena de Puzles</h1>
+            <p class="section-sub">Elige un modo de juego para entrenar tu intuición visual, algebraica y de cálculo rápido.</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card hub-module-card" onclick="openGame('venn')">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="tag tag-a">10 Niveles</span>
+                <span style="font-size:1.5rem;">🎨</span>
+              </div>
+              <h2 style="margin:0 0 6px;">Pintor de Venn</h2>
+              <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">
+                Pinta regiones exactas en diagramas de 2 y 3 círculos (Niv. 1-5) y resuelve fichas de exámenes reales UNED (Niv. 6-10).
+              </p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+              <span class="stars-row" id="vennStarsSummary">0 / 30 ★</span>
+              <span class="btn btn-primary btn-sm">Jugar</span>
+            </div>
+          </div>
+
+          <div class="card hub-module-card" onclick="openGame('alchemy')">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="tag tag-b">8 Niveles</span>
+                <span style="font-size:1.5rem;">🧪</span>
+              </div>
+              <h2 style="margin:0 0 6px;">Alquimia de Leyes</h2>
+              <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">
+                Transforma fórmulas paso a paso jugando cartas de De Morgan, Doble Complemento y Diferencia evitando las cartas trampa.
+              </p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+              <span class="stars-row" id="alchemyStarsSummary">0 / 24 ★</span>
+              <span class="btn btn-pink btn-sm">Jugar</span>
+            </div>
+          </div>
+
+          <div class="card hub-module-card" onclick="openGame('arcade')">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="tag tag-c">Arcade + Zen</span>
+                <span style="font-size:1.5rem;">⚡</span>
+              </div>
+              <h2 style="margin:0 0 6px;">Contrarreloj de Cardinales</h2>
+              <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">
+                3 vidas y combos hasta x4 calculando |P(A)|, |A × B|, trampas de ∈/⊆ e Inclusión-Exclusión. Incluye Modo Zen sin reloj.
+              </p>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border-subtle);">
+              <span style="font-size:0.86rem; font-weight:700; color:var(--gold);" id="arcadeBestSummary">Récord: 0 pts</span>
+              <span class="btn btn-amber btn-sm">Jugar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-VIEW: JUEGO 1 — PINTOR DE VENN -->
+      <div id="game-venn" style="display:none;">
+        <div class="section-header">
+          <div>
+            <button class="btn btn-ghost btn-sm" onclick="closeGame()" style="margin-bottom:8px;">← Volver a Puzles</button>
+            <h2 class="section-title" style="font-size:1.35rem;">🎨 Pintor de Venn</h2>
+          </div>
+          <span class="tag tag-gold" id="vennHeaderStars">0 / 30 ★</span>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Selecciona nivel (1-5 Regiones · 6-10 Exámenes Reales)</div>
+          <div class="level-grid" id="vennLevelGrid"></div>
+        </div>
+
+        <div class="card" id="vennPlayArea"></div>
+      </div>
+
+      <!-- SUB-VIEW: JUEGO 2 — ALQUIMIA DE LEYES -->
+      <div id="game-alchemy" style="display:none;">
+        <div class="section-header">
+          <div>
+            <button class="btn btn-ghost btn-sm" onclick="closeGame()" style="margin-bottom:8px;">← Volver a Puzles</button>
+            <h2 class="section-title" style="font-size:1.35rem;">🧪 Alquimia de Leyes</h2>
+          </div>
+          <span class="tag tag-gold" id="alchemyHeaderStars">0 / 24 ★</span>
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em;">Niveles de Transformación</div>
+          <div class="level-grid" id="alchemyLevelGrid"></div>
+        </div>
+
+        <div class="card" id="alchemyPlayArea"></div>
+      </div>
+
+      <!-- SUB-VIEW: JUEGO 3 — CONTRARRELOJ DE CARDINALES -->
+      <div id="game-arcade" style="display:none;">
+        <div class="section-header">
+          <div>
+            <button class="btn btn-ghost btn-sm" onclick="closeGame()" style="margin-bottom:8px;">← Volver a Puzles</button>
+            <h2 class="section-title" style="font-size:1.35rem;">⚡ Contrarreloj de Cardinales</h2>
+          </div>
+          <span class="tag tag-gold" id="arcadeHeaderBest">Récord: 0</span>
+        </div>
+
+        <div class="card" id="arcadePlayArea"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: SIMULADOR OFICIAL UNED ==================== -->
+    <section id="view-exam" class="view-section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">📝 Simulador Oficial UNED (2025 – 2026)</h1>
+          <p class="section-sub">13 preguntas reales verificadas · Sistema de puntuación oficial: <strong class="c-ok">+0,50</strong> acierto · <strong class="c-err">-0,25</strong> fallo · <strong>0</strong> blanco.</p>
+        </div>
+      </div>
+
+      <div id="examContainer"></div>
+    </section>
+
+  </main>
+
+  <!-- ======================= MOBILE BOTTOM NAV ======================= -->
+  <nav class="bottom-nav" aria-label="Navegación móvil">
+    <button class="bnav-btn active" data-nav="hub" onclick="navigateTo('hub')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>
+      Inicio
+    </button>
+    <button class="bnav-btn" data-nav="academy" onclick="navigateTo('academy')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Academia
+    </button>
+    <button class="bnav-btn" data-nav="games" onclick="navigateTo('games')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="15" cy="11" r="1" fill="currentColor"/><circle cx="17" cy="13" r="1" fill="currentColor"/></svg>
+      Puzles
+    </button>
+    <button class="bnav-btn" data-nav="exam" onclick="navigateTo('exam')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Examen
+    </button>
+  </nav>
+
+  <!-- ======================= TOAST & MODAL ======================= -->
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <div class="modal-backdrop" id="resetModal">
+    <div class="modal-box">
+      <h3 style="margin:0 0 10px; font-size:1.2rem;">¿Reiniciar todo tu progreso?</h3>
+      <p style="margin:0 0 18px; color:var(--text-muted); font-size:0.93rem;">
+        Se borrarán tus XP, lecciones completadas, estrellas en puzles, récord arcade y notas del simulador en este navegador.
+      </p>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn btn-ghost btn-sm" onclick="closeResetModal()">Cancelar</button>
+        <button class="btn btn-sm" style="background:var(--error); color:#fff;" onclick="confirmResetProgress()">Sí, reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       APPLICATION JAVASCRIPT (Self-Contained Vanilla JS)
+       ========================================================================== -->
+  <script>
+    "use strict";
+
+    /* ========================================================================
+       1. STATE, PERSISTENCE & AUDIO ENGINE
+       ======================================================================== */
+    const STORAGE_KEY = "setquest_uned_v1";
+
+    const DEFAULT_STATE = {
+      xp: 0,
+      soundOn: true,
+      completedLessons: [],   // [1..6]
+      vennStars: {},          // { "1": 3, ... }
+      alchemyStars: {},       // { "1": 3, ... }
+      arcadeBest: 0,
+      examBestNote10: null,
+      examAttempts: 0
+    };
+
+    let state = loadState();
+    let audioCtx = null;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredCloneSafe(DEFAULT_STATE);
+        const parsed = JSON.parse(raw);
+        return Object.assign(structuredCloneSafe(DEFAULT_STATE), parsed);
+      } catch (e) {
+        return structuredCloneSafe(DEFAULT_STATE);
+      }
+    }
+
+    function structuredCloneSafe(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) { /* Ignore quota errors in private mode */ }
+      updateGlobalUI();
+    }
+
+    function getLevelInfo(xp) {
+      const level = Math.floor(xp / 150) + 1;
+      const inLevel = xp % 150;
+      const pct = Math.round((inLevel / 150) * 100);
+      const ranks = [
+        "Iniciado de Cantor",
+        "Explorador de Venn",
+        "Alquimista de De Morgan",
+        "Estratega de Subconjuntos",
+        "Maestro de Conjuntos",
+        "Leyenda UNED"
+      ];
+      const rank = ranks[Math.min(level - 1, ranks.length - 1)];
+      return { level, inLevel, pct, rank };
+    }
+
+    function awardXP(amount, reason) {
+      const prevLvl = getLevelInfo(state.xp).level;
+      state.xp += amount;
+      const nextLvl = getLevelInfo(state.xp).level;
+      saveState();
+      if (nextLvl > prevLvl) {
+        playSound("levelup");
+        showToast(`🌟 ¡Nivel ${nextLvl} alcanzado! (+${amount} XP)`);
+      } else {
+        showToast(`+${amount} XP · ${reason}`);
+      }
+    }
+
+    // Subtle Web Audio API Synthesizer (no external audio files)
+    function ensureAudio() {
+      if (!state.soundOn) return null;
+      try {
+        if (!audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (Ctx) audioCtx = new Ctx();
+        }
+        if (audioCtx && audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function playSound(type) {
+      const ctx = ensureAudio();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const playTone = (freq, start, dur, wave = "sine", gainVal = 0.08) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = wave;
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.exponentialRampToValueAtTime(gainVal, start + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start);
+          osc.stop(start + dur + 0.02);
+        };
+
+        if (type === "click") {
+          playTone(540, now, 0.06, "triangle", 0.05);
+        } else if (type === "toggle") {
+          playTone(680, now, 0.07, "sine", 0.05);
+        } else if (type === "success") {
+          playTone(523.25, now, 0.12, "triangle", 0.08);
+          playTone(659.25, now + 0.09, 0.14, "triangle", 0.08);
+          playTone(783.99, now + 0.18, 0.22, "triangle", 0.09);
+        } else if (type === "error") {
+          playTone(230, now, 0.14, "sawtooth", 0.06);
+          playTone(185, now + 0.12, 0.2, "sawtooth", 0.06);
+        } else if (type === "levelup") {
+          playTone(523.25, now, 0.1, "triangle", 0.09);
+          playTone(659.25, now + 0.09, 0.1, "triangle", 0.09);
+          playTone(783.99, now + 0.18, 0.1, "triangle", 0.09);
+          playTone(1046.5, now + 0.28, 0.3, "triangle", 0.1);
+        }
+      } catch (e) { /* safe fallback */ }
+    }
+
+    function toggleSound() {
+      state.soundOn = !state.soundOn;
+      saveState();
+      if (state.soundOn) playSound("click");
+      showToast(state.soundOn ? "🔊 Sonido activado" : "🔇 Sonido silenciado");
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const box = document.getElementById("toastBox");
+      box.textContent = msg;
+      box.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => box.classList.remove("show"), 2600);
+    }
+
+    function openResetModal() {
+      document.getElementById("resetModal").classList.add("show");
+    }
+
+    function closeResetModal() {
+      document.getElementById("resetModal").classList.remove("show");
+    }
+
+    function confirmResetProgress() {
+      state = structuredCloneSafe(DEFAULT_STATE);
+      saveState();
+      closeResetModal();
+      renderAcademy();
+      renderGamesHubStats();
+      renderExamStart();
+      showToast("Progreso reiniciado correctamente");
+    }
+
+    /* ========================================================================
+       2. NAVIGATION & GLOBAL UI SYNC
+       ======================================================================== */
+    let currentView = "hub";
+    let activeVennInstances = [];
+
+    function navigateTo(view) {
+      // Stop arcade timer if leaving games
+      if (view !== "games") stopArcadeTimer();
+
+      currentView = view;
+      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+      const target = document.getElementById(`view-${view}`);
+      if (target) target.classList.add("active");
+
+      document.querySelectorAll("[data-nav]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-nav") === view);
+      });
+
+      if (view === "academy") {
+        renderAcademy();
+      } else if (view === "games") {
+        closeGame(true);
+        renderGamesHubStats();
+      } else if (view === "exam") {
+        if (!examRuntime.active) renderExamStart();
+      }
+
+      updateGlobalUI();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      playSound("click");
+    }
+
+    function sumStars(obj) {
+      return Object.values(obj || {}).reduce((acc, v) => acc + Number(v || 0), 0);
+    }
+
+    function updateGlobalUI() {
+      const lvl = getLevelInfo(state.xp);
+      document.getElementById("hdrLvl").textContent = `Nv. ${lvl.level}`;
+      document.getElementById("hdrXp").textContent = `${state.xp} XP`;
+      document.getElementById("soundToggleBtn").textContent = state.soundOn ? "🔊" : "🔇";
+
+      const lessonsCount = state.completedLessons.length;
+      const vennS = sumStars(state.vennStars);
+      const alchS = sumStars(state.alchemyStars);
+      const totalS = vennS + alchS;
+
+      document.getElementById("hubRankTitle").textContent = lvl.rank;
+      document.getElementById("hubXpBadge").textContent = `${state.xp} XP`;
+      document.getElementById("hubXpBar").style.width = `${lvl.pct}%`;
+
+      document.getElementById("hubLessonsText").textContent = `${lessonsCount} / 6 lecciones`;
+      document.getElementById("hubLessonsBar").style.width = `${Math.round((lessonsCount / 6) * 100)}%`;
+      document.getElementById("hubTotalStars").textContent = `${totalS} / 54 ★`;
+      document.getElementById("hubBestExam").textContent =
+        state.examBestNote10 !== null ? `${state.examBestNote10.toFixed(2)} / 10` : "—";
+
+      const heroBtn = document.getElementById("heroAcademyBtn");
+      if (lessonsCount === 0) {
+        heroBtn.textContent = "📖 Empezar Academia desde Cero";
+      } else if (lessonsCount < 6) {
+        heroBtn.textContent = `📖 Continuar Academia (Lección ${lessonsCount + 1}/6)`;
+      } else {
+        heroBtn.textContent = "✅ Repasar Academia (6/6 Completada)";
+      }
+
+      document.getElementById("cardAcademyStatus").textContent = `${lessonsCount}/6 completadas`;
+      document.getElementById("cardGamesStatus").textContent = `${totalS}★ · Récord Arcade: ${state.arcadeBest}`;
+      document.getElementById("cardExamStatus").textContent =
+        state.examBestNote10 !== null ? `Mejor nota: ${state.examBestNote10.toFixed(2)}/10` : "13 preguntas oficiales";
+
+      document.getElementById("academyProgressPill").textContent = `${lessonsCount} / 6 Completadas`;
+      renderGamesHubStats();
+    }
+
+    function renderGamesHubStats() {
+      const vennS = sumStars(state.vennStars);
+      const alchS = sumStars(state.alchemyStars);
+      const el1 = document.getElementById("vennStarsSummary");
+      const el2 = document.getElementById("alchemyStarsSummary");
+      const el3 = document.getElementById("arcadeBestSummary");
+      if (el1) el1.textContent = `${vennS} / 30 ★`;
+      if (el2) el2.textContent = `${alchS} / 24 ★`;
+      if (el3) el3.textContent = `Récord: ${state.arcadeBest} pts`;
+
+      const vh = document.getElementById("vennHeaderStars");
+      const ah = document.getElementById("alchemyHeaderStars");
+      const ab = document.getElementById("arcadeHeaderBest");
+      if (vh) vh.textContent = `${vennS} / 30 ★`;
+      if (ah) ah.textContent = `${alchS} / 24 ★`;
+      if (ab) ab.textContent = `Récord: ${state.arcadeBest} pts`;
+    }
+
+    /* ========================================================================
+       3. PIXEL-PERFECT INTERACTIVE VENN CANVAS ENGINE (2 & 3 CIRCLES)
+       Uses mathematical distance bitmasks (inA | inB<<1 | inC<<2) so every
+       single region (4 in 2-set, 8 in 3-set) is 100% independently clickable
+       and rendered crisply on both desktop and mobile touchscreens.
+       ======================================================================== */
+    class VennCanvas {
+      constructor(canvas, options = {}) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext("2d");
+        this.numSets = options.numSets || 2; // 2 or 3
+        this.labels = options.labels || (this.numSets === 2 ? ["A", "B"] : ["A", "B", "C"]);
+        this.selectedMasks = new Set(options.selectedMasks || []);
+        this.readOnly = Boolean(options.readOnly);
+        this.onToggleMask = options.onToggleMask || null;
+        this.regionTexts = options.regionTexts || null; // Map mask -> string (e.g. elements or counts)
+        this.highlightMask = options.highlightMask !== undefined ? options.highlightMask : null;
+        this.showHintColors = options.showHintColors !== false;
+
+        // Offscreen low-res buffer for instant pixel-exact region painting
+        this.bufW = 320;
+        this.bufH = 220;
+        this.offCanvas = document.createElement("canvas");
+        this.offCanvas.width = this.bufW;
+        this.offCanvas.height = this.bufH;
+        this.offCtx = this.offCanvas.getContext("2d");
+
+        this._bindEvents();
+        this.resizeAndDraw();
+        activeVennInstances.push(this);
+      }
+
+      getGeometry(w, h) {
+        if (this.numSets === 2) {
+          const r = Math.min(w * 0.27, h * 0.36);
+          const cy = h * 0.54;
+          const dx = r * 0.62;
+          return {
+            circles: [
+              { x: w * 0.5 - dx, y: cy, r, color: "#38bdf8", rgb: [56, 189, 248], label: this.labels[0], lx: w * 0.5 - dx - r * 0.68, ly: cy - r * 0.78 },
+              { x: w * 0.5 + dx, y: cy, r, color: "#f472b6", rgb: [244, 114, 182], label: this.labels[1], lx: w * 0.5 + dx + r * 0.68, ly: cy - r * 0.78 }
+            ],
+            centroids: {
+              0: [w * 0.11, h * 0.87],
+              1: [w * 0.5 - dx - r * 0.34, cy],
+              2: [w * 0.5 + dx + r * 0.34, cy],
+              3: [w * 0.5, cy]
+            }
+          };
+        } else {
+          const r = Math.min(w * 0.24, h * 0.31);
+          const cx = w * 0.5;
+          const cy = h * 0.56;
+          const d = r * 0.56;
+          const ax = cx - d * 0.96, ay = cy - d * 0.52;
+          const bx = cx + d * 0.96, by = cy - d * 0.52;
+          const cx3 = cx, cy3 = cy + d * 0.92;
+          return {
+            circles: [
+              { x: ax, y: ay, r, color: "#38bdf8", rgb: [56, 189, 248], label: this.labels[0], lx: ax - r * 0.88, ly: ay - r * 0.66 },
+              { x: bx, y: by, r, color: "#f472b6", rgb: [244, 114, 182], label: this.labels[1], lx: bx + r * 0.88, ly: by - r * 0.66 },
+              { x: cx3, y: cy3, r, color: "#fbbf24", rgb: [251, 191, 36], label: this.labels[2], lx: cx3 + r * 0.92, ly: cy3 + r * 0.62 }
+            ],
+            centroids: {
+              0: [w * 0.11, h * 0.88],             // exterior
+              1: [ax - r * 0.38, ay - r * 0.14],   // solo A
+              2: [bx + r * 0.38, by - r * 0.14],   // solo B
+              3: [cx, ay - r * 0.16],              // A∩B\C
+              4: [cx3, cy3 + r * 0.42],            // solo C
+              5: [cx - r * 0.42, cy + r * 0.24],   // A∩C\B
+              6: [cx + r * 0.42, cy + r * 0.24],   // B∩C\A
+              7: [cx, cy + r * 0.04]               // A∩B∩C
+            }
+          };
+        }
+      }
+
+      getMaskAt(x, y, geom) {
+        let mask = 0;
+        for (let i = 0; i < geom.circles.length; i++) {
+          const c = geom.circles[i];
+          const dx = x - c.x;
+          const dy = y - c.y;
+          if (dx * dx + dy * dy <= c.r * c.r) {
+            mask |= (1 << i);
+          }
+        }
+        return mask;
+      }
+
+      _bindEvents() {
+        const handler = (ev) => {
+          if (this.readOnly) return;
+          const rect = this.canvas.getBoundingClientRect();
+          const clientX = ev.clientX;
+          const clientY = ev.clientY;
+          const x = clientX - rect.left;
+          const y = clientY - rect.top;
+          const geom = this.getGeometry(rect.width, rect.height);
+          const mask = this.getMaskAt(x, y, geom);
+
+          if (this.onToggleMask) {
+            this.onToggleMask(mask, this);
+          } else {
+            if (this.selectedMasks.has(mask)) this.selectedMasks.delete(mask);
+            else this.selectedMasks.add(mask);
+            playSound("toggle");
+            this.draw();
+          }
+        };
+        this.canvas.addEventListener("pointerdown", handler);
+      }
+
+      setSelectedMasks(masksArray) {
+        this.selectedMasks = new Set(masksArray);
+        this.draw();
+      }
+
+      setRegionTexts(mapObj) {
+        this.regionTexts = mapObj;
+        this.draw();
+      }
+
+      resizeAndDraw() {
+        const parent = this.canvas.parentElement;
+        if (!parent) return;
+        const rect = parent.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.canvas.width = Math.round(rect.width * dpr);
+        this.canvas.height = Math.round(rect.height * dpr);
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        this.cssW = rect.width;
+        this.cssH = rect.height;
+        this.draw();
+      }
+
+      draw() {
+        if (!this.cssW || !this.cssH) {
+          this.resizeAndDraw();
+          return;
+        }
+        const ctx = this.ctx;
+        const w = this.cssW;
+        const h = this.cssH;
+
+        // 1. Pixel-perfect region fill on offscreen canvas
+        const bw = this.bufW;
+        const bh = this.bufH;
+        const bGeom = this.getGeometry(bw, bh);
+        const img = this.offCtx.createImageData(bw, bh);
+        const data = img.data;
+
+        // Precompute colors for each bitmask 0..7
+        const maskColors = new Array(8);
+        for (let m = 0; m < 8; m++) {
+          const isSel = this.selectedMasks.has(m);
+          if (isSel) {
+            // Vivid neon emerald/cyan highlight for selected regions
+            maskColors[m] = m === 0 ? [56, 189, 248, 125] : [52, 211, 153, 175];
+          } else if (m === 0) {
+            maskColors[m] = [11, 16, 32, 255];
+          } else {
+            // Subtle blended tint per set
+            let r = 18, g = 26, b = 48, cnt = 0;
+            if (m & 1) { r += 56; g += 189; b += 248; cnt++; }
+            if (m & 2) { r += 244; g += 114; b += 182; cnt++; }
+            if (m & 4) { r += 251; g += 191; b += 36; cnt++; }
+            maskColors[m] = [Math.round(r / (cnt + 2.6)), Math.round(g / (cnt + 2.6)), Math.round(b / (cnt + 2.6)), 255];
+          }
+        }
+
+        const c0 = bGeom.circles[0];
+        const c1 = bGeom.circles[1];
+        const c2 = bGeom.circles[2] || null;
+        const r0sq = c0.r * c0.r;
+        const r1sq = c1.r * c1.r;
+        const r2sq = c2 ? c2.r * c2.r : 0;
+
+        let idx = 0;
+        for (let py = 0; py < bh; py++) {
+          const dy0 = py - c0.y, dy0sq = dy0 * dy0;
+          const dy1 = py - c1.y, dy1sq = dy1 * dy1;
+          const dy2sq = c2 ? (py - c2.y) * (py - c2.y) : 0;
+
+          for (let px = 0; px < bw; px++) {
+            let m = 0;
+            const dx0 = px - c0.x;
+            if (dx0 * dx0 + dy0sq <= r0sq) m |= 1;
+            const dx1 = px - c1.x;
+            if (dx1 * dx1 + dy1sq <= r1sq) m |= 2;
+            if (c2) {
+              const dx2 = px - c2.x;
+              if (dx2 * dx2 + dy2sq <= r2sq) m |= 4;
+            }
+
+            const col = maskColors[m];
+            // Add subtle diagonal stripe pattern on selected regions for clarity
+            const stripe = this.selectedMasks.has(m) && ((px + py) % 10 < 2) ? 24 : 0;
+            data[idx++] = Math.min(255, col[0] + stripe);
+            data[idx++] = Math.min(255, col[1] + stripe);
+            data[idx++] = Math.min(255, col[2] + stripe);
+            data[idx++] = 255;
+          }
+        }
+
+        this.offCtx.putImageData(img, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(this.offCanvas, 0, 0, w, h);
+
+        // 2. Draw crisp vector Universe frame, circles & labels
+        const geom = this.getGeometry(w, h);
+
+        // Universe corner label
+        ctx.font = "800 14px Inter, sans-serif";
+        ctx.fillStyle = this.selectedMasks.has(0) ? "#ffffff" : "#94a3b8";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillText("U", 12, 10);
+
+        // Circles outlines
+        for (const c of geom.circles) {
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+          ctx.lineWidth = 2.6;
+          ctx.strokeStyle = c.color;
+          ctx.stroke();
+
+          // Label pill
+          ctx.font = "800 15px Inter, sans-serif";
+          ctx.fillStyle = c.color;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(c.label, Math.max(18, Math.min(w - 18, c.lx)), Math.max(18, Math.min(h - 18, c.ly)));
+        }
+
+        // 3. Draw Region Texts (elements or counts) or subtle checkmarks
+        const maxMask = this.numSets === 2 ? 4 : 8;
+        for (let m = 0; m < maxMask; m++) {
+          const pos = geom.centroids[m];
+          if (!pos) continue;
+          const [tx, ty] = pos;
+
+          if (this.regionTexts && this.regionTexts[m] !== undefined && this.regionTexts[m] !== "") {
+            const text = String(this.regionTexts[m]);
+            ctx.font = text.length > 6 ? "700 11px JetBrains Mono, monospace" : "800 13px JetBrains Mono, monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            // Subtle pill behind text for max legibility
+            const metrics = ctx.measureText(text);
+            const pw = metrics.width + 10;
+            const ph = 20;
+            ctx.fillStyle = this.selectedMasks.has(m) ? "rgba(6, 34, 26, 0.78)" : "rgba(11, 16, 32, 0.75)";
+            roundRect(ctx, tx - pw / 2, ty - ph / 2, pw, ph, 6);
+            ctx.fill();
+            ctx.fillStyle = this.selectedMasks.has(m) ? "#ecfdf5" : "#f1f5f9";
+            ctx.fillText(text, tx, ty + 0.5);
+          } else if (this.selectedMasks.has(m)) {
+            // Draw small crisp dot/check on painted region
+            ctx.beginPath();
+            ctx.arc(tx, ty, 5, 0, Math.PI * 2);
+            ctx.fillStyle = "#ffffff";
+            ctx.fill();
+          }
+        }
+      }
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    window.addEventListener("resize", () => {
+      activeVennInstances = activeVennInstances.filter(inst => document.body.contains(inst.canvas));
+      activeVennInstances.forEach(inst => inst.resizeAndDraw());
+    });
+
+    /* ========================================================================
+       4. MODULE 1: ACADEMIA DESDE CERO (6 INTERACTIVE LESSONS)
+       ======================================================================== */
+    let currentLessonId = 1;
+
+    const LESSONS_META = [
+      { id: 1, short: "U, ∈, ⊆ e Igualdad", title: "Lección 1 — Universo (U), Pertenencia (∈), Inclusión (⊆) e Igualdad" },
+      { id: 2, short: "Operaciones Básicas", title: "Lección 2 — Operaciones (∪, ∩, \\, ~) y Diferencia Simétrica" },
+      { id: 3, short: "Espejo y De Morgan", title: "Lección 3 — El Espejo con la Lógica y Leyes de Conjuntos" },
+      { id: 4, short: "3 Conjuntos y Truco", title: "Lección 4 — Operaciones con 3 Conjuntos y Truco del Espía" },
+      { id: 5, short: "Potencia y Cartesiano", title: "Lección 5 — Conjunto Potencia P(A) y Producto Cartesiano A × B" },
+      { id: 6, short: "Inclusión-Exclusión", title: "Lección 6 — Cardinalidad e Inclusión-Exclusión (2 y 3 Conjuntos)" }
+    ];
+
+    const LESSON_QUIZZES = {
+      1: {
+        q: "Dado A = {1, 3, 5}, ¿cuál de estas afirmaciones es VERDADERA?",
+        opts: ["{3} ∈ A", "{3} ⊆ A", "3 ⊆ A"],
+        correct: 1,
+        exp: "3 es un elemento (3 ∈ A), mientras que {3} es un conjunto formado por el 3, por tanto es un SUBCONJUNTO de A: {3} ⊆ A."
+      },
+      2: {
+        q: "Con U = {1,2,3,4,5,6}, A = {1,2,4,6} y B = {2,3,5,6}, ¿cuál es el resultado de A \\ B?",
+        opts: ["{1, 4}", "{2, 6}", "{3, 5}"],
+        correct: 0,
+        exp: "A \\ B significa 'en A pero NO en B'. A tiene {1,2,4,6}; quitamos los que están en B (el 2 y el 6) y queda {1, 4}."
+      },
+      3: {
+        q: "Según las leyes de conjuntos (pregunta real UNED 2025), ¿a qué equivale A \\ ~B?",
+        opts: ["A ∪ B", "A ∩ B", "~(A ∩ B)"],
+        correct: 1,
+        exp: "Usando X \\ Y = X ∩ ~Y: A \\ ~B = A ∩ ~~B = A ∩ B por Doble Complemento."
+      },
+      4: {
+        q: "En un diagrama de 3 conjuntos (A, B, C), ¿qué fórmula describe la región que está en B y C pero NO en A?",
+        opts: ["A ∩ B ∩ C", "Aᶜ ∩ B ∩ C", "A ∪ (B ∩ C)"],
+        correct: 1,
+        exp: "No estar en A es Aᶜ (o ~A), y estar en B y en C a la vez es ∩ B ∩ C. Por tanto: Aᶜ ∩ B ∩ C."
+      },
+      5: {
+        q: "Si |A| = 5, ¿cuántos elementos tiene P(A) y qué relación cumple ∅?",
+        opts: ["25 elementos y ∅ ∉ P(A)", "32 elementos y ∅ ∈ P(A)", "10 elementos y ∅ ∈ P(A)"],
+        correct: 1,
+        exp: "|P(A)| = 2⁵ = 32 subconjuntos. Además, ∅ siempre es subconjunto de A, por lo que ∅ es un ELEMENTO de P(A): ∅ ∈ P(A)."
+      },
+      6: {
+        q: "Si |A|=6, |B|=5 y |A ∩ B|=2, ¿cuántos elementos hay en A ∪ B?",
+        opts: ["11", "9", "13"],
+        correct: 1,
+        exp: "Por Inclusión-Exclusión para 2 conjuntos: |A ∪ B| = |A| + |B| - |A ∩ B| = 6 + 5 - 2 = 9."
+      }
+    };
+
+    function renderAcademy() {
+      const tabsEl = document.getElementById("lessonTabs");
+      tabsEl.innerHTML = LESSONS_META.map(l => {
+        const done = state.completedLessons.includes(l.id);
+        return `
+          <button class="lesson-tab ${l.id === currentLessonId ? "active" : ""} ${done ? "done" : ""}" onclick="selectLesson(${l.id})">
+            <span class="lt-num">${done ? "✓" : l.id}</span>
+            <span>${l.short}</span>
+          </button>
+        `;
+      }).join("");
+
+      const container = document.getElementById("lessonContent");
+      const meta = LESSONS_META.find(l => l.id === currentLessonId);
+      const isDone = state.completedLessons.includes(currentLessonId);
+
+      let bodyHtml = "";
+      if (currentLessonId === 1) bodyHtml = buildLesson1HTML();
+      if (currentLessonId === 2) bodyHtml = buildLesson2HTML();
+      if (currentLessonId === 3) bodyHtml = buildLesson3HTML();
+      if (currentLessonId === 4) bodyHtml = buildLesson4HTML();
+      if (currentLessonId === 5) bodyHtml = buildLesson5HTML();
+      if (currentLessonId === 6) bodyHtml = buildLesson6HTML();
+
+      const q = LESSON_QUIZZES[currentLessonId];
+      const quizHtml = `
+        <div class="mini-quiz">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <strong style="color:var(--success); font-size:0.95rem;">🎯 Mini-Reto de Lección ${currentLessonId}</strong>
+            ${isDone ? '<span class="tag tag-ok">✓ Completada (+50 XP)</span>' : '<span class="tag tag-gold">Recompensa: +50 XP</span>'}
+          </div>
+          <p style="margin:0 0 10px; font-weight:700;">${q.q}</p>
+          <div id="lessonQuizOpts">
+            ${q.opts.map((opt, idx) => `
+              <button class="quiz-opt" onclick="answerLessonQuiz(${currentLessonId}, ${idx})">
+                <span class="opt-letter">${String.fromCharCode(97 + idx)}</span>
+                <span>${opt}</span>
+              </button>
+            `).join("")}
+          </div>
+          <div id="lessonQuizFb" class="feedback-box"></div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" ${currentLessonId === 1 ? "disabled" : ""} onclick="selectLesson(${currentLessonId - 1})">← Anterior</button>
+          ${currentLessonId < 6
+            ? `<button class="btn btn-primary btn-sm" onclick="selectLesson(${currentLessonId + 1})">Siguiente Lección →</button>`
+            : `<button class="btn btn-success btn-sm" onclick="navigateTo('games')">🎮 ¡Ir a los Juegos de Puzle!</button>`
+          }
+        </div>
+      `;
+
+      container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+          <h2 style="margin:0; font-size:1.35rem;">${meta.title}</h2>
+          <span class="tag tag-a">Lección ${currentLessonId} de 6</span>
+        </div>
+        ${bodyHtml}
+        ${quizHtml}
+      `;
+
+      // Initialize interactive labs after DOM injection
+      if (currentLessonId === 2) initLesson2Lab();
+      if (currentLessonId === 3) initLesson3Lab();
+      if (currentLessonId === 4) initLesson4Lab();
+      if (currentLessonId === 5) initLesson5Lab();
+      if (currentLessonId === 6) initLesson6Lab();
+    }
+
+    function selectLesson(id) {
+      if (id < 1 || id > 6) return;
+      currentLessonId = id;
+      renderAcademy();
+      playSound("click");
+    }
+
+    function answerLessonQuiz(lessonId, chosenIdx) {
+      const q = LESSON_QUIZZES[lessonId];
+      const btns = document.querySelectorAll("#lessonQuizOpts .quiz-opt");
+      const fb = document.getElementById("lessonQuizFb");
+      btns.forEach((b, i) => {
+        b.classList.remove("correct", "wrong");
+        if (i === q.correct) b.classList.add("correct");
+        else if (i === chosenIdx) b.classList.add("wrong");
+      });
+
+      if (chosenIdx === q.correct) {
+        playSound("success");
+        fb.className = "feedback-box show ok";
+        fb.innerHTML = `<strong>¡Correcto!</strong> ${q.exp}`;
+        if (!state.completedLessons.includes(lessonId)) {
+          state.completedLessons.push(lessonId);
+          awardXP(50, `Lección ${lessonId} completada`);
+          // Update tabs badge without destroying feedback
+          const tabs = document.querySelectorAll("#lessonTabs .lesson-tab");
+          if (tabs[lessonId - 1]) {
+            tabs[lessonId - 1].classList.add("done");
+            tabs[lessonId - 1].querySelector(".lt-num").textContent = "✓";
+          }
+        }
+      } else {
+        playSound("error");
+        fb.className = "feedback-box show err";
+        fb.innerHTML = `<strong>Casi...</strong> ${q.exp}`;
+      }
+    }
+
+    /* --- LESSON 1 --- */
+    function buildLesson1HTML() {
+      const tests = [
+        { expr: "3 ∈ A", ok: true, exp: "VERDADERO: 3 es un elemento que está dentro de las llaves de A = {1, 3, 5}." },
+        { expr: "{3} ⊆ A", ok: true, exp: "VERDADERO: {3} es un conjunto y todos sus elementos (solo el 3) están en A." },
+        { expr: "{3} ∈ A", ok: false, exp: "FALSO (¡trampa típica!): Los elementos de A son números (1, 3, 5), NO conjuntos. {3} es subconjunto (⊆), no elemento (∈)." },
+        { expr: "∅ ⊆ A", ok: true, exp: "VERDADERO: El conjunto vacío ∅ es subconjunto de CUALQUIER conjunto, incluido A." },
+        { expr: "A ⊆ U", ok: true, exp: "VERDADERO: Todos los elementos de A (1, 3, 5) pertenecen al Universo U = {1,2,3,4,5}." },
+        { expr: "2 ∈ A", ok: false, exp: "FALSO: El número 2 está en U, pero NO está en A = {1, 3, 5}. Lo correcto sería 2 ∉ A." }
+      ];
+      window._l1Tests = tests;
+
+      return `
+        <p>Un <strong>conjunto</strong> es una colección bien definida de objetos (llamados <strong>elementos</strong>) donde <em>no importa el orden ni las repeticiones</em>: <span class="formula">{1, 3, 5} = {5, 1, 3, 1}</span>.</p>
+        <ul class="theory-list">
+          <li><strong>Universo (<span class="formula">U</span>):</strong> Es la "caja grande" que contiene todos los elementos posibles del problema.</li>
+          <li><strong>Pertenencia (<span class="formula">∈</span>):</strong> Conecta un <em>elemento</em> con un <em>conjunto</em>. Ejemplo: <span class="formula">3 ∈ A</span>.</li>
+          <li><strong>Inclusión (<span class="formula">⊆</span>):</strong> Conecta un <em>conjunto</em> con otro <em>conjunto</em>. <span class="formula">X ⊆ Y</span> significa que todo elemento de X está también en Y.</li>
+          <li><strong>Conjunto vacío (<span class="formula">∅</span> o <span class="formula">{}</span>):</strong> No tiene ningún elemento. Regla de oro: <span class="formula">∅ ⊆ A</span> para cualquier conjunto A.</li>
+        </ul>
+        <div class="callout-tip">
+          <strong>⭐ Criterio de Igualdad (Examen UNED 2026 Mod. A):</strong> Dos conjuntos son iguales si y solo si cada uno está incluido en el otro:
+          <div style="margin-top:6px;"><span class="formula">A = B  ⇔  (A ⊆ B  y  B ⊆ A)</span></div>
+        </div>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Laboratorio Interactivo — Prueba ∈ vs ⊆</div>
+          <p style="margin:0 0 12px; font-size:0.92rem;">
+            Supón <span class="formula">U = {1, 2, 3, 4, 5}</span> y <span class="formula" style="border-color:var(--set-a); color:var(--set-a);">A = {1, 3, 5}</span>. Toca cada afirmación para ver si es Verdadera o Falsa:
+          </p>
+          <div class="chip-row">
+            ${tests.map((t, i) => `<button class="op-btn" onclick="testL1(${i}, this)">${t.expr}</button>`).join("")}
+          </div>
+          <div id="l1Output" class="feedback-box info show" style="margin-top:12px;">
+            👆 Pulsa cualquier afirmación de arriba para analizarla paso a paso.
+          </div>
+        </div>
+      `;
+    }
+
+    function testL1(idx, btn) {
+      const t = window._l1Tests[idx];
+      document.querySelectorAll("#lessonContent .lab-box .op-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const out = document.getElementById("l1Output");
+      out.className = `feedback-box show ${t.ok ? "ok" : "err"}`;
+      out.innerHTML = `<span class="formula" style="margin-right:8px;">${t.expr}</span> ${t.exp}`;
+      playSound(t.ok ? "toggle" : "click");
+    }
+
+    /* --- LESSON 2 --- */
+    function buildLesson2HTML() {
+      return `
+        <p>Con dos conjuntos <span class="c-a">A</span> y <span class="c-b">B</span> dentro de un universo <span class="formula">U</span> podemos construir nuevos conjuntos mediante 5 operaciones fundamentales:</p>
+        <ul class="theory-list">
+          <li><strong>Unión (<span class="formula">A ∪ B</span>):</strong> Elementos en A <strong>o</strong> en B (o en ambos).</li>
+          <li><strong>Intersección (<span class="formula">A ∩ B</span>):</strong> Solo los elementos comunes (en A <strong>y</strong> en B a la vez).</li>
+          <li><strong>Diferencia (<span class="formula">A \\ B</span>):</strong> Los de A <strong>quitando</strong> los que también estén en B.</li>
+          <li><strong>Complemento (<span class="formula">~A</span> o <span class="formula">Aᶜ</span>):</strong> Todo lo que está en <span class="formula">U</span> pero <strong>NO</strong> está en A.</li>
+          <li><strong>Diferencia Simétrica (<span class="formula">(A ∪ B) \\ (A ∩ B)</span>):</strong> Lo que está en uno o en otro, pero <em>no en ambos a la vez</em> (cayó literal en Sept 2025).</li>
+        </ul>
+
+        <div class="lab-box">
+          <div class="lab-title">🔬 Laboratorio Interactivo — Diagrama de Venn en Vivo</div>
+          <p style="margin:0 0 10px; font-size:0.9rem;">
+            Datos reales de examen: <span class="formula">U = {1,2,3,4,5,6}</span>, <span class="c-a">A = {1,2,4,6}</span>, <span class="c-b">B = {2,3,5,6}</span>. Pulsa cada fórmula:
+          </p>
+          <div class="chip-row" id="l2OpBtns" style="margin-bottom:14px;"></div>
+
+          <div class="grid-2" style="align-items:center;">
+            <div class="venn-stage">
+              <canvas id="l2VennCanvas"></canvas>
+            </div>
+            <div>
+              <div style="font-size:0.84rem; color:var(--text-muted); margin-bottom:6px;">Elementos de U (los iluminados forman el resultado):</div>
+              <div class="chip-row" id="l2Chips" style="margin-bottom:12px;"></div>
+              <div id="l2Desc" class="card-soft" style="font-size:0.9rem;"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initLesson2Lab() {
+      const ops = [
+        { label: "A ∪ B", masks: [1, 2, 3], elems: [1, 2, 3, 4, 5, 6], desc: "Unión: juntamos todos los elementos de A y B." },
+        { label: "A ∩ B", masks: [3], elems: [2, 6], desc: "Intersección: solo los repetidos en A y B." },
+        { label: "A \\ B", masks: [1], elems: [1, 4], desc: "Solo en A: a {1,2,4,6} le quitamos 2 y 6." },
+        { label: "B \\ A", masks: [2], elems: [3, 5], desc: "Solo en B: a {2,3,5,6} le quitamos 2 y 6." },
+        { label: "~A", masks: [0, 2], elems: [3, 5], desc: "Complemento de A: todo U={1..6} menos {1,2,4,6}." },
+        { label: "~(A ∪ B)", masks: [0], elems: [], desc: "Fuera de A y de B. Como A∪B cubre todo U, aquí da ∅." },
+        { label: "(A ∪ B) \\ (A ∩ B)", masks: [1, 2], elems: [1, 3, 4, 5], desc: "Diferencia simétrica: la unión menos la intersección {2,6}." }
+      ];
+
+      const canvas = document.getElementById("l2VennCanvas");
+      const venn = new VennCanvas(canvas, {
+        numSets: 2,
+        labels: ["A", "B"],
+        readOnly: true,
+        selectedMasks: ops[0].masks,
+        regionTexts: { 0: "∅", 1: "1, 4", 2: "3, 5", 3: "2, 6" }
+      });
+
+      const btnsWrap = document.getElementById("l2OpBtns");
+      const chipsWrap = document.getElementById("l2Chips");
+      const descEl = document.getElementById("l2Desc");
+
+      function applyOp(index) {
+        const op = ops[index];
+        venn.setSelectedMasks(op.masks);
+        btnsWrap.querySelectorAll("button").forEach((b, i) => b.classList.toggle("active", i === index));
+        chipsWrap.innerHTML = [1, 2, 3, 4, 5, 6].map(n =>
+          `<div class="elem-chip ${op.elems.includes(n) ? "selected" : ""}">${n}</div>`
+        ).join("");
+        const resStr = op.elems.length ? `{${op.elems.join(", ")}}` : "∅";
+        descEl.innerHTML = `<strong>${op.label} = <span class="c-ok">${resStr}</span></strong><br><span style="color:var(--text-muted)">${op.desc}</span>`;
+      }
+
+      btnsWrap.innerHTML = ops.map((op, i) => `<button class="op-btn" onclick="window._l2Pick(${i})">${op.label}</button>`).join("");
+      window._l2Pick = (i) => { playSound("toggle"); applyOp(i); };
+      applyOp(0);
+    }
+
+    /* --- LESSON 3 --- */
+    function buildLesson3HTML() {
+      return `
+        <p>¡Buena noticia! Si ya conoces la <strong>Lógica Proposicional</strong>, ya sabes casi todas las leyes de conjuntos: son un espejo exacto.</p>
+        <table class="mirror-table">
+          <thead>
+            <tr><th>Conjuntos</th><th>Lógica Proposicional</th><th>Significado</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="formula">∪</span> (Unión)</td><td><span class="formula">∨</span> (Disyunción)</td><td>"o"</td></tr>
+            <tr><td><span class="formula">∩</span> (Intersección)</td><td><span class="formula">∧</span> (Conjunción)</td><td>"y"</td></tr>
+            <tr><td><span class="formula">~A</span> o <span class="formula">Aᶜ</span></td><td><span class="formula">¬p</span> (Negación)</td><td>"no"</td></tr>
+            <tr><td><span class="formula">∅</span> / <span class="formula">U</span></td><td><span class="formula">⊥</span> / <span class="formula">⊤</span></td><td>Vacío / Todo</td></tr>
+          </tbody>
+        </table>
+
+        <ul class="theory-list">
+          <li><strong>Leyes de De Morgan:</strong> <span class="formula">~(A ∪ B) = ~A ∩ ~B</span> y <span class="formula">~(A ∩ B) = ~A ∪ ~B</span> (el complemento entra y da la vuelta al símbolo).</li>
+          <li><strong>Doble Complemento:</strong> <span class="formula">~~A = A</span>.</li>
+          <li><strong>Definición de Diferencia:</strong> <span class="formula">A \\ B = A ∩ ~B</span>.</li>
+        </ul>
+
+        <div class="callout-danger">
+          <strong>🔥 Trampa Estrella UNED (2025 Mod. C/D):</strong> ¿A qué equivale <span class="formula">A \\ ~B</span>?<br>
+          Aplicas la definición de diferencia: <span class="formula">A \\ ~B = A ∩ ~~B = A ∩ B</span>. ¡Quitar lo que NO está en B deja exactamente lo que SÍ está en B!
+        </div>
+
+        <div class="lab-box">
+          <div class="lab-title">🔬 Laboratorio Interactivo — Transformador Paso a Paso</div>
+          <div class="chip-row" style="margin-bottom:12px;">
+            <button class="op-btn active" id="l3Case0" onclick="selectL3Case(0)">Caso 1: ~(A ∪ B)</button>
+            <button class="op-btn" id="l3Case1" onclick="selectL3Case(1)">Caso 2: A \\ ~B (Real UNED)</button>
+            <button class="op-btn" id="l3Case2" onclick="selectL3Case(2)">Caso 3: ~(~A ∪ B)</button>
+          </div>
+          <div id="l3StepsBox" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;"></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" id="l3NextBtn" onclick="advanceL3Step()">✨ Aplicar siguiente ley</button>
+            <button class="btn btn-ghost btn-sm" onclick="resetL3Step()">↺ Reiniciar</button>
+          </div>
+        </div>
+      `;
+    }
+
+    const L3_CASES = [
+      [
+        { expr: "~(A ∪ B)", note: "Expresión inicial: complemento de una unión." },
+        { expr: "~A ∩ ~B", note: "Aplicamos De Morgan: el ~ entra a A y B, y ∪ gira a ∩." }
+      ],
+      [
+        { expr: "A \\ ~B", note: "Expresión inicial (examen UNED 2025 Mod. C/D)." },
+        { expr: "A ∩ ~~B", note: "Definición de Diferencia (X \\ Y = X ∩ ~Y)." },
+        { expr: "A ∩ B", note: "Doble Complemento (~~B = B). ¡Simplificada!" }
+      ],
+      [
+        { expr: "~(~A ∪ B)", note: "Expresión inicial (opción distractora del mismo examen)." },
+        { expr: "~~A ∩ ~B", note: "De Morgan: ~ entra a ~A y B, y ∪ gira a ∩." },
+        { expr: "A ∩ ~B", note: "Doble Complemento: ~~A = A." },
+        { expr: "A \\ B", note: "Definición de Diferencia: equivale a A \\ B (¡NO a A ∩ B!)." }
+      ]
+    ];
+    let l3CaseIdx = 0;
+    let l3StepIdx = 0;
+
+    function initLesson3Lab() {
+      l3CaseIdx = 0;
+      l3StepIdx = 0;
+      renderL3Lab();
+    }
+
+    function selectL3Case(idx) {
+      l3CaseIdx = idx;
+      l3StepIdx = 0;
+      [0, 1, 2].forEach(i => {
+        const b = document.getElementById(`l3Case${i}`);
+        if (b) b.classList.toggle("active", i === idx);
+      });
+      renderL3Lab();
+      playSound("click");
+    }
+
+    function advanceL3Step() {
+      if (l3StepIdx < L3_CASES[l3CaseIdx].length - 1) {
+        l3StepIdx++;
+        renderL3Lab();
+        playSound("success");
+      }
+    }
+
+    function resetL3Step() {
+      l3StepIdx = 0;
+      renderL3Lab();
+      playSound("click");
+    }
+
+    function renderL3Lab() {
+      const steps = L3_CASES[l3CaseIdx];
+      const box = document.getElementById("l3StepsBox");
+      if (!box) return;
+      box.innerHTML = steps.slice(0, l3StepIdx + 1).map((s, i) => `
+        <div class="alchemy-step" style="border-left:3px solid ${i === steps.length - 1 ? "var(--success)" : "var(--set-a)"};">
+          <span class="tag ${i === 0 ? "tag-a" : "tag-ok"}">Paso ${i}</span>
+          <span class="formula">${s.expr}</span>
+          <span style="color:var(--text-muted); font-size:0.86rem;">${s.note}</span>
+        </div>
+      `).join("");
+      const btn = document.getElementById("l3NextBtn");
+      if (btn) btn.disabled = l3StepIdx >= steps.length - 1;
+    }
+
+    /* --- LESSON 4 --- */
+    const REGIONS_3 = [
+      { mask: 0, formula: "Aᶜ ∩ Bᶜ ∩ Cᶜ  =  ~(A ∪ B ∪ C)", desc: "Exterior: elementos del universo U que NO están en A, ni en B, ni en C." },
+      { mask: 1, formula: "A ∩ Bᶜ ∩ Cᶜ  =  A \\ (B ∪ C)", desc: "Solo en A (no está en B ni en C)." },
+      { mask: 2, formula: "Aᶜ ∩ B ∩ Cᶜ  =  B \\ (A ∪ C)", desc: "Solo en B (no está en A ni en C)." },
+      { mask: 3, formula: "A ∩ B ∩ Cᶜ  =  (A ∩ B) \\ C", desc: "En A y en B, pero NO en C." },
+      { mask: 4, formula: "Aᶜ ∩ Bᶜ ∩ C  =  C \\ (A ∪ B)", desc: "Solo en C (no está en A ni en B)." },
+      { mask: 5, formula: "A ∩ Bᶜ ∩ C  =  (A ∩ C) \\ B", desc: "En A y en C, pero NO en B." },
+      { mask: 6, formula: "Aᶜ ∩ B ∩ C  =  (B ∩ C) \\ A", desc: "En B y en C, pero NO en A." },
+      { mask: 7, formula: "A ∩ B ∩ C", desc: "El corazón central: elementos que están en los 3 conjuntos a la vez." }
+    ];
+
+    function buildLesson4HTML() {
+      return `
+        <p>En la pregunta 11 del examen suelen darte 3 conjuntos (<span class="c-a">A</span>, <span class="c-b">B</span>, <span class="c-c">C</span> o X, Y, Z) y una fórmula con paréntesis y complementos.</p>
+        <ul class="theory-list">
+          <li><strong>Orden de evaluación:</strong> 1º resuelve los <strong>paréntesis internos</strong>, 2º aplica los <strong>complementos (~ o ᶜ) respecto a U</strong>, y 3º haz las uniones o intersecciones externas.</li>
+          <li><strong>🕵️ Truco del Elemento Espía (ahorra minutos en el test):</strong> En lugar de calcular las 3 opciones enteras, elige <em>un solo elemento</em> que esté en el conjunto solución (o uno que NO esté) y comprueba rápidamente qué opción del test lo acepta o rechaza.</li>
+        </ul>
+        <div class="lab-box">
+          <div class="lab-title">🔬 Laboratorio Interactivo — Las 8 Regiones de 3 Conjuntos</div>
+          <p style="margin:0 0 12px; font-size:0.9rem;">
+            <strong>Toca directamente cualquier zona del diagrama</strong> (incluyendo el fondo exterior) o pulsa un botón para ver su fórmula canónica:
+          </p>
+          <div class="grid-2" style="align-items:center;">
+            <div class="venn-stage">
+              <canvas id="l4VennCanvas"></canvas>
+            </div>
+            <div>
+              <div id="l4Info" class="card-soft" style="margin-bottom:12px;"></div>
+              <div class="chip-row" id="l4RegionBtns"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function initLesson4Lab() {
+      const canvas = document.getElementById("l4VennCanvas");
+      const infoEl = document.getElementById("l4Info");
+      const btnsEl = document.getElementById("l4RegionBtns");
+
+      const venn = new VennCanvas(canvas, {
+        numSets: 3,
+        labels: ["A", "B", "C"],
+        selectedMasks: [7],
+        onToggleMask: (mask) => {
+          playSound("toggle");
+          pickRegion(mask);
+        }
+      });
+
+      function pickRegion(mask) {
+        venn.setSelectedMasks([mask]);
+        const r = REGIONS_3[mask];
+        infoEl.innerHTML = `
+          <div class="tag tag-a" style="margin-bottom:8px;">Región #${mask}</div>
+          <div class="formula" style="display:block; margin-bottom:8px; font-size:0.96rem;">${r.formula}</div>
+          <div style="color:#cbd5e1; font-size:0.9rem;">${r.desc}</div>
+        `;
+        btnsEl.querySelectorAll("button").forEach((b, i) => b.classList.toggle("active", i === mask));
+      }
+
+      btnsEl.innerHTML = REGIONS_3.map((r, i) =>
+        `<button class="op-btn" style="font-size:0.78rem; padding:7px 10px;" onclick="window._l4Pick(${i})">${r.formula.split("=")[0].trim()}</button>`
+      ).join("");
+      window._l4Pick = (m) => { playSound("toggle"); pickRegion(m); };
+      pickRegion(7);
+    }
+
+    /* --- LESSON 5 --- */
+    function buildLesson5HTML() {
+      return `
+        <p>Dos construcciones distintas que la UNED adora comparar en la pregunta 10:</p>
+        <ul class="theory-list">
+          <li><strong>Conjunto Potencia <span class="formula">P(A)</span>:</strong> Es el conjunto formado por <strong>TODOS los subconjuntos posibles</strong> de A (desde <span class="formula">∅</span> hasta el propio <span class="formula">A</span>). Si <span class="formula">|A| = n</span>, entonces <span class="formula">|P(A)| = 2ⁿ</span>.</li>
+          <li><strong>Regla vital:</strong> Como <span class="formula">∅ ⊆ A</span>, el vacío es siempre un <em>elemento</em> del conjunto potencia: <span class="formula">∅ ∈ P(A)</span>.</li>
+          <li><strong>Producto Cartesiano <span class="formula">A × B</span>:</strong> Conjunto de todos los <strong>pares ordenados</strong> <span class="formula">(a, b)</span> con a ∈ A y b ∈ B. Su cardinal es <span class="formula">|A × B| = |A| · |B|</span> (y <span class="formula">|A × A| = n²</span>).</li>
+        </ul>
+
+        <div class="callout-tip">
+          <strong>⭐ Propiedad fija de examen (UNED 2026 Mod. B):</strong><br>
+          • <span class="c-ok">P(A ∩ B) = P(A) ∩ P(B)</span> → <strong>SIEMPRE VERDADERA.</strong><br>
+          • <span class="c-err">P(A ∪ B) = P(A) ∪ P(B)</span> → <strong>FALSA.</strong> Contraejemplo: con <span class="formula">A={1}, B={2}</span>, el subconjunto <span class="formula">{1,2}</span> está en P(A ∪ B), pero NO está en P(A) ni en P(B).<br>
+          • <span class="c-err">P(A \\ B) = P(A) \\ P(B)</span> → <strong>FALSA.</strong> Porque <span class="formula">∅ ∈ P(A \\ B)</span>, pero en <span class="formula">P(A) \\ P(B)</span> hemos borrado el ∅ (ya que ∅ estaba en P(B)).
+        </div>
+
+        <div class="lab-box">
+          <div class="lab-title">🔬 Laboratorio Interactivo — Generador de P(A) y A × A</div>
+          <p style="margin:0 0 10px; font-size:0.9rem;">Elige el tamaño <strong>n</strong> de A y observa cómo crece <span class="c-a">2ⁿ</span> frente a <span class="c-b">n²</span>:</p>
+          <div class="chip-row" id="l5SizeBtns" style="margin-bottom:14px;">
+            ${[0, 1, 2, 3, 4].map(n => `<button class="op-btn ${n === 3 ? "active" : ""}" onclick="renderL5Size(${n}, this)">n = ${n}</button>`).join("")}
+          </div>
+          <div id="l5Output"></div>
+        </div>
+      `;
+    }
+
+    function initLesson5Lab() {
+      renderL5Size(3);
+    }
+
+    function renderL5Size(n, btn) {
+      if (btn) {
+        document.querySelectorAll("#l5SizeBtns .op-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        playSound("toggle");
+      }
+      const elems = Array.from({ length: n }, (_, i) => i + 1);
+      // Generate all 2^n subsets
+      const subsets = [];
+      const total = 1 << n;
+      for (let mask = 0; mask < total; mask++) {
+        const sub = [];
+        for (let b = 0; b < n; b++) if (mask & (1 << b)) sub.push(elems[b]);
+        subsets.push(sub.length ? `{${sub.join(",")}}` : "∅");
+      }
+
+      // Generate n^2 Cartesian pairs
+      const pairs = [];
+      for (const a of elems) {
+        for (const b of elems) pairs.push(`(${a},${b})`);
+      }
+
+      const out = document.getElementById("l5Output");
+      out.innerHTML = `
+        <div style="margin-bottom:12px;">
+          Conjunto actual: <span class="formula">A = ${n ? `{${elems.join(", ")}}` : "∅"}</span>
+        </div>
+        <div class="grid-2">
+          <div class="card-soft">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong class="c-a">Conjunto Potencia P(A)</strong>
+              <span class="tag tag-a">|P(A)| = 2^${n} = ${total}</span>
+            </div>
+            <div class="subset-grid">
+              ${subsets.map(s => `<span class="subset-badge">${s}</span>`).join("")}
+            </div>
+          </div>
+
+          <div class="card-soft">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong class="c-b">Producto Cartesiano A × A</strong>
+              <span class="tag tag-b">|A × A| = ${n}² = ${n * n}</span>
+            </div>
+            ${n === 0
+              ? `<p style="color:var(--text-muted); margin-top:10px;">∅ × ∅ = ∅ (0 pares ordenados).</p>`
+              : `<div class="cartesian-table" style="grid-template-columns:repeat(${n}, minmax(0, 1fr));">
+                  ${pairs.map(p => `<div class="cart-cell">${p}</div>`).join("")}
+                </div>`
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- LESSON 6 --- */
+    function buildLesson6HTML() {
+      return `
+        <p>Cuando queremos contar elementos en una unión (<span class="formula">|A ∪ B|</span> o <span class="formula">|A ∪ B ∪ C|</span>), si simplemente sumamos <span class="formula">|A| + |B| + |C|</span> contamos repetidos los elementos de las intersecciones.</p>
+        <div class="card-soft" style="margin:12px 0; text-align:center;">
+          <div style="font-size:0.84rem; color:var(--text-muted); margin-bottom:6px;">Para 2 conjuntos:</div>
+          <div class="formula" style="margin-bottom:12px;">|A ∪ B| = |A| + |B| − |A ∩ B|</div>
+          <div style="font-size:0.84rem; color:var(--text-muted); margin-bottom:6px;">Para 3 conjuntos (Examen UNED Sept 2025):</div>
+          <div class="formula">|A ∪ B ∪ C| = |A| + |B| + |C| − |A ∩ B| − |A ∩ C| − |B ∩ C| + |A ∩ B ∩ C|</div>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.92rem;">
+          ¿Por qué sumamos al final <span class="formula">+ |A ∩ B ∩ C|</span>? Porque el centro se sumó 3 veces (en A, B, C) y se restó 3 veces (en las 3 intersecciones dobles), quedando en 0. ¡Sumándolo una vez vuelve a contarse 1 vez!
+        </p>
+
+        <div class="lab-box">
+          <div class="lab-title">🔬 Laboratorio Interactivo — Calculadora Visual Inclusión-Exclusión</div>
+          <p style="margin:0 0 12px; font-size:0.88rem; color:var(--text-muted);">
+            Inicializada con los datos exactos del examen <strong>UNED Sept 2025 (P11)</strong>. Mueve los controles y observa las 7 zonas en vivo:
+          </p>
+          <div class="grid-2" style="align-items:center;">
+            <div>
+              <div class="ie-slider-row"><span class="c-a">|A|</span><input type="range" id="ieA" min="0" max="20" value="10" oninput="updateL6Lab()"><strong id="ieAVal">10</strong></div>
+              <div class="ie-slider-row"><span class="c-b">|B|</span><input type="range" id="ieB" min="0" max="20" value="8" oninput="updateL6Lab()"><strong id="ieBVal">8</strong></div>
+              <div class="ie-slider-row"><span class="c-c">|C|</span><input type="range" id="ieC" min="0" max="20" value="7" oninput="updateL6Lab()"><strong id="ieCVal">7</strong></div>
+              <div class="ie-slider-row"><span>|A ∩ B|</span><input type="range" id="ieAB" min="0" max="15" value="3" oninput="updateL6Lab()"><strong id="ieABVal">3</strong></div>
+              <div class="ie-slider-row"><span>|A ∩ C|</span><input type="range" id="ieAC" min="0" max="15" value="2" oninput="updateL6Lab()"><strong id="ieACVal">2</strong></div>
+              <div class="ie-slider-row"><span>|B ∩ C|</span><input type="range" id="ieBC" min="0" max="15" value="2" oninput="updateL6Lab()"><strong id="ieBCVal">2</strong></div>
+              <div class="ie-slider-row"><span class="c-ok">|A ∩ B ∩ C|</span><input type="range" id="ieABC" min="0" max="10" value="1" oninput="updateL6Lab()"><strong id="ieABCVal">1</strong></div>
+              <button class="btn btn-ghost btn-sm" style="margin-top:6px;" onclick="resetL6Preset()">↺ Restaurar datos UNED Sept 2025</button>
+            </div>
+            <div>
+              <div class="venn-stage" style="margin-bottom:10px;">
+                <canvas id="l6VennCanvas"></canvas>
+              </div>
+              <div id="l6CalcOut" class="card-soft" style="text-align:center;"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    let l6VennInst = null;
+    function initLesson6Lab() {
+      const canvas = document.getElementById("l6VennCanvas");
+      l6VennInst = new VennCanvas(canvas, {
+        numSets: 3,
+        labels: ["A", "B", "C"],
+        readOnly: true,
+        selectedMasks: [1, 2, 3, 4, 5, 6, 7]
+      });
+      updateL6Lab();
+    }
+
+    function resetL6Preset() {
+      const vals = { ieA: 10, ieB: 8, ieC: 7, ieAB: 3, ieAC: 2, ieBC: 2, ieABC: 1 };
+      Object.entries(vals).forEach(([k, v]) => { const el = document.getElementById(k); if (el) el.value = v; });
+      updateL6Lab();
+      playSound("click");
+    }
+
+    function updateL6Lab() {
+      const A = +document.getElementById("ieA").value;
+      const B = +document.getElementById("ieB").value;
+      const C = +document.getElementById("ieC").value;
+      const AB = +document.getElementById("ieAB").value;
+      const AC = +document.getElementById("ieAC").value;
+      const BC = +document.getElementById("ieBC").value;
+      const ABC = +document.getElementById("ieABC").value;
+
+      document.getElementById("ieAVal").textContent = A;
+      document.getElementById("ieBVal").textContent = B;
+      document.getElementById("ieCVal").textContent = C;
+      document.getElementById("ieABVal").textContent = AB;
+      document.getElementById("ieACVal").textContent = AC;
+      document.getElementById("ieBCVal").textContent = BC;
+      document.getElementById("ieABCVal").textContent = ABC;
+
+      // Disjoint regions
+      const r7 = ABC;
+      const r3 = AB - ABC;
+      const r5 = AC - ABC;
+      const r6 = BC - ABC;
+      const r1 = A - r3 - r5 - r7;
+      const r2 = B - r3 - r6 - r7;
+      const r4 = C - r5 - r6 - r7;
+
+      const total = A + B + C - AB - AC - BC + ABC;
+      const invalid = [r1, r2, r3, r4, r5, r6, r7].some(v => v < 0);
+
+      if (l6VennInst) {
+        l6VennInst.setRegionTexts({
+          1: r1, 2: r2, 3: r3, 4: r4, 5: r5, 6: r6, 7: r7
+        });
+      }
+
+      const out = document.getElementById("l6CalcOut");
+      out.innerHTML = `
+        <div style="font-family:var(--font-mono); font-size:0.86rem; color:var(--text-muted); margin-bottom:4px;">
+          ${A} + ${B} + ${C} − ${AB} − ${AC} − ${BC} + ${ABC}
+        </div>
+        <div style="font-size:1.35rem; font-weight:900; color:${invalid ? "var(--error)" : "var(--success)"};">
+          |A ∪ B ∪ C| = ${total}
+        </div>
+        ${invalid ? `<div style="font-size:0.78rem; color:var(--error); margin-top:4px;">⚠️ Alguna zona salió negativa: en un conjunto real las intersecciones no pueden superar al conjunto entero.</div>` : ""}
+      `;
+    }
+
+    /* ========================================================================
+       5. MODULE 2: 3 PUZZLE GAMES
+       ======================================================================== */
+    function openGame(gameId) {
+      document.getElementById("games-selector").style.display = "none";
+      ["venn", "alchemy", "arcade"].forEach(id => {
+        document.getElementById(`game-${id}`).style.display = id === gameId ? "block" : "none";
+      });
+      if (gameId === "venn") initVennGame();
+      if (gameId === "alchemy") initAlchemyGame();
+      if (gameId === "arcade") initArcadeMenu();
+      playSound("click");
+    }
+
+    function closeGame(silent = false) {
+      stopArcadeTimer();
+      const sel = document.getElementById("games-selector");
+      if (sel) sel.style.display = "block";
+      ["venn", "alchemy", "arcade"].forEach(id => {
+        const el = document.getElementById(`game-${id}`);
+        if (el) el.style.display = "none";
+      });
+      renderGamesHubStats();
+      if (!silent) playSound("click");
+    }
+
+    /* ------------------------------------------------------------------------
+       GAME 1: PINTOR DE VENN (10 Progressive Levels)
+       ------------------------------------------------------------------------ */
+    const VENN_LEVELS = [
+      // Levels 1-5: Interactive Regions
+      {
+        id: 1, mode: "region", numSets: 2, labels: ["A", "B"],
+        title: "Calentamiento: La Unión",
+        formula: "A ∪ B",
+        targetMasks: [1, 2, 3],
+        hint: "Pinta todo lo que pertenezca a A, a B o a ambos círculos."
+      },
+      {
+        id: 2, mode: "region", numSets: 2, labels: ["A", "B"],
+        title: "Solo en A",
+        formula: "A \\ B",
+        targetMasks: [1],
+        hint: "Empieza pensando en el círculo A completo, pero NO pintes la zona que comparte con B."
+      },
+      {
+        id: 3, mode: "region", numSets: 2, labels: ["A", "B"],
+        title: "El Exterior (De Morgan)",
+        formula: "~(A ∪ B)",
+        targetMasks: [0],
+        hint: "Es todo lo del universo U que está FUERA de ambos círculos. ¡Toca el fondo oscuro!"
+      },
+      {
+        id: 4, mode: "region", numSets: 3, labels: ["A", "B", "C"],
+        title: "Trío Clásico UNED",
+        formula: "A ∩ (B ∪ C)",
+        targetMasks: [3, 5, 7],
+        hint: "Debe estar DENTRO de A y además dentro de B o de C (son 3 zonas internas de A)."
+      },
+      {
+        id: 5, mode: "region", numSets: 3, labels: ["A", "B", "C"],
+        title: "Combinación Maestra",
+        formula: "(A ∩ B) ∪ (A \\ C)",
+        targetMasks: [1, 3, 7],
+        hint: "Pinta A∩B (el cruce de A y B) y añade la parte de A que NO toca a C."
+      },
+      // Levels 6-10: Real UNED Exam Elements
+      {
+        id: 6, mode: "elements", numSets: 2, labels: ["A", "B"],
+        badge: "UNED Sept 2025 · P12",
+        title: "Diferencia Simétrica Real",
+        formula: "(A ∪ B) \\ (A ∩ B)",
+        U: ["1", "2", "3", "4", "5", "6"],
+        sets: { A: ["1", "2", "4", "6"], B: ["2", "3", "5", "6"] },
+        answer: ["1", "3", "4", "5"],
+        hint: "Primero identifica la intersección A ∩ B = {2, 6}. Ahora selecciona todos los demás elementos de A ∪ B."
+      },
+      {
+        id: 7, mode: "elements", numSets: 3, labels: ["A", "B", "C"],
+        badge: "UNED 2026 Mod. A · P11",
+        title: "Unión de Dos Bloques",
+        formula: "(A ∩ B) ∪ (A \\ C)",
+        U: ["1", "2", "3", "4", "5", "6", "7"],
+        sets: { A: ["1", "2", "3", "4", "5"], B: ["3", "4", "6"], C: ["1", "4", "7"] },
+        answer: ["2", "3", "4", "5"],
+        hint: "Calcula por separado: A ∩ B = {3, 4}, y A \\ C (los de A quitando 1 y 4) = {2, 3, 5}. ¡Ahora únelos!"
+      },
+      {
+        id: 8, mode: "elements", numSets: 3, labels: ["A", "B", "C"],
+        badge: "UNED 2025 Mod. A/B · P11",
+        title: "Filtro de A sobre B ∪ C",
+        formula: "A ∩ (B ∪ C)",
+        U: ["1", "2", "3", "4", "5", "6", "7", "8"],
+        sets: { A: ["1", "2", "4", "6", "8"], B: ["1", "2", "3", "5", "8"], C: ["1", "4", "5", "7"] },
+        answer: ["1", "2", "4", "8"],
+        hint: "Mira solo los elementos de A = {1,2,4,6,8}. ¿Cuál de ellos NO está ni en B ni en C? Ese es el único que queda fuera (el 6)."
+      },
+      {
+        id: 9, mode: "elements", numSets: 3, labels: ["A", "B", "C"],
+        badge: "UNED 2025 Mod. C/D · P11",
+        title: "Complemento + Unión",
+        formula: "~(A ∩ B) ∪ C",
+        U: ["1", "2", "3", "4", "5", "6", "7", "8"],
+        sets: { A: ["1", "2", "4", "6", "8"], B: ["1", "2", "3", "5", "8"], C: ["1", "4", "5", "7"] },
+        answer: ["1", "3", "4", "5", "6", "7"],
+        hint: "A ∩ B = {1, 2, 8}, así que ~(A ∩ B) = {3, 4, 5, 6, 7}. Ahora únele C = {1, 4, 5, 7} (entra el 1)."
+      },
+      {
+        id: 10, mode: "elements", numSets: 3, labels: ["X", "Y", "Z"],
+        badge: "👑 JEFE FINAL · UNED Sept 2026 P11",
+        title: "El Duelo de Complementos",
+        formula: "(Xᶜ ∩ Y ∩ Z) ∪ (X ∩ Yᶜ ∩ Z)",
+        U: ["a", "b", "c", "d", "e", "f", "g"],
+        sets: { X: ["b", "d", "e", "f"], Y: ["a", "c", "d", "f"], Z: ["b", "c", "e", "f"] },
+        answer: ["b", "c", "e"],
+        hint: "Ambas partes exigen estar en Z = {b, c, e, f}. El primer trozo pide estar en Y pero no en X ({c}); el segundo en X pero no en Y ({b, e})."
+      }
+    ];
+
+    let vennCurLvl = 1;
+    let vennInst = null;
+    let vennPickedElems = new Set();
+    let vennMistakes = 0;
+    let vennHintUsed = false;
+
+    function initVennGame() {
+      renderVennLevelGrid();
+      loadVennLevel(vennCurLvl);
+    }
+
+    function renderVennLevelGrid() {
+      const grid = document.getElementById("vennLevelGrid");
+      grid.innerHTML = VENN_LEVELS.map(lv => {
+        const s = state.vennStars[lv.id] || 0;
+        const stars = "★".repeat(s) + "☆".repeat(3 - s);
+        return `
+          <button class="level-tile ${lv.id === vennCurLvl ? "active" : ""}" onclick="loadVennLevel(${lv.id})">
+            <span style="font-size:0.72rem; color:${lv.mode === "region" ? "var(--set-a)" : "var(--set-c)"};">${lv.mode === "region" ? "VENN" : "UNED"}</span>
+            <span style="font-size:1.1rem;">${lv.id}</span>
+            <span class="stars-row">${stars}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function loadVennLevel(id) {
+      vennCurLvl = id;
+      vennMistakes = 0;
+      vennHintUsed = false;
+      vennPickedElems = new Set();
+      renderVennLevelGrid();
+
+      const lv = VENN_LEVELS.find(l => l.id === id);
+      const area = document.getElementById("vennPlayArea");
+
+      if (lv.mode === "region") {
+        area.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+            <div>
+              <span class="tag tag-a">Nivel ${lv.id} · Modo Regiones</span>
+              <h3 style="margin:6px 0 0;">${lv.title}</h3>
+            </div>
+            <div class="formula-big">${lv.formula}</div>
+          </div>
+
+          <p style="color:var(--text-muted); font-size:0.9rem; margin:0 0 12px;">
+            Toca cada región del diagrama de Venn que pertenezca al conjunto objetivo y pulsa <strong>Comprobar</strong>.
+          </p>
+
+          <div class="venn-stage" style="margin-bottom:16px;">
+            <canvas id="gameVennCanvas"></canvas>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+            <button class="btn btn-primary" onclick="checkVennLevel()">✅ Comprobar</button>
+            <button class="btn btn-ghost" onclick="clearVennSelection()">🧹 Limpiar</button>
+            <button class="btn btn-ghost" onclick="showVennHint()">💡 Pista</button>
+          </div>
+          <div id="vennFb" class="feedback-box"></div>
+        `;
+
+        vennInst = new VennCanvas(document.getElementById("gameVennCanvas"), {
+          numSets: lv.numSets,
+          labels: lv.labels,
+          selectedMasks: []
+        });
+      } else {
+        // Compute element placement per region mask for visual help
+        const [k0, k1, k2] = lv.labels;
+        const regBuckets = {};
+        for (const el of lv.U) {
+          let m = 0;
+          if (lv.sets[k0].includes(el)) m |= 1;
+          if (lv.sets[k1].includes(el)) m |= 2;
+          if (k2 && lv.sets[k2].includes(el)) m |= 4;
+          if (!regBuckets[m]) regBuckets[m] = [];
+          regBuckets[m].push(el);
+        }
+        const regTexts = {};
+        Object.keys(regBuckets).forEach(m => { regTexts[m] = regBuckets[m].join(","); });
+
+        const setsDefHtml = lv.labels.map((lbl, idx) => {
+          const colClass = idx === 0 ? "c-a" : (idx === 1 ? "c-b" : "c-c");
+          return `<span class="${colClass}">${lbl}</span> = <span class="formula">{${lv.sets[lbl].join(", ")}}</span>`;
+        }).join(" &nbsp;·&nbsp; ");
+
+        area.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <div>
+              <span class="tag tag-c">${lv.badge}</span>
+              <h3 style="margin:6px 0 0;">Nivel ${lv.id}: ${lv.title}</h3>
+            </div>
+            <div class="formula-big">${lv.formula}</div>
+          </div>
+
+          <div class="card-soft" style="margin-bottom:14px; font-size:0.9rem; line-height:1.9;">
+            <strong>U</strong> = <span class="formula">{${lv.U.join(", ")}}</span><br>
+            ${setsDefHtml}
+          </div>
+
+          <div class="grid-2" style="align-items:center; margin-bottom:16px;">
+            <div class="venn-stage">
+              <canvas id="gameVennCanvas"></canvas>
+            </div>
+            <div>
+              <p style="margin:0 0 10px; font-size:0.92rem; color:#cbd5e1;">
+                Toca las <strong>fichas de elementos</strong> que forman el conjunto resultado (puedes mirar su posición en el diagrama):
+              </p>
+              <div class="chip-row" id="vennElemChips" style="margin-bottom:14px;">
+                ${lv.U.map(el => `<button class="elem-chip" data-el="${el}" onclick="toggleVennElem('${el}', this)">${el}</button>`).join("")}
+              </div>
+              <div style="font-size:0.86rem; color:var(--text-muted);">
+                Tu conjunto: <strong id="vennCurSetStr" class="formula">∅</strong>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+            <button class="btn btn-primary" onclick="checkVennLevel()">✅ Comprobar</button>
+            <button class="btn btn-ghost" onclick="clearVennSelection()">🧹 Limpiar</button>
+            <button class="btn btn-ghost" onclick="showVennHint()">💡 Pista</button>
+          </div>
+          <div id="vennFb" class="feedback-box"></div>
+        `;
+
+        // Allow tapping regions in Venn to also toggle those elements!
+        vennInst = new VennCanvas(document.getElementById("gameVennCanvas"), {
+          numSets: lv.numSets,
+          labels: lv.labels,
+          selectedMasks: [],
+          regionTexts: regTexts,
+          onToggleMask: (mask) => {
+            const items = regBuckets[mask] || [];
+            if (!items.length) return;
+            const allIn = items.every(x => vennPickedElems.has(x));
+            items.forEach(x => allIn ? vennPickedElems.delete(x) : vennPickedElems.add(x));
+            playSound("toggle");
+            syncVennElemUI(regBuckets);
+          }
+        });
+        window._vennRegBuckets = regBuckets;
+      }
+    }
+
+    function toggleVennElem(el) {
+      if (vennPickedElems.has(el)) vennPickedElems.delete(el);
+      else vennPickedElems.add(el);
+      playSound("toggle");
+      syncVennElemUI(window._vennRegBuckets || {});
+    }
+
+    function syncVennElemUI(regBuckets) {
+      document.querySelectorAll("#vennElemChips .elem-chip").forEach(btn => {
+        btn.classList.remove("correct", "wrong");
+        btn.classList.toggle("selected", vennPickedElems.has(btn.dataset.el));
+      });
+      const arr = Array.from(vennPickedElems).sort();
+      const strEl = document.getElementById("vennCurSetStr");
+      if (strEl) strEl.textContent = arr.length ? `{${arr.join(", ")}}` : "∅";
+
+      // Highlight region if all its elements are picked
+      if (vennInst && regBuckets) {
+        const activeMasks = [];
+        Object.entries(regBuckets).forEach(([m, items]) => {
+          if (items.length && items.every(x => vennPickedElems.has(x))) activeMasks.push(Number(m));
+        });
+        vennInst.setSelectedMasks(activeMasks);
+      }
+    }
+
+    function clearVennSelection() {
+      vennPickedElems.clear();
+      if (vennInst) vennInst.setSelectedMasks([]);
+      syncVennElemUI(window._vennRegBuckets || {});
+      playSound("click");
+    }
+
+    function showVennHint() {
+      const lv = VENN_LEVELS.find(l => l.id === vennCurLvl);
+      vennHintUsed = true;
+      const fb = document.getElementById("vennFb");
+      fb.className = "feedback-box show info";
+      fb.innerHTML = `<strong>💡 Pista:</strong> ${lv.hint}`;
+      playSound("click");
+    }
+
+    function checkVennLevel() {
+      const lv = VENN_LEVELS.find(l => l.id === vennCurLvl);
+      const fb = document.getElementById("vennFb");
+      let ok = false;
+
+      if (lv.mode === "region") {
+        const chosen = Array.from(vennInst.selectedMasks).sort((a, b) => a - b);
+        const target = [...lv.targetMasks].sort((a, b) => a - b);
+        ok = chosen.length === target.length && chosen.every((v, i) => v === target[i]);
+        if (!ok) {
+          vennMistakes++;
+          const extra = chosen.filter(x => !target.includes(x)).length;
+          const missing = target.filter(x => !chosen.includes(x)).length;
+          playSound("error");
+          fb.className = "feedback-box show err";
+          fb.innerHTML = `<strong>¡Casi!</strong> Te ${missing ? `faltan ${missing} región(es)` : ""}${missing && extra ? " y te " : ""}${extra ? `sobran ${extra} región(es)` : ""}. Revisa la fórmula o pulsa "Pista".`;
+          return;
+        }
+      } else {
+        const chosen = Array.from(vennPickedElems).sort();
+        const target = [...lv.answer].sort();
+        ok = chosen.length === target.length && chosen.every((v, i) => v === target[i]);
+        if (!ok) {
+          vennMistakes++;
+          const missing = target.filter(x => !chosen.includes(x));
+          const extra = chosen.filter(x => !target.includes(x));
+          playSound("error");
+          fb.className = "feedback-box show err";
+          fb.innerHTML = `<strong>Revisa tu selección:</strong> ${missing.length ? `te faltan ${missing.length} elemento(s)` : ""}${missing.length && extra.length ? " y " : ""}${extra.length ? `sobran ${extra.length} elemento(s)` : ""}.`;
+          return;
+        }
+      }
+
+      // Level Won!
+      playSound("success");
+      const stars = (vennMistakes === 0 && !vennHintUsed) ? 3 : (vennMistakes <= 1 ? 2 : 1);
+      const prev = state.vennStars[lv.id] || 0;
+      if (stars > prev) {
+        state.vennStars[lv.id] = stars;
+        awardXP(prev === 0 ? 45 : 15, `Pintor de Venn Nivel ${lv.id}`);
+      } else {
+        saveState();
+      }
+      renderVennLevelGrid();
+
+      const nextBtn = lv.id < VENN_LEVELS.length
+        ? `<button class="btn btn-success btn-sm" style="margin-top:10px;" onclick="loadVennLevel(${lv.id + 1})">Siguiente Nivel (${lv.id + 1}) →</button>`
+        : `<button class="btn btn-amber btn-sm" style="margin-top:10px;" onclick="openGame('alchemy')">🧪 ¡Todos completados! Probar Alquimia</button>`;
+
+      fb.className = "feedback-box show ok";
+      fb.innerHTML = `
+        <strong>🎉 ¡Nivel ${lv.id} superado! ${"★".repeat(stars)}${"☆".repeat(3 - stars)}</strong><br>
+        Expresión exacta: <span class="formula">${lv.formula}${lv.answer ? ` = {${lv.answer.join(", ")}}` : ""}</span><br>
+        ${nextBtn}
+      `;
+    }
+
+    /* ------------------------------------------------------------------------
+       GAME 2: ALQUIMIA DE LEYES (8 Card-Transformation Levels)
+       ------------------------------------------------------------------------ */
+    const ALCHEMY_LEVELS = [
+      {
+        id: 1, title: "Primera Ley de De Morgan",
+        start: "~(A ∪ B)", goal: "~A ∩ ~B",
+        steps: [
+          {
+            correct: { law: "Ley de De Morgan", result: "~A ∩ ~B", desc: "El ~ entra a ambos y ∪ cambia a ∩" },
+            traps: [
+              { law: "Falsa Distributiva del ~", result: "~A ∪ ~B", err: "¡Trampa clásica! Al introducir el complemento ~, la unión (∪) DEBE cambiar a intersección (∩)." },
+              { law: "Doble Complemento", result: "A ∪ B", err: "Solo hay un símbolo ~, no dos (~~)." },
+              { law: "Definición de Diferencia", result: "A \\ B", err: "A \\ B equivale a A ∩ ~B, no a ~(A ∪ B)." }
+            ]
+          }
+        ]
+      },
+      {
+        id: 2, title: "Segunda Ley de De Morgan",
+        start: "~(A ∩ B)", goal: "~A ∪ ~B",
+        steps: [
+          {
+            correct: { law: "Ley de De Morgan", result: "~A ∪ ~B", desc: "El ~ entra a ambos y ∩ cambia a ∪" },
+            traps: [
+              { law: "Reparto sin giro", result: "~A ∩ ~B", err: "Recuerda: al meter el ~ dentro, la intersección (∩) tiene que girar a unión (∪)." },
+              { law: "Absorción", result: "~A", err: "La absorción no aplica a ~(A ∩ B)." },
+              { law: "Conmutativa falsa", result: "A ∪ ~B", err: "El complemento afecta tanto a A como a B." }
+            ]
+          }
+        ]
+      },
+      {
+        id: 3, title: "Clásico UNED 2025 Mod. C",
+        start: "A \\ ~B", goal: "A ∩ B",
+        steps: [
+          {
+            correct: { law: "Def. de Diferencia", result: "A ∩ ~~B", desc: "X \\ Y = X ∩ ~Y" },
+            traps: [
+              { law: "De Morgan", result: "~A ∪ B", err: "De Morgan se usa cuando un ~ abarca todo un paréntesis, no en una diferencia directa." },
+              { law: "Diferencia invertida", result: "A ∪ ~B", err: "La diferencia X \\ Y es una intersección (X ∩ ~Y), nunca una unión." },
+              { law: "Complemento directo", result: "A \\ B", err: "No puedes borrar el ~ de ~B sin cambiar la operación." }
+            ]
+          },
+          {
+            correct: { law: "Doble Complemento", result: "A ∩ B", desc: "~~B = B" },
+            traps: [
+              { law: "Idempotencia", result: "A", err: "A y B son conjuntos distintos, no puedes fusionarlos." },
+              { law: "De Morgan", result: "~(A ∪ B)", err: "De Morgan sacaría un ~ de ambos, pero A no está negado." },
+              { law: "Identidad", result: "A ∩ U", err: "~~B es B, no el universo U." }
+            ]
+          }
+        ]
+      },
+      {
+        id: 4, title: "Desmontando la Trampa del Test",
+        start: "~(~A ∪ B)", goal: "A \\ B",
+        steps: [
+          {
+            correct: { law: "Ley de De Morgan", result: "~~A ∩ ~B", desc: "El ~ entra y ∪ gira a ∩" },
+            traps: [
+              { law: "Sin girar operador", result: "~~A ∪ ~B", err: "Al aplicar De Morgan, ∪ debe convertirse en ∩." },
+              { law: "Dejar B intacto", result: "~~A ∩ B", err: "El complemento exterior también niega a B." },
+              { law: "Cancelar todo", result: "A ∪ B", err: "El ~ exterior no puede cancelar solo a ~A ignorando a B." }
+            ]
+          },
+          {
+            correct: { law: "Doble Complemento", result: "A ∩ ~B", desc: "~~A = A" },
+            traps: [
+              { law: "Complemento", result: "∅", err: "A ∩ ~A sería ∅, pero aquí tenemos A y ~B." },
+              { law: "Unión forzada", result: "A ∪ ~B", err: "La intersección ∩ se mantiene." },
+              { law: "Borrar ambos ~", result: "A ∩ B", err: "B solo tenía UN símbolo ~, no dos." }
+            ]
+          },
+          {
+            correct: { law: "Def. de Diferencia (inversa)", result: "A \\ B", desc: "X ∩ ~Y = X \\ Y" },
+            traps: [
+              { law: "Orden invertido", result: "B \\ A", err: "El conjunto negado (~B) es el que resta: es A \\ B, no B \\ A." },
+              { law: "Unión", result: "A ∪ B", err: "A ∩ ~B son los elementos de A que NO están en B." },
+              { law: "De Morgan", result: "~(A ∪ B)", err: "Eso nos alejaría del objetivo A \\ B." }
+            ]
+          }
+        ]
+      },
+      {
+        id: 5, title: "Doble Negación Encerrada",
+        start: "~(~A ∩ ~B)", goal: "A ∪ B",
+        steps: [
+          {
+            correct: { law: "Ley de De Morgan", result: "~~A ∪ ~~B", desc: "El ~ entra y ∩ gira a ∪" },
+            traps: [
+              { law: "Mantener ∩", result: "~~A ∩ ~~B", err: "De Morgan siempre cambia ∩ por ∪." },
+              { law: "Quitar solo un ~", result: "~A ∪ ~B", err: "El ~ exterior se suma a los que ya tenían A y B, formando ~~." },
+              { law: "Diferencia", result: "A \\ B", err: "No corresponde a una diferencia." }
+            ]
+          },
+          {
+            correct: { law: "Doble Complemento", result: "A ∪ B", desc: "~~A = A y ~~B = B" },
+            traps: [
+              { law: "Dejar ∩", result: "A ∩ B", err: "La operación actual es ∪." },
+              { law: "Complemento total", result: "U", err: "A ∪ ~A = U, pero A ∪ B no tiene por qué ser U." },
+              { law: "Vacío", result: "∅", err: "~~A es A, nunca ∅." }
+            ]
+          }
+        ]
+      },
+      {
+        id: 6, title: "Complemento de una Diferencia",
+        start: "~(A \\ B)", goal: "~A ∪ B",
+        steps: [
+          {
+            correct: { law: "Def. de Diferencia", result: "~(A ∩ ~B)", desc: "Primero reescribimos A \\ B como A ∩ ~B" },
+            traps: [
+              { law: "De Morgan directo sobre \\", result: "~A \\ ~B", err: "No existe De Morgan sobre \\ directamente; primero pásalo a A ∩ ~B." },
+              { law: "Cambiar a unión", result: "~(A ∪ ~B)", err: "A \\ B es A ∩ ~B (intersección), no unión." },
+              { law: "Invertir resta", result: "B \\ A", err: "~(A \\ B) incluye el exterior y A∩B, mucho más que B \\ A." }
+            ]
+          },
+          {
+            correct: { law: "Ley de De Morgan", result: "~A ∪ ~~B", desc: "El ~ entra y ∩ gira a ∪" },
+            traps: [
+              { law: "Sin girar ∩", result: "~A ∩ ~~B", err: "De Morgan exige cambiar ∩ por ∪." },
+              { law: "Olvidar ~ de A", result: "A ∪ ~~B", err: "El complemento exterior también afecta a A." },
+              { law: "Igualar a ∅", result: "∅", err: "A y ~B no tienen por qué ser complementarios." }
+            ]
+          },
+          {
+            correct: { law: "Doble Complemento", result: "~A ∪ B", desc: "~~B = B" },
+            traps: [
+              { law: "Quitar ~ de A", result: "A ∪ B", err: "A solo tiene un ~, sigue siendo ~A." },
+              { law: "Diferencia", result: "B \\ A", err: "B \\ A es B ∩ ~A, pero aquí tenemos unión (~A ∪ B)." },
+              { law: "Idempotencia", result: "B", err: "No podemos eliminar ~A." }
+            ]
+          }
+        ]
+      },
+      {
+        id: 7, title: "Factor Común Alquímico",
+        start: "(A ∩ B) ∪ (A ∩ ~B)", goal: "A",
+        steps: [
+          {
+            correct: { law: "Distributiva inversa", result: "A ∩ (B ∪ ~B)", desc: "Sacamos 'A ∩' como factor común" },
+            traps: [
+              { law: "De Morgan", result: "~(A ∪ B)", err: "No hay ningún complemento envolviendo todo." },
+              { law: "Sacar factor mal", result: "A ∪ (B ∩ ~B)", err: "El operador pegado a A es ∩, y el central entre bloques es ∪." },
+              { law: "Cancelar B directamente", result: "A ∪ A", err: "Primero debes factorizar y aplicar la ley del complemento." }
+            ]
+          },
+          {
+            correct: { law: "Ley del Complemento", result: "A ∩ U", desc: "B ∪ ~B = U (todo el universo)" },
+            traps: [
+              { law: "Confundir con ∅", result: "A ∩ ∅", err: "B ∩ ~B = ∅, pero B ∪ ~B cubre TODO el universo U." },
+              { law: "Idempotencia", result: "A ∩ B", err: "B ∪ ~B no es B, es U." },
+              { law: "Doble Complemento", result: "A ∩ ~B", err: "No hay doble complemento aquí." }
+            ]
+          },
+          {
+            correct: { law: "Ley de Identidad", result: "A", desc: "A ∩ U = A" },
+            traps: [
+              { law: "Dominación falsa", result: "U", err: "A ∪ U = U, pero A ∩ U = A." },
+              { law: "Vacío", result: "∅", err: "A ∩ ∅ = ∅, pero con U queda A." },
+              { law: "Complemento", result: "~A", err: "Intersecar con U deja a A exactamente igual." }
+            ]
+          }
+        ]
+      },
+      {
+        id: 8, title: "Absorción Extendida",
+        start: "A ∪ (~A ∩ B)", goal: "A ∪ B",
+        steps: [
+          {
+            correct: { law: "Propiedad Distributiva", result: "(A ∪ ~A) ∩ (A ∪ B)", desc: "Repartimos 'A ∪' sobre (~A ∩ B)" },
+            traps: [
+              { law: "Asociativa inválida", result: "(A ∪ ~A) ∪ B", err: "No puedes aplicar asociativa porque los operadores son distintos (∪ y ∩)." },
+              { law: "De Morgan", result: "~A ∩ (A ∪ B)", err: "No hay un complemento externo para De Morgan." },
+              { law: "Distributiva invertida", result: "(A ∩ ~A) ∪ (A ∩ B)", err: "El operador externo que se reparte es ∪, no ∩." }
+            ]
+          },
+          {
+            correct: { law: "Ley del Complemento", result: "U ∩ (A ∪ B)", desc: "A ∪ ~A = U" },
+            traps: [
+              { law: "Vacío", result: "∅ ∩ (A ∪ B)", err: "A ∪ ~A es todo el universo U, no ∅." },
+              { law: "Idempotencia", result: "A ∩ (A ∪ B)", err: "A ∪ ~A no es A, es U." },
+              { law: "Borrar ~A", result: "A ∩ (A ∪ B)", err: "A ∪ ~A equivale siempre al universo U." }
+            ]
+          },
+          {
+            correct: { law: "Ley de Identidad", result: "A ∪ B", desc: "U ∩ X = X" },
+            traps: [
+              { law: "Dominación", result: "U", err: "U ∪ X = U, pero U ∩ X = X." },
+              { law: "Intersección", result: "A ∩ B", err: "El paréntesis restante es (A ∪ B)." },
+              { law: "Vacío", result: "∅", err: "Intersecar con el universo U conserva el conjunto intacto." }
+            ]
+          }
+        ]
+      }
+    ];
+
+    let alchCurLvl = 1;
+    let alchStep = 0;
+    let alchMistakes = 0;
+    let alchHistory = [];
+    let alchCurrentCards = [];
+
+    function initAlchemyGame() {
+      renderAlchemyLevelGrid();
+      loadAlchemyLevel(alchCurLvl);
+    }
+
+    function renderAlchemyLevelGrid() {
+      const grid = document.getElementById("alchemyLevelGrid");
+      grid.innerHTML = ALCHEMY_LEVELS.map(lv => {
+        const s = state.alchemyStars[lv.id] || 0;
+        const stars = "★".repeat(s) + "☆".repeat(3 - s);
+        return `
+          <button class="level-tile ${lv.id === alchCurLvl ? "active" : ""}" onclick="loadAlchemyLevel(${lv.id})">
+            <span style="font-size:0.7rem; color:var(--set-b);">NIVEL</span>
+            <span style="font-size:1.1rem;">${lv.id}</span>
+            <span class="stars-row">${stars}</span>
+          </button>
+        `;
+      }).join("");
+    }
+
+    function loadAlchemyLevel(id) {
+      alchCurLvl = id;
+      alchStep = 0;
+      alchMistakes = 0;
+      const lv = ALCHEMY_LEVELS.find(l => l.id === id);
+      alchHistory = [{ expr: lv.start, law: "Inicio" }];
+      renderAlchemyLevelGrid();
+      renderAlchemyStage();
+    }
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function renderAlchemyStage() {
+      const lv = ALCHEMY_LEVELS.find(l => l.id === alchCurLvl);
+      const area = document.getElementById("alchemyPlayArea");
+      const curExpr = alchHistory[alchHistory.length - 1].expr;
+      const finished = alchStep >= lv.steps.length;
+
+      let cardsHtml = "";
+      if (!finished) {
+        const stepObj = lv.steps[alchStep];
+        const cards = [
+          { ...stepObj.correct, isCorrect: true },
+          ...stepObj.traps.map(t => ({ ...t, isCorrect: false }))
+        ];
+        alchCurrentCards = shuffleArray(cards);
+
+        cardsHtml = `
+          <div style="font-size:0.86rem; color:var(--text-muted); margin-bottom:10px;">
+            Elige la carta de transformación correcta (Paso ${alchStep + 1} de ${lv.steps.length}):
+          </div>
+          <div class="grid-2" id="alchemyCardsGrid">
+            ${alchCurrentCards.map((c, idx) => `
+              <button class="alchemy-card" id="alchCard${idx}" onclick="playAlchemyCard(${idx})">
+                <span class="tag tag-b" style="align-self:flex-start;">${c.law}</span>
+                <div class="formula" style="margin-top:4px; font-size:1rem;">→ ${c.result}</div>
+              </button>
+            `).join("")}
+          </div>
+        `;
+      } else {
+        const stars = alchMistakes === 0 ? 3 : (alchMistakes === 1 ? 2 : 1);
+        const nextBtn = lv.id < ALCHEMY_LEVELS.length
+          ? `<button class="btn btn-success" onclick="loadAlchemyLevel(${lv.id + 1})">Siguiente Nivel (${lv.id + 1}) →</button>`
+          : `<button class="btn btn-amber" onclick="openGame('arcade')">⚡ ¡Maestría alcanzada! Probar Contrarreloj</button>`;
+        cardsHtml = `
+          <div class="feedback-box show ok" style="text-align:center;">
+            <div style="font-size:1.3rem; font-weight:900; margin-bottom:6px;">🧪 ¡Transmutación Completada! ${"★".repeat(stars)}${"☆".repeat(3 - stars)}</div>
+            <p style="margin:0 0 12px;">Has demostrado paso a paso que <span class="formula">${lv.start} = ${lv.goal}</span>.</p>
+            ${nextBtn}
+          </div>
+        `;
+      }
+
+      area.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div>
+            <span class="tag tag-b">Nivel ${lv.id} · ${lv.title}</span>
+          </div>
+          <span style="font-size:0.86rem; color:var(--text-muted);">Fallos: <strong class="${alchMistakes ? "c-err" : "c-ok"}">${alchMistakes}</strong></span>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:16px;">
+          <div class="card-soft" style="text-align:center; border-color:rgba(56,189,248,0.35);">
+            <div style="font-size:0.76rem; text-transform:uppercase; color:var(--set-a); font-weight:800; margin-bottom:6px;">Fórmula Actual</div>
+            <div class="formula-big">${curExpr}</div>
+          </div>
+          <div class="card-soft" style="text-align:center; border-color:rgba(52,211,153,0.35);">
+            <div style="font-size:0.76rem; text-transform:uppercase; color:var(--success); font-weight:800; margin-bottom:6px;">🎯 Objetivo</div>
+            <div class="formula-big" style="border-color:rgba(52,211,153,0.45);">${lv.goal}</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px; display:flex; flex-direction:column; gap:6px;">
+          ${alchHistory.map((h, i) => `
+            <div class="alchemy-step">
+              <span class="tag ${i === 0 ? "tag-a" : "tag-ok"}">${h.law}</span>
+              <span class="formula">${h.expr}</span>
+            </div>
+          `).join("")}
+        </div>
+
+        ${cardsHtml}
+        <div id="alchFb" class="feedback-box"></div>
+      `;
+    }
+
+    function playAlchemyCard(idx) {
+      const card = alchCurrentCards[idx];
+      const cardEl = document.getElementById(`alchCard${idx}`);
+      const fb = document.getElementById("alchFb");
+
+      if (card.isCorrect) {
+        playSound("success");
+        if (cardEl) cardEl.classList.add("flash-ok");
+        alchHistory.push({ expr: card.result, law: card.law });
+        alchStep++;
+        const lv = ALCHEMY_LEVELS.find(l => l.id === alchCurLvl);
+
+        if (alchStep >= lv.steps.length) {
+          const stars = alchMistakes === 0 ? 3 : (alchMistakes === 1 ? 2 : 1);
+          const prev = state.alchemyStars[lv.id] || 0;
+          if (stars > prev) {
+            state.alchemyStars[lv.id] = stars;
+            awardXP(prev === 0 ? 45 : 15, `Alquimia Nivel ${lv.id}`);
+          } else {
+            saveState();
+          }
+          renderAlchemyLevelGrid();
+        }
+        setTimeout(() => renderAlchemyStage(), 220);
+      } else {
+        alchMistakes++;
+        playSound("error");
+        if (cardEl) {
+          cardEl.classList.remove("shake");
+          void cardEl.offsetWidth;
+          cardEl.classList.add("shake");
+        }
+        fb.className = "feedback-box show err";
+        fb.innerHTML = `<strong>Carta trampa (${card.law}):</strong> ${card.err}`;
+      }
+    }
+
+    /* ------------------------------------------------------------------------
+       GAME 3: CONTRARRELOJ DE CARDINALES (Arcade + Zen Mode)
+       ------------------------------------------------------------------------ */
+    const arcadeState = {
+      running: false,
+      zenMode: false,
+      lives: 3,
+      score: 0,
+      streak: 0,
+      answered: 0,
+      timeLeft: 18,
+      maxTime: 18,
+      timerId: null,
+      currentQ: null,
+      locked: false,
+      showFormula: false
+    };
+
+    function stopArcadeTimer() {
+      if (arcadeState.timerId) {
+        clearInterval(arcadeState.timerId);
+        arcadeState.timerId = null;
+      }
+    }
+
+    function initArcadeMenu() {
+      stopArcadeTimer();
+      arcadeState.running = false;
+      const area = document.getElementById("arcadePlayArea");
+      area.innerHTML = `
+        <div style="text-align:center; padding:12px 6px;">
+          <div style="font-size:2.6rem; margin-bottom:8px;">⚡</div>
+          <h3 style="margin:0 0 8px; font-size:1.4rem;">Contrarreloj de Cardinales</h3>
+          <p style="color:var(--text-muted); max-width:540px; margin:0 auto 20px;">
+            Pon a prueba tus reflejos con retos generados de <strong>|P(A)| = 2ⁿ</strong>, <strong>|A × B|</strong>, trampas de <strong>∈ vs ⊆</strong> e <strong>Inclusión-Exclusión</strong>. Acumula combos hasta <strong>x4</strong> con 3 corazones.
+          </p>
+
+          <div class="card-soft" style="max-width:420px; margin:0 auto 20px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <div style="text-align:left;">
+              <strong>🧘 Modo Zen (sin reloj)</strong>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Estudia sin presión de temporizador</div>
+            </div>
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="arcadeZenToggle" ${arcadeState.zenMode ? "checked" : ""} onchange="arcadeState.zenMode = this.checked" style="width:20px; height:20px; accent-color:var(--set-c);">
+              <span style="font-weight:700; font-size:0.88rem;">Activar</span>
+            </label>
+          </div>
+
+          <button class="btn btn-amber" style="min-width:220px;" onclick="startArcadeRun()">🚀 ¡Empezar Partida!</button>
+        </div>
+      `;
+    }
+
+    const STATIC_ARCADE_TRAPS = [
+      {
+        tag: "Trampa P(A)",
+        q: "¿Es siempre cierto que ∅ ∈ P(A) para cualquier conjunto A?",
+        opts: ["Sí, siempre verdadero", "No, es falso"],
+        correct: 0,
+        exp: "∅ es subconjunto de cualquier conjunto A, por tanto ∅ es siempre un ELEMENTO de P(A)."
+      },
+      {
+        tag: "Propiedad UNED",
+        q: "¿Es SIEMPRE verdadero que P(A ∩ B) = P(A) ∩ P(B)?",
+        opts: ["Sí, siempre verdadero", "No, hay contraejemplos"],
+        correct: 0,
+        exp: "Todo subconjunto de A ∩ B es subconjunto de A y de B a la vez. Pregunta real 2026 Mod. B."
+      },
+      {
+        tag: "Propiedad UNED",
+        q: "¿Es siempre verdadero que P(A ∪ B) = P(A) ∪ P(B)?",
+        opts: ["Sí, siempre verdadero", "No, es falso"],
+        correct: 1,
+        exp: "Falso: con A={1} y B={2}, {1,2} ∈ P(A∪B) pero {1,2} no pertenece ni a P(A) ni a P(B)."
+      },
+      {
+        tag: "Propiedad UNED",
+        q: "¿Es siempre verdadero que P(A \\ B) = P(A) \\ P(B)?",
+        opts: ["Sí, siempre verdadero", "No, es falso"],
+        correct: 1,
+        exp: "Falso: ∅ siempre está en P(A \\ B), pero en P(A) \\ P(B) el vacío desaparece porque estaba en P(B)."
+      },
+      {
+        tag: "Trampa ∈ vs ⊆",
+        q: "Si A = {1, 2, 3}, ¿es correcto escribir {2} ∈ A?",
+        opts: ["Sí, es correcto", "No, lo correcto es {2} ⊆ A"],
+        correct: 1,
+        exp: "{2} es un conjunto, no un número. Debe usarse ⊆ (inclusión) y no ∈ (pertenencia)."
+      },
+      {
+        tag: "Igualdad UNED",
+        q: "¿Qué condición equivale exactamente a A = B?",
+        opts: ["A ⊆ B y B ⊆ A", "A ∪ B = U", "A ∩ B = ∅", "|A| = |B|"],
+        correct: 0,
+        exp: "Dos conjuntos son iguales si y solo si se incluyen mutuamente: A ⊆ B y B ⊆ A."
+      },
+      {
+        tag: "Vacío",
+        q: "¿Cuánto vale |P(∅)| (el cardinal del conjunto potencia del vacío)?",
+        opts: ["0", "1", "2", "Infinito"],
+        correct: 1,
+        exp: "|∅| = 0, luego |P(∅)| = 2⁰ = 1. El único subconjunto es el propio ∅: P(∅) = {∅}."
+      }
+    ];
+
+    function generateArcadeQuestion() {
+      const roll = Math.random();
+      if (roll < 0.28) {
+        // |P(A)| = 2^n
+        const n = Math.floor(Math.random() * 8); // 0..7
+        const ans = Math.pow(2, n);
+        const candidates = new Set([ans]);
+        const fakes = [n * n, n * 2, ans * 2, Math.max(1, ans / 2), n + 2, ans + n];
+        for (const f of fakes) {
+          if (candidates.size < 4 && Number.isInteger(f) && f >= 0 && f !== ans) candidates.add(f);
+        }
+        while (candidates.size < 4) candidates.add(ans + candidates.size * 3);
+        const opts = shuffleArray(Array.from(candidates)).map(String);
+        return {
+          tag: "Conjunto Potencia",
+          q: `Si |A| = ${n}, ¿cuántos subconjuntos tiene A (es decir, |P(A)|)?`,
+          opts,
+          correct: opts.indexOf(String(ans)),
+          exp: `|P(A)| = 2^${n} = ${ans}.`
+        };
+      } else if (roll < 0.52) {
+        // |A x B| or |A x A|
+        const same = Math.random() < 0.5;
+        const a = Math.floor(Math.random() * 6) + 2; // 2..7
+        const b = same ? a : Math.floor(Math.random() * 6) + 2;
+        const ans = a * b;
+        const candidates = new Set([ans]);
+        const fakes = [a + b, Math.pow(2, a), a * b + a, Math.max(1, a * b - 2), a * 2];
+        for (const f of fakes) {
+          if (candidates.size < 4 && f > 0 && f !== ans) candidates.add(f);
+        }
+        while (candidates.size < 4) candidates.add(ans + candidates.size);
+        const opts = shuffleArray(Array.from(candidates)).map(String);
+        return {
+          tag: "Producto Cartesiano",
+          q: same
+            ? `Si |A| = ${a}, ¿cuántas 2-tuplas tiene el producto cartesiano A × A?`
+            : `Si |A| = ${a} y |B| = ${b}, ¿cuántos pares ordenados tiene A × B?`,
+          opts,
+          correct: opts.indexOf(String(ans)),
+          exp: same ? `|A × A| = ${a}² = ${ans}.` : `|A × B| = ${a} · ${b} = ${ans}.`
+        };
+      } else if (roll < 0.78) {
+        // Inclusion-Exclusion (2 or 3 sets generated from valid disjoint zones)
+        if (Math.random() < 0.5) {
+          const onlyA = Math.floor(Math.random() * 7) + 2;
+          const onlyB = Math.floor(Math.random() * 7) + 2;
+          const both = Math.floor(Math.random() * 5) + 1;
+          const A = onlyA + both;
+          const B = onlyB + both;
+          const ans = onlyA + onlyB + both;
+          const optsSet = new Set([ans, A + B, A + B + both, Math.max(1, ans - 2)]);
+          while (optsSet.size < 4) optsSet.add(ans + optsSet.size + 1);
+          const opts = shuffleArray(Array.from(optsSet)).map(String);
+          return {
+            tag: "Inclusión-Exclusión (2)",
+            q: `Con |A| = ${A}, |B| = ${B} y |A ∩ B| = ${both}, ¿cuánto vale |A ∪ B|?`,
+            opts,
+            correct: opts.indexOf(String(ans)),
+            exp: `|A ∪ B| = ${A} + ${B} − ${both} = ${ans}.`
+          };
+        } else {
+          // 3 sets valid disjoint zones
+          const r1 = Math.floor(Math.random() * 5) + 2;
+          const r2 = Math.floor(Math.random() * 5) + 2;
+          const r4 = Math.floor(Math.random() * 5) + 2;
+          const r3 = Math.floor(Math.random() * 3) + 1;
+          const r5 = Math.floor(Math.random() * 3) + 1;
+          const r6 = Math.floor(Math.random() * 3) + 1;
+          const r7 = Math.floor(Math.random() * 2) + 1;
+          const A = r1 + r3 + r5 + r7;
+          const B = r2 + r3 + r6 + r7;
+          const C = r4 + r5 + r6 + r7;
+          const AB = r3 + r7, AC = r5 + r7, BC = r6 + r7, ABC = r7;
+          const ans = r1 + r2 + r3 + r4 + r5 + r6 + r7;
+          const optsSet = new Set([ans, A + B + C, ans - ABC, ans + ABC]);
+          while (optsSet.size < 4) optsSet.add(ans + optsSet.size + 2);
+          const opts = shuffleArray(Array.from(optsSet)).map(String);
+          return {
+            tag: "Inclusión-Exclusión (3)",
+            q: `|A|=${A}, |B|=${B}, |C|=${C}, |A∩B|=${AB}, |A∩C|=${AC}, |B∩C|=${BC}, |A∩B∩C|=${ABC}. ¿Cuánto vale |A ∪ B ∪ C|?`,
+            opts,
+            correct: opts.indexOf(String(ans)),
+            exp: `${A}+${B}+${C} − ${AB}−${AC}−${BC} + ${ABC} = ${ans}.`
+          };
+        }
+      } else {
+        const pick = STATIC_ARCADE_TRAPS[Math.floor(Math.random() * STATIC_ARCADE_TRAPS.length)];
+        return structuredCloneSafe(pick);
+      }
+    }
+
+    function startArcadeRun() {
+      stopArcadeTimer();
+      arcadeState.running = true;
+      arcadeState.lives = 3;
+      arcadeState.score = 0;
+      arcadeState.streak = 0;
+      arcadeState.answered = 0;
+      arcadeState.showFormula = false;
+      nextArcadeQuestion();
+      playSound("click");
+    }
+
+    function nextArcadeQuestion() {
+      stopArcadeTimer();
+      if (arcadeState.lives <= 0) {
+        finishArcadeRun();
+        return;
+      }
+      arcadeState.locked = false;
+      arcadeState.currentQ = generateArcadeQuestion();
+      arcadeState.maxTime = Math.max(10, 18 - Math.floor(arcadeState.streak / 3));
+      arcadeState.timeLeft = arcadeState.maxTime;
+      renderArcadeScreen();
+
+      if (!arcadeState.zenMode) {
+        arcadeState.timerId = setInterval(() => {
+          if (arcadeState.locked) return;
+          arcadeState.timeLeft -= 0.1;
+          const bar = document.getElementById("arcadeTimerFill");
+          if (bar) bar.style.width = `${Math.max(0, (arcadeState.timeLeft / arcadeState.maxTime) * 100)}%`;
+          if (arcadeState.timeLeft <= 0) {
+            stopArcadeTimer();
+            handleArcadeAnswer(-1); // Timeout
+          }
+        }, 100);
+      }
+    }
+
+    function getComboMult(streak) {
+      if (streak >= 9) return 4;
+      if (streak >= 6) return 3;
+      if (streak >= 3) return 2;
+      return 1;
+    }
+
+    function renderArcadeScreen() {
+      const area = document.getElementById("arcadePlayArea");
+      const q = arcadeState.currentQ;
+      const mult = getComboMult(arcadeState.streak);
+      const hearts = "❤️".repeat(arcadeState.lives) + "🖤".repeat(3 - arcadeState.lives);
+
+      area.innerHTML = `
+        <div class="arcade-hud">
+          <div style="font-size:1.15rem; letter-spacing:3px;">${hearts}</div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span class="tag tag-b">Combo x${mult}</span>
+            <span class="tag tag-gold" style="font-size:0.9rem;">${arcadeState.score} pts</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="toggleArcadeFormula()">📐 ${arcadeState.showFormula ? "Ocultar" : "Ver"} fórmulas</button>
+        </div>
+
+        ${arcadeState.zenMode
+          ? `<div style="text-align:center; font-size:0.8rem; color:var(--set-c); margin-bottom:12px;">🧘 Modo Zen Activo (sin límite de tiempo)</div>`
+          : `<div class="timer-bar-wrap"><div class="timer-bar-fill" id="arcadeTimerFill" style="width:100%;"></div></div>`
+        }
+
+        <div id="arcadeFormulaBox" class="card-soft" style="display:${arcadeState.showFormula ? "block" : "none"}; margin-bottom:14px; font-size:0.84rem;">
+          • <strong>|P(A)| = 2ⁿ</strong> &nbsp;|&nbsp; <strong>|A × B| = |A| · |B|</strong> &nbsp;|&nbsp; <strong>∅ ∈ P(A)</strong> siempre<br>
+          • <strong>|A ∪ B| = |A| + |B| − |A ∩ B|</strong><br>
+          • <strong>|A ∪ B ∪ C| = |A| + |B| + |C| − |A∩B| − |A∩C| − |B∩C| + |A∩B∩C|</strong>
+        </div>
+
+        <span class="tag tag-a" style="margin-bottom:8px;">${q.tag}</span>
+        <h3 style="margin:6px 0 14px; font-size:1.15rem;">${q.q}</h3>
+
+        <div class="grid-2" id="arcadeOpts">
+          ${q.opts.map((opt, idx) => `
+            <button class="quiz-opt" style="margin-top:0;" onclick="handleArcadeAnswer(${idx})">
+              <span class="opt-letter">${String.fromCharCode(65 + idx)}</span>
+              <span>${opt}</span>
+            </button>
+          `).join("")}
+        </div>
+
+        <div id="arcadeFb" class="feedback-box"></div>
+      `;
+    }
+
+    function toggleArcadeFormula() {
+      arcadeState.showFormula = !arcadeState.showFormula;
+      const box = document.getElementById("arcadeFormulaBox");
+      if (box) box.style.display = arcadeState.showFormula ? "block" : "none";
+      playSound("click");
+    }
+
+    function handleArcadeAnswer(chosenIdx) {
+      if (arcadeState.locked) return;
+      arcadeState.locked = true;
+      stopArcadeTimer();
+
+      const q = arcadeState.currentQ;
+      const btns = document.querySelectorAll("#arcadeOpts .quiz-opt");
+      btns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === q.correct) b.classList.add("correct");
+        else if (i === chosenIdx) b.classList.add("wrong");
+      });
+
+      const fb = document.getElementById("arcadeFb");
+      if (chosenIdx === q.correct) {
+        arcadeState.streak++;
+        arcadeState.answered++;
+        const mult = getComboMult(arcadeState.streak);
+        const pts = 25 * mult;
+        arcadeState.score += pts;
+        if (arcadeState.score > state.arcadeBest) {
+          state.arcadeBest = arcadeState.score;
+          saveState();
+        }
+        playSound("success");
+        fb.className = "feedback-box show ok";
+        fb.innerHTML = `<strong>⚡ ¡+${pts} pts! (Racha ${arcadeState.streak})</strong> · ${q.exp}`;
+        setTimeout(() => nextArcadeQuestion(), 1050);
+      } else {
+        arcadeState.lives--;
+        arcadeState.streak = 0;
+        playSound("error");
+        fb.className = "feedback-box show err";
+        const msg = chosenIdx === -1 ? "⏰ ¡Se acabó el tiempo!" : "❌ Fallo";
+        fb.innerHTML = `
+          <strong>${msg}:</strong> ${q.exp}
+          <div style="margin-top:10px;">
+            <button class="btn btn-primary btn-sm" onclick="nextArcadeQuestion()">
+              ${arcadeState.lives > 0 ? "Siguiente reto →" : "Ver resultado final"}
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function finishArcadeRun() {
+      stopArcadeTimer();
+      arcadeState.running = false;
+      const xpEarned = Math.min(80, Math.floor(arcadeState.score / 20));
+      if (xpEarned > 0) awardXP(xpEarned, "Partida Contrarreloj");
+      const area = document.getElementById("arcadePlayArea");
+      area.innerHTML = `
+        <div style="text-align:center; padding:14px;">
+          <div style="font-size:2.6rem;">🏆</div>
+          <h3 style="margin:6px 0 8px; font-size:1.45rem;">¡Partida terminada!</h3>
+          <div style="font-size:2rem; font-weight:900; color:var(--gold); margin-bottom:6px;">${arcadeState.score} pts</div>
+          <p style="color:var(--text-muted); margin:0 0 18px;">
+            Aciertos: <strong>${arcadeState.answered}</strong> · Récord histórico: <strong style="color:var(--gold);">${state.arcadeBest} pts</strong>
+          </p>
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-amber" onclick="startArcadeRun()">🔁 Jugar otra vez</button>
+            <button class="btn btn-ghost" onclick="initArcadeMenu()">⚙️ Cambiar Modo</button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ========================================================================
+       6. MODULE 3: SIMULADOR OFICIAL UNED (13 VERIFIED 2025-2026 QUESTIONS)
+       ======================================================================== */
+    const UNED_EXAM_QUESTIONS = [
+      {
+        id: 1, tag: "2025 Mod. A/B · P10",
+        q: "Indique la afirmación correcta sobre el conjunto A = {1, 2, 3, 4}:",
+        opts: [
+          "El producto cartesiano de A × A tiene por elementos ocho 2-tuplas.",
+          "El cardinal del conjunto potencia de A es 8.",
+          "El conjunto vacío ∅ es un elemento del conjunto potencia de A."
+        ],
+        correct: 2,
+        exp: "|A| = 4, por tanto |A × A| = 4² = 16 (no 8) y |P(A)| = 2⁴ = 16 (no 8). Como ∅ ⊆ A siempre, ∅ es un elemento de P(A) (opción c)."
+      },
+      {
+        id: 2, tag: "2025 Mod. A/B · P11",
+        q: "Dado U = {1, 2, 3, 4, 5, 6, 7, 8}, A = {1, 2, 4, 6, 8}, B = {1, 2, 3, 5, 8} y C = {1, 4, 5, 7}, señale la afirmación correcta:",
+        opts: [
+          "{1, 2, 4, 8} = (A ∩ B) ∪ C",
+          "{1, 2, 4, 8} = A ∩ (B ∪ C)",
+          "{1, 2, 4, 8} = ~(A ∩ B) ∪ C"
+        ],
+        correct: 1,
+        exp: "Calculamos B ∪ C = {1, 2, 3, 4, 5, 7, 8}. Al intersecar con A = {1, 2, 4, 6, 8}, solo se cae el 6 y queda {1, 2, 4, 8} (opción b)."
+      },
+      {
+        id: 3, tag: "2025 Mod. C/D · P10",
+        q: "¿Cuál de las siguientes expresiones es equivalente a (A ∩ B)?",
+        opts: [
+          "~(~A ∪ B)",
+          "(A \\ ~B)",
+          "~(A ∩ B)"
+        ],
+        correct: 1,
+        exp: "Por definición de diferencia (X \\ Y = X ∩ ~Y): A \\ ~B = A ∩ ~~B = A ∩ B. En cambio ~(~A ∪ B) = A ∩ ~B = A \\ B."
+      },
+      {
+        id: 4, tag: "2025 Mod. C/D · P11",
+        q: "Dado U = {1, 2, 3, 4, 5, 6, 7, 8}, A = {1, 2, 4, 6, 8}, B = {1, 2, 3, 5, 8} y C = {1, 4, 5, 7}, señale la afirmación correcta:",
+        opts: [
+          "{1, 3, 4, 5, 6, 7} = (A ∩ B) ∪ C",
+          "{1, 3, 4, 5, 6, 7} = A ∩ (B ∪ C)",
+          "{1, 3, 4, 5, 6, 7} = ~(A ∩ B) ∪ C"
+        ],
+        correct: 2,
+        exp: "A ∩ B = {1, 2, 8}. Su complemento respecto a U es ~(A ∩ B) = {3, 4, 5, 6, 7}. Al unirle C = {1, 4, 5, 7} obtenemos {1, 3, 4, 5, 6, 7} (opción c)."
+      },
+      {
+        id: 5, tag: "2025 Sept · P10",
+        q: "Sea A un conjunto finito de n elementos. El conjunto potencia de A tiene por elementos:",
+        opts: [
+          "todos los n subconjuntos distintos de A.",
+          "todos los 2ⁿ subconjuntos distintos de A.",
+          "todos los n! subconjuntos distintos de A."
+        ],
+        correct: 1,
+        exp: "Para cada uno de los n elementos hay 2 elecciones (incluirlo o no en el subconjunto), lo que da exactamente 2ⁿ subconjuntos distintos."
+      },
+      {
+        id: 6, tag: "2025 Sept · P11",
+        q: "Sean A, B y C con |A|=10, |B|=8, |C|=7, |A∩B|=3, |A∩C|=2, |B∩C|=2 y |A∩B∩C|=1. ¿Cuántos elementos hay en A ∪ B ∪ C?",
+        opts: [
+          "19",
+          "26",
+          "25"
+        ],
+        correct: 0,
+        exp: "Principio de Inclusión-Exclusión: 10 + 8 + 7 − 3 − 2 − 2 + 1 = 25 − 7 + 1 = 19 (opción a)."
+      },
+      {
+        id: 7, tag: "2025 Sept · P12",
+        q: "Dado U = {1, 2, 3, 4, 5, 6}, A = {1, 2, 4, 6} y B = {2, 3, 5, 6}. Indique cuál es el resultado de (A ∪ B) \\ (A ∩ B):",
+        opts: [
+          "{2, 6}",
+          "{1, 2, 3, 4, 5, 6}",
+          "{1, 3, 4, 5}"
+        ],
+        correct: 2,
+        exp: "A ∪ B = {1, 2, 3, 4, 5, 6} y A ∩ B = {2, 6}. Al restar la intersección a la unión queda {1, 3, 4, 5} (opción c)."
+      },
+      {
+        id: 8, tag: "2026 Mod. A · P10",
+        q: "Dados dos conjuntos A y B pertenecientes al universo U (A, B ⊆ U). ¿Cuál de las siguientes condiciones es equivalente a A = B?",
+        opts: [
+          "A ∩ B = ∅",
+          "A ⊆ B y B ⊆ A",
+          "A ∪ B = U"
+        ],
+        correct: 1,
+        exp: "Definición de igualdad por doble inclusión: A = B si y solo si todo elemento de A está en B (A ⊆ B) y todo elemento de B está en A (B ⊆ A)."
+      },
+      {
+        id: 9, tag: "2026 Mod. A · P11",
+        q: "Sean A = {1, 2, 3, 4, 5}, B = {3, 4, 6} y C = {1, 4, 7}. ¿Cuál de las siguientes opciones corresponde al conjunto (A ∩ B) ∪ (A \\ C)?",
+        opts: [
+          "{1, 2, 3, 4}",
+          "{2, 3, 4, 5}",
+          "{3, 4, 5, 7}"
+        ],
+        correct: 1,
+        exp: "A ∩ B = {3, 4}. Por otro lado, A \\ C (los de A quitando los que estén en C={1,4,7}) = {2, 3, 5}. Su unión es {2, 3, 4, 5} (opción b)."
+      },
+      {
+        id: 10, tag: "2026 Mod. B · P10",
+        q: "Se utiliza la notación P para el conjunto potencia. Dados dos conjuntos A y B cualesquiera, señale la afirmación que siempre es verdadera:",
+        opts: [
+          "P(A ∩ B) = P(A) ∩ P(B)",
+          "P(A ∪ B) = P(A) ∪ P(B)",
+          "P(A \\ B) = P(A) \\ P(B)"
+        ],
+        correct: 0,
+        exp: "X ∈ P(A ∩ B) ⇔ X ⊆ A ∩ B ⇔ (X ⊆ A y X ⊆ B) ⇔ X ∈ P(A) ∩ P(B). En (b) y (c) existen contraejemplos simples como A={1}, B={2}."
+      },
+      {
+        id: 11, tag: "2026 Mod. B · P11",
+        q: "Sea U = {1, 2, 3, 4, 5}, A = {1, 3, 4} y B = {2, 4, 5}. ¿Cuál de las siguientes opciones corresponde a ~(A ∪ B)?",
+        opts: [
+          "{3}",
+          "U",
+          "∅"
+        ],
+        correct: 2,
+        exp: "A ∪ B = {1, 2, 3, 4, 5} = U. El complemento del universo entero U es el conjunto vacío ∅ (opción c)."
+      },
+      {
+        id: 12, tag: "2026 Sept · P10",
+        q: "Dado un conjunto X = {a, b, c, d, e}, ¿cuántos posibles subconjuntos de X existen?",
+        opts: [
+          "25 subconjuntos",
+          "64 subconjuntos",
+          "32 subconjuntos"
+        ],
+        correct: 2,
+        exp: "|X| = 5 elementos, por tanto el número de subconjuntos es |P(X)| = 2⁵ = 32 (opción c)."
+      },
+      {
+        id: 13, tag: "2026 Sept · P11",
+        q: "Dado U = {a, b, c, d, e, f, g}, X = {b, d, e, f}, Y = {a, c, d, f} y Z = {b, c, e, f}, señale la afirmación correcta:",
+        opts: [
+          "{b, c, e} = (X ∩ Y ∩ Z) ∪ (Xᶜ ∩ Y ∩ Z)",
+          "{b, c, e} = (X ∩ Y ∩ Z) ∪ (X ∩ Yᶜ ∩ Z)",
+          "{b, c, e} = (Xᶜ ∩ Y ∩ Z) ∪ (X ∩ Yᶜ ∩ Z)"
+        ],
+        correct: 2,
+        exp: "Xᶜ = {a, c, g} y Yᶜ = {b, e, g}. Así: Xᶜ ∩ Y ∩ Z = {c}, mientras que X ∩ Yᶜ ∩ Z = {b, e}. Su unión es exactamente {b, c, e} (opción c)."
+      }
+    ];
+
+    const examRuntime = {
+      active: false,
+      mode: "train", // "train" | "real"
+      idx: 0,
+      answers: {}, // { qId: 0 | 1 | 2 | "blank" }
+      finished: false
+    };
+
+    function renderExamStart() {
+      examRuntime.active = false;
+      const box = document.getElementById("examContainer");
+      box.innerHTML = `
+        <div class="grid-2">
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; gap:14px;">
+            <div>
+              <span class="tag tag-ok">Recomendado para estudiar</span>
+              <h2 style="margin:10px 0 8px;">🎓 Modo Entrenamiento</h2>
+              <p style="color:var(--text-muted); margin:0; font-size:0.93rem;">
+                Responde las 13 preguntas oficiales una a una con <strong>corrección inmediata</strong> y explicación paso a paso tras cada intento.
+              </p>
+            </div>
+            <button class="btn btn-primary" onclick="startExam('train')">Empezar Modo Entrenamiento</button>
+          </div>
+
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; gap:14px;">
+            <div>
+              <span class="tag tag-c">Simulacro oficial</span>
+              <h2 style="margin:10px 0 8px;">⏱️ Modo Examen Real</h2>
+              <p style="color:var(--text-muted); margin:0; font-size:0.93rem;">
+                Navega libremente entre las 13 preguntas, deja en blanco las dudosas para evitar el <strong>-0,25</strong>, y recibe tu informe completo y nota sobre 10 al entregar.
+              </p>
+            </div>
+            <button class="btn btn-amber" onclick="startExam('real')">Empezar Simulacro Real</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function startExam(mode) {
+      examRuntime.active = true;
+      examRuntime.mode = mode;
+      examRuntime.idx = 0;
+      examRuntime.answers = {};
+      examRuntime.finished = false;
+      renderExamQuestion();
+      playSound("click");
+    }
+
+    function renderExamQuestion() {
+      const box = document.getElementById("examContainer");
+      const q = UNED_EXAM_QUESTIONS[examRuntime.idx];
+      const chosen = examRuntime.answers[q.id];
+      const isTrainRevealed = examRuntime.mode === "train" && chosen !== undefined;
+
+      const dotsHtml = UNED_EXAM_QUESTIONS.map((item, i) => {
+        const ans = examRuntime.answers[item.id];
+        let cls = "";
+        if (i === examRuntime.idx) cls += " current";
+        if (examRuntime.mode === "train" && ans !== undefined) {
+          if (ans === "blank") cls += " blank";
+          else cls += ans === item.correct ? " ok" : " bad";
+        } else if (ans !== undefined) {
+          cls += ans === "blank" ? " blank" : " answered";
+        }
+        return `<button class="exam-dot ${cls}" onclick="jumpExamQ(${i})">${i + 1}</button>`;
+      }).join("");
+
+      const optsHtml = q.opts.map((opt, idx) => {
+        let cls = "";
+        if (isTrainRevealed) {
+          if (idx === q.correct) cls = "correct";
+          else if (idx === chosen) cls = "wrong";
+        } else if (chosen === idx) {
+          cls = "selected";
+        }
+        return `
+          <button class="quiz-opt ${cls}" ${isTrainRevealed ? "disabled" : ""} onclick="selectExamOpt(${q.id}, ${idx})">
+            <span class="opt-letter">${String.fromCharCode(97 + idx)}</span>
+            <span>${opt}</span>
+          </button>
+        `;
+      }).join("");
+
+      let trainFbHtml = "";
+      if (isTrainRevealed) {
+        const isOk = chosen === q.correct;
+        const isBlank = chosen === "blank";
+        trainFbHtml = `
+          <div class="feedback-box show ${isBlank ? "info" : (isOk ? "ok" : "err")}">
+            <strong>${isBlank ? "⚪ Dejada en blanco (0 pts)" : (isOk ? "✅ ¡Correcto! (+0,50 pts)" : "❌ Incorrecto (-0,25 pts)")}</strong><br>
+            ${q.exp}
+          </div>
+        `;
+      }
+
+      const answeredCount = Object.keys(examRuntime.answers).length;
+
+      box.innerHTML = `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+            <span class="tag ${examRuntime.mode === "train" ? "tag-ok" : "tag-c"}">
+              ${examRuntime.mode === "train" ? "🎓 Entrenamiento" : "⏱️ Examen Real"} · Pregunta ${examRuntime.idx + 1} / 13
+            </span>
+            <button class="btn btn-ghost btn-sm" onclick="renderExamStart()">Salir</button>
+          </div>
+
+          <div class="exam-dots">${dotsHtml}</div>
+
+          <div style="margin-bottom:8px;"><span class="tag tag-a">${q.tag}</span></div>
+          <h3 style="margin:6px 0 14px; font-size:1.1rem; line-height:1.45;">${q.q}</h3>
+
+          <div>${optsHtml}</div>
+
+          <div style="margin-top:12px;">
+            <button class="btn btn-ghost btn-sm ${chosen === "blank" ? "active" : ""}" style="${chosen === "blank" ? "border-color:var(--set-c); color:var(--set-c);" : ""}" ${isTrainRevealed ? "disabled" : ""} onclick="selectExamOpt(${q.id}, 'blank')">
+              ⚪ Dejar en blanco (0 pts)
+            </button>
+          </div>
+
+          ${trainFbHtml}
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:20px; padding-top:14px; border-top:1px solid var(--border-subtle);">
+            <button class="btn btn-ghost btn-sm" ${examRuntime.idx === 0 ? "disabled" : ""} onclick="jumpExamQ(${examRuntime.idx - 1})">← Anterior</button>
+            <div style="display:flex; gap:10px;">
+              ${examRuntime.idx < 12
+                ? `<button class="btn btn-primary btn-sm" onclick="jumpExamQ(${examRuntime.idx + 1})">Siguiente →</button>`
+                : `<button class="btn btn-success btn-sm" onclick="finishExam()">🏁 Entregar y Corregir (${answeredCount}/13)</button>`
+              }
+              ${examRuntime.mode === "real" && examRuntime.idx < 12
+                ? `<button class="btn btn-amber btn-sm" onclick="finishExam()">🏁 Entregar ya</button>`
+                : ""
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function jumpExamQ(index) {
+      if (index < 0 || index >= UNED_EXAM_QUESTIONS.length) return;
+      examRuntime.idx = index;
+      renderExamQuestion();
+      playSound("click");
+    }
+
+    function selectExamOpt(qId, val) {
+      examRuntime.answers[qId] = val;
+      if (examRuntime.mode === "train") {
+        const q = UNED_EXAM_QUESTIONS.find(x => x.id === qId);
+        if (val === "blank") playSound("click");
+        else playSound(val === q.correct ? "success" : "error");
+      } else {
+        playSound("toggle");
+      }
+      renderExamQuestion();
+    }
+
+    function finishExam() {
+      examRuntime.finished = true;
+      let okCount = 0, badCount = 0, blankCount = 0;
+
+      UNED_EXAM_QUESTIONS.forEach(q => {
+        const ans = examRuntime.answers[q.id];
+        if (ans === undefined || ans === "blank") blankCount++;
+        else if (ans === q.correct) okCount++;
+        else badCount++;
+      });
+
+      const rawScore = okCount * 0.5 - badCount * 0.25;
+      const maxRaw = UNED_EXAM_QUESTIONS.length * 0.5; // 6.50
+      const note10 = Math.max(0, (rawScore / maxRaw) * 10);
+
+      state.examAttempts++;
+      if (state.examBestNote10 === null || note10 > state.examBestNote10) {
+        state.examBestNote10 = note10;
+      }
+      awardXP(Math.max(20, okCount * 10), "Simulador UNED completado");
+      playSound(note10 >= 5 ? "levelup" : "click");
+
+      const reviewHtml = UNED_EXAM_QUESTIONS.map((q, i) => {
+        const ans = examRuntime.answers[q.id];
+        const isBlank = ans === undefined || ans === "blank";
+        const isOk = !isBlank && ans === q.correct;
+        const badge = isBlank
+          ? `<span class="tag" style="background:rgba(148,163,184,0.18); color:#cbd5e1;">Blanco (0)</span>`
+          : (isOk ? `<span class="tag tag-ok">Acierto (+0,50)</span>` : `<span class="tag tag-err">Fallo (-0,25)</span>`);
+
+        return `
+          <div class="card-soft" style="margin-bottom:10px; border-left:4px solid ${isBlank ? "var(--text-dim)" : (isOk ? "var(--success)" : "var(--error)")};">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+              <strong>#${i + 1} · ${q.tag}</strong>
+              ${badge}
+            </div>
+            <div style="font-size:0.93rem; margin-bottom:6px;">${q.q}</div>
+            <div style="font-size:0.86rem; color:#cbd5e1;">
+              ${!isBlank && !isOk ? `<div class="c-err">Tu respuesta: (${String.fromCharCode(97 + ans)}) ${q.opts[ans]}</div>` : ""}
+              <div class="c-ok">Correcta: (${String.fromCharCode(97 + q.correct)}) ${q.opts[q.correct]}</div>
+              <div style="color:var(--text-muted); margin-top:4px;">${q.exp}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const box = document.getElementById("examContainer");
+      box.innerHTML = `
+        <div class="card" style="margin-bottom:18px; text-align:center;">
+          <span class="tag ${note10 >= 5 ? "tag-ok" : "tag-err"}">${note10 >= 5 ? "🎉 ¡Aprobado!" : "📚 Sigue entrenando"}</span>
+          <h2 style="margin:10px 0 4px; font-size:2.1rem; color:${note10 >= 5 ? "var(--success)" : "var(--error)"};">
+            ${note10.toFixed(2)} / 10
+          </h2>
+          <p style="color:var(--text-muted); margin:0 0 16px;">
+            Puntuación UNED: <strong>${rawScore.toFixed(2)} / ${maxRaw.toFixed(2)} pts</strong>
+          </p>
+
+          <div class="grid-3" style="max-width:520px; margin:0 auto 18px;">
+            <div class="card-soft">
+              <div class="c-ok" style="font-size:1.3rem;">${okCount}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Aciertos (+${(okCount * 0.5).toFixed(2)})</div>
+            </div>
+            <div class="card-soft">
+              <div class="c-err" style="font-size:1.3rem;">${badCount}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Fallos (-${(badCount * 0.25).toFixed(2)})</div>
+            </div>
+            <div class="card-soft">
+              <div style="font-size:1.3rem; font-weight:800; color:#cbd5e1;">${blankCount}</div>
+              <div style="font-size:0.78rem; color:var(--text-muted);">En blanco (0)</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="startExam('${examRuntime.mode}')">🔁 Repetir</button>
+            <button class="btn btn-ghost" onclick="renderExamStart()">Cambiar Modo</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 14px;">📋 Revisión Detallada (13 Preguntas)</h3>
+          ${reviewHtml}
+        </div>
+      `;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ========================================================================
+       7. INITIALIZATION
+       ======================================================================== */
+    window.addEventListener("DOMContentLoaded", () => {
+      updateGlobalUI();
+      renderExamStart();
+    });
+  </script>
+</body>
+</html>
